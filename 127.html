@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文字列ハッシュ値の254進数表示</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* テキストエリアの自動高さ調整 */
+        textarea {
+            resize: none;
+            overflow: hidden;
+            min-height: 4rem; /* 最小高さを設定 */
+        }
+        /* Interフォントの設定 */
+        body {
+            font-family: "Inter", sans-serif;
+        }
+        /* 入力フィールドの基本クラス */
+        .input-base {
+            transition: all 0.15s ease-in-out;
+        }
+        /* Tailwind CSSがロードされる前に適用されるクラス */
+        .w-full { width: 100%; }
+        .p-3 { padding: 0.75rem; }
+        .border-2 { border-width: 2px; }
+        .rounded-lg { border-radius: 0.5rem; }
+        /* オーバーレイ用の非表示状態 */
+        .toast-hidden {
+            opacity: 0;
+            transform: translateY(20px);
+            visibility: hidden;
+        }
+        /* ローディングスピナー（今回は使用しませんが、スタイルは残します） */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 1.5rem;
+            height: 1.5rem;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen p-4 sm:p-8">
+
+    <!-- コピー成功オーバーレイ表示 (Toast Notification) -->
+    <div id="toastMessage" class="fixed bottom-5 right-5 z-50 p-4 bg-green-600 text-white rounded-lg shadow-xl toast-hidden 
+                                  transition-all duration-300 ease-in-out pointer-events-none">
+        コピーしました！
+    </div>
+
+    <div class="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-xl shadow-2xl">
+        <h1 class="text-3xl font-extrabold text-indigo-700 mb-6 border-b-4 border-indigo-200 pb-2">
+            文字列ハッシュ値の254進数表示 (1-254 範囲)
+        </h1>
+
+        <div class="space-y-4 mb-8">
+            <label for="inputString" class="block text-lg font-medium text-gray-700">
+                入力文字列 (ドメイン名ラベルに使用可能な文字: 小文字英数字, ハイフンのみ, **最大63バイト**):
+            </label>
+            
+            <!-- 入力フィールドとボタンを横並びにするための flex コンテナ -->
+            <div class="flex flex-col sm:flex-row gap-2">
+                <input type="text" id="inputString" 
+                       placeholder="小文字英数字とハイフンのみ入力可能"
+                       class="input-base w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 flex-grow"
+                       value="testlabel">
+                
+                <!-- ボタンを小さくし、入力欄の右に配置 -->
+                <button onclick="calculateAndDisplay()"
+                        class="px-4 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition duration-150 transform hover:scale-[1.01] flex-shrink-0">
+                    再計算
+                </button>
+            </div>
+
+            <div id="inputWarning" class="text-red-600 font-semibold hidden">
+                <p>⚠️ 不正な文字が検出されました。小文字の英数字とハイフンのみが許可されます。</p>
+            </div>
+             <div id="inputTooLongWarning" class="text-red-600 font-semibold hidden">
+                <p>⚠️ **文字数制限超過!** 入力は **63バイト** を超えることはできません (現在: <span id="currentByteLength">0</span> バイト)。</p>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 pt-4 border-t-2 border-gray-100">計算結果 (SHA-256)</h2>
+        
+        <div class="space-y-6">
+            <!-- IPアドレス風表示と操作ボタンのセクション -->
+            <div>
+                <h3 class="text-xl font-semibold text-gray-600 mb-2">IPアドレス風表示 (127.B1.B2.B3)</h3>
+                
+                <!-- 大画面では横並び (flex)、小画面では縦並び (flex-col) にする -->
+                <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+                    
+                    <!-- IPアドレス表示 (常に幅いっぱいまで広がる) -->
+                    <span id="ipAddressDisplay" class="p-3 border border-gray-300 bg-gray-50 rounded-lg text-gray-800 font-mono text-lg flex-grow sm:flex-grow-0">
+                        結果がここに表示されます
+                    </span>
+                    
+                    <!-- ボタンコンテナ: 小画面では縦並び、大画面では横並びを維持し、右に寄せる -->
+                    <div class="flex flex-wrap gap-2 justify-end sm:flex-nowrap"> 
+                        <!-- コピーボタン -->
+                        <button id="copyIpButton" onclick="copyToClipboard('ipAddressDisplay')"
+                                class="px-4 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-150 transform hover:scale-[1.05] flex-shrink-0 w-full sm:w-auto">
+                            コピー
+                        </button>
+                        
+                        <!-- HTTPで開くボタン -->
+                        <button id="openHttpButton" onclick="openUrl('http')"
+                                class="px-4 py-3 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600 focus:outline-none focus:ring-4 focus:ring-purple-300 transition duration-150 transform hover:scale-[1.05] flex-shrink-0 w-full sm:w-auto">
+                            HTTPで開く
+                        </button>
+                        
+                        <!-- HTTPSで開くボタン -->
+                        <button id="openHttpsButton" onclick="openUrl('https')"
+                                class="px-4 py-3 bg-teal-500 text-white font-semibold rounded-lg shadow-md hover:bg-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-300 transition duration-150 transform hover:scale-[1.05] flex-shrink-0 w-full sm:w-auto">
+                            HTTPSで開く
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-semibold text-gray-600 mb-2">ハッシュ値 (16進数)</h3>
+                <textarea id="hashValueHex" rows="2" readonly 
+                          placeholder="ここにハッシュ値（16進数、64文字）が表示されます"
+                          class="w-full p-3 border border-gray-300 bg-gray-50 rounded-lg text-gray-800 font-mono"></textarea>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-semibold text-gray-600 mb-2">ハッシュ値 (10進数)</h3>
+                <textarea id="hashValueDec" rows="4" readonly 
+                          placeholder="ここに巨大な整数（10進数）が表示されます"
+                          class="w-full p-3 border border-gray-300 bg-gray-50 rounded-lg text-gray-800 font-mono"></textarea>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-semibold text-indigo-600 mb-2">ハッシュ値 (254進数, 1-254表記)</h3>
+                <p class="text-sm text-gray-500 mb-2">
+                    各桁の値は $1$ から $254$ の数値で表示されます。ゼロを $254$ で表現する特殊な方式です。
+                </p>
+                <textarea id="hashValueBase254" rows="4" readonly 
+                          placeholder="ここに254進数表現 (1-254の数値リスト) が表示されます"
+                          class="w-full p-3 border-4 border-indigo-400 bg-indigo-50 rounded-lg text-indigo-800 font-mono text-lg"></textarea>
+            </div>
+        </div>
+        
+        <!-- LLM 機能: ドメイン名ラベルの公式解釈 (削除) -->
+    </div>
+
+    <!-- JavaScript ロジック -->
+    <script>
+        // --- 共通設定 ---
+        const MAX_OCTET_LENGTH = 63;
+        const textEncoder = new TextEncoder();
+
+        // --- 汎用ユーティリティ関数 ---
+
+        /**
+         * 文字列のバイト長（オクテット数）を取得する
+         * @param {string} str 測定する文字列
+         * @returns {number} バイト長
+         */
+        function getByteLength(str) {
+            return textEncoder.encode(str).length;
+        }
+
+        /**
+         * ArrayBufferを16進数文字列に変換する
+         */
+        function bufferToHex(buffer) {
+            return Array.from(new Uint8Array(buffer))
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('');
+        }
+
+        /**
+         * ArrayBufferをBigIntに変換する
+         */
+        function bufferToBigInt(buffer) {
+            const hex = bufferToHex(buffer);
+            return BigInt(`0x${hex}`);
+        }
+
+        /**
+         * BigIntを特殊な基数B (B=254) で表現された数値配列に変換する (1からBの範囲)
+         * 1-based encoding (Bijective Numeration) を使用
+         */
+        function bigIntToBase254_OneBased(bigIntValue) {
+            const BASE = BigInt(254);
+            if (bigIntValue === 0n) return '1';
+            let n = bigIntValue;
+            let digits = [];
+            while (n > 0n) {
+                // n - 1 を計算し、通常の 0-based の剰余 (0..253) を計算
+                let remainder = (n - 1n) % BASE; 
+                
+                // 次の n を計算: n = floor((n - 1) / B)
+                n = (n - 1n) / BASE;
+
+                // 表示値は 1-based (1..254) に戻す
+                const displayValue = remainder + 1n;
+                
+                digits.push(Number(displayValue));
+            }
+            return digits.reverse().join(', ');
+        }
+        
+        /**
+         * テキストエリアの高さを内容に合わせて自動調整する
+         */
+        function autoResizeTextarea(element) {
+            element.style.height = 'auto';
+            element.style.height = element.scrollHeight + 'px';
+        }
+        
+        /**
+         * 指定されたプロトコルでウェブページを開く
+         */
+        function openUrl(protocol) {
+            const ipAddressDisplayElement = document.getElementById('ipAddressDisplay');
+            const ipAddress = ipAddressDisplayElement.textContent.trim();
+            
+            if (ipAddress && ipAddress.includes('.')) {
+                const url = `${protocol}://${ipAddress}`;
+                window.open(url, '_blank');
+            } else {
+                console.warn('有効なIPアドレスが表示されていません。');
+            }
+        }
+
+        /**
+         * クリップボードにテキストをコピーする
+         */
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            let textToCopy = (element.tagName === 'TEXTAREA' || element.tagName === 'INPUT') 
+                             ? element.value : element.textContent.trim();
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    showCopyMessage();
+                }).catch(err => {
+                    fallbackCopyTextToClipboard(textToCopy);
+                });
+            } else {
+                fallbackCopyTextToClipboard(textToCopy);
+            }
+        }
+        
+        function fallbackCopyTextToClipboard(text) {
+            const tempTextArea = document.createElement("textarea");
+            tempTextArea.value = text;
+            tempTextArea.style.position = "fixed"; 
+            tempTextArea.style.left = "-9999px"; 
+            document.body.appendChild(tempTextArea);
+            tempTextArea.focus();
+            tempTextArea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showCopyMessage();
+                } else {
+                    console.error('Fallback: コピーに失敗しました');
+                }
+            } catch (err) {
+                console.error('Fallback: コピー中にエラーが発生しました', err);
+            }
+
+            document.body.removeChild(tempTextArea);
+        }
+
+        /**
+         * コピー成功メッセージをオーバーレイで表示し、一定時間後に非表示にする
+         */
+        function showCopyMessage() {
+            const toastElement = document.getElementById('toastMessage');
+            if (toastElement) {
+                toastElement.classList.remove('toast-hidden');
+                toastElement.classList.add('opacity-100', 'translate-y-0', 'visible');
+
+                setTimeout(() => {
+                    toastElement.classList.remove('opacity-100', 'translate-y-0', 'visible');
+                    toastElement.classList.add('toast-hidden');
+                }, 2000);
+            }
+        }
+
+        /**
+         * 入力文字をドメイン名ラベルに使用可能な文字に制限し、不正な文字を削除・警告する
+         */
+        function filterAndCheckDomainLabelCharacters(value) {
+            let lowercasedValue = value.toLowerCase();
+            const hasUpperCase = value !== lowercasedValue;
+            const hasInvalidSpecialChars = /[^a-z0-9-]/.test(lowercasedValue);
+            
+            const isValid = !hasUpperCase && !hasInvalidSpecialChars;
+            const filteredValue = lowercasedValue.replace(/[^a-z0-9-]/g, '');
+
+            return { filteredValue, isValid };
+        }
+
+        // --- LLM関連関数は全て削除 ---
+
+        /**
+         * メイン処理: ハッシュ値を計算し、各形式で表示する
+         */
+        async function calculateAndDisplay() {
+            const inputElement = document.getElementById('inputString');
+            const inputString = inputElement.value;
+
+            const ipAddressDisplayElement = document.getElementById('ipAddressDisplay');
+            const hashValueHexElement = document.getElementById('hashValueHex');
+            const hashValueDecElement = document.getElementById('hashValueDec');
+            const hashValueBase254Element = document.getElementById('hashValueBase254');
+            
+            // 全ての表示要素をクリア/初期化
+            ipAddressDisplayElement.textContent = '結果がここに表示されます';
+            hashValueHexElement.value = '';
+            hashValueDecElement.value = '';
+            hashValueBase254Element.value = '';
+
+            // 入力値が空の場合は計算をスキップ
+            if (!inputString) {
+                hashValueHexElement.placeholder = '入力文字列がありません。';
+                hashValueDecElement.placeholder = '入力文字列がありません。';
+                hashValueBase254Element.placeholder = '文字列を入力してください。';
+                autoResizeTextarea(hashValueHexElement);
+                autoResizeTextarea(hashValueDecElement);
+                autoResizeTextarea(hashValueBase254Element);
+                return;
+            }
+
+            // 63バイト制限の適用（切り詰め）
+            let currentString = inputString;
+            let byteLength = getByteLength(currentString);
+            
+            if (byteLength > MAX_OCTET_LENGTH) {
+                let truncatedString = '';
+                let currentLength = 0;
+                
+                for (let i = 0; i < inputString.length; i++) {
+                    const char = inputString[i];
+                    const charByteLength = getByteLength(char);
+                    
+                    if (currentLength + charByteLength <= MAX_OCTET_LENGTH) {
+                        truncatedString += char;
+                        currentLength += charByteLength;
+                    } else {
+                        break;
+                    }
+                }
+                currentString = truncatedString;
+            }
+
+            // --- 計算処理 ---
+            try {
+                const data = textEncoder.encode(currentString);
+                // SHA-256ハッシュ値を計算 (Web Crypto API)
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                const hashBytes = new Uint8Array(hashBuffer);
+
+                // 3. IPアドレス風表示の生成 (最初の3バイトを使用)
+                if (hashBytes.length >= 3) {
+                    const b1 = hashBytes[0];
+                    const b2 = hashBytes[1];
+                    const b3 = hashBytes[2];
+                    ipAddressDisplayElement.textContent = `127.${b1}.${b2}.${b3}`;
+                } else {
+                    ipAddressDisplayElement.textContent = 'ハッシュ値が短すぎます';
+                }
+
+                // 4. 16進数、BigInt、254進数（1-254表記）に変換して表示
+                hashValueHexElement.value = bufferToHex(hashBuffer);
+                autoResizeTextarea(hashValueHexElement);
+
+                const hashBigInt = bufferToBigInt(hashBuffer);
+                hashValueDecElement.value = hashBigInt.toString();
+                autoResizeTextarea(hashValueDecElement);
+
+                hashValueBase254Element.value = bigIntToBase254_OneBased(hashBigInt);
+                autoResizeTextarea(hashValueBase254Element);
+                
+            } catch (error) {
+                console.error("ハッシュ計算中にエラーが発生しました:", error);
+                hashValueBase254Element.value = '計算中に致命的なエラーが発生しました。コンソールを確認してください。';
+                autoResizeTextarea(hashValueBase254Element);
+            }
+        }
+
+        // --- イベントリスナー設定 ---
+
+        const inputElement = document.getElementById('inputString');
+        const inputWarningElement = document.getElementById('inputWarning'); // 不正文字警告
+        const inputTooLongWarningElement = document.getElementById('inputTooLongWarning'); // バイト長警告
+        const currentByteLengthElement = document.getElementById('currentByteLength');
+        
+        // 入力フィールドのクラスセット
+        const inputClasses = 'input-base w-full p-3 border-2 rounded-lg focus:ring-indigo-500 focus:border-indigo-500';
+
+        /**
+         * 入力イベントハンドラ: 文字フィルタリング、警告表示、自動計算を行う
+         */
+        function handleInput() {
+            const originalValue = inputElement.value;
+            const { filteredValue, isValid } = filterAndCheckDomainLabelCharacters(originalValue);
+            
+            let finalValue = filteredValue;
+            let byteLength = getByteLength(finalValue);
+            let isTooLong = byteLength > MAX_OCTET_LENGTH;
+            
+            // バイト長表示の更新
+            currentByteLengthElement.textContent = byteLength;
+
+            // 1. バイト長が超過している場合の処理 (入力値の変更は行わず、警告のみを行う)
+            if (isTooLong) {
+                inputTooLongWarningElement.classList.remove('hidden');
+            } else {
+                inputTooLongWarningElement.classList.add('hidden');
+            }
+
+            // 2. 不正文字のチェックと入力欄の修正（大文字の小文字化、不正文字の削除）
+            if (originalValue !== filteredValue) {
+                 // 不正な文字を削除または大文字を小文字に変換した分、カーソル位置を調整
+                const start = inputElement.selectionStart;
+                const end = inputElement.selectionEnd;
+                inputElement.value = filteredValue;
+
+                if (start !== null) {
+                    const diff = originalValue.length - filteredValue.length;
+                    inputElement.setSelectionRange(start - diff, end - diff);
+                }
+            } else {
+                 // 変換は不要だが、念のため値を設定（小文字化された値）
+                 inputElement.value = filteredValue;
+            }
+            finalValue = inputElement.value; // 更新された値を取得
+
+            // 3. 警告の表示と入力欄のスタイリング
+            if (isValid && !isTooLong) {
+                // 有効な入力の場合: 通常のスタイルに戻す
+                inputWarningElement.classList.add('hidden');
+                inputElement.className = inputClasses + ' border-gray-300 flex-grow'; // flex-grow を追加
+            } else {
+                // 無効な入力または制限超過の場合: 警告を表示し、赤色のスタイルを適用
+                if (!isValid) {
+                    inputWarningElement.classList.remove('hidden');
+                } else {
+                    inputWarningElement.classList.add('hidden');
+                }
+                
+                inputElement.className = inputClasses + ' border-red-500 bg-red-100 flex-grow'; // flex-grow を追加
+            }
+
+            // 4. 自動計算の実行
+            calculateAndDisplay();
+        }
+
+        // 入力時に自動計算をトリガー
+        inputElement.addEventListener('input', handleInput);
+        
+        // 初期ロード時に計算を実行
+        window.onload = () => {
+             handleInput(); 
+        };
+
+        // DOMContentLoaded後に一度だけ実行される初期化関数
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = [
+                document.getElementById('hashValueHex'),
+                document.getElementById('hashValueDec'),
+                document.getElementById('hashValueBase254')
+            ];
+            elements.forEach(el => autoResizeTextarea(el));
+        });
+    </script>
+</body>
+</html>

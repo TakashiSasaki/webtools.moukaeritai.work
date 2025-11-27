@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebTools - ツール一覧</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+        }
+        .tool-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 sm:p-8">
+
+    <div class="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-xl shadow-2xl">
+        <header class="mb-8 border-b-4 border-indigo-200 pb-4">
+            <h1 class="text-4xl font-extrabold text-indigo-700">
+                WebTools by webtools.moukaeritai.work
+            </h1>
+            <p class="text-gray-600 mt-2 text-lg">
+                ウェブブラウザで動作する、ニッチな用途のツールたち。
+            </p>
+        </header>
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">利用可能なツール</h2>
+
+        <div class="grid gap-6">
+            
+            <!-- ツール項目 1: 127.html -->
+            <a href="127.html" class="tool-card block p-6 bg-white border border-gray-200 rounded-xl shadow-lg hover:bg-indigo-50 hover:border-indigo-400">
+                <div class="flex items-start">
+                    <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4 flex-shrink-0">
+                        <!-- Icon: Hash / Numbering -->
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-indigo-700">ハッシュ値に基づく 127.x.x.x 生成</h3>
+                        <p class="text-gray-600 mt-1">
+                            入力されたドメイン名ラベル（小文字、63バイト制限）のSHA-256ハッシュ値を計算し、巨大な整数を254進数（1-254表記）およびローカルIPアドレス風形式（127.B1.B2.B3）で表示します。
+                        </p>
+                    </div>
+                </div>
+            </a>
+
+            <!-- ツール項目 2: (今後の追加ツール用) -->
+            <div class="p-6 bg-gray-50 border border-gray-200 rounded-xl text-gray-400">
+                <h3 class="text-xl font-bold">今後追加予定のツール...</h3>
+                <p class="mt-1">
+                    この場所に、今後開発される様々なウェブツールのリンクがリストアップされます。
+                </p>
+            </div>
+            
+        </div>
+
+        <footer class="mt-12 pt-6 border-t border-gray-200 text-center text-gray-500">
+            <p>&copy; 2025 WebTools hosted on webtools.moukaeritai.work</p>
+        </footer>
+    </div>
+</body>
+</html>

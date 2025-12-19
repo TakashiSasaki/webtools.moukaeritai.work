@@ -16,6 +16,27 @@
             background-color: #f0f2f5;
             box-sizing: border-box;
         }
+        .header-nav {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 1rem;
+        }
+        .nav-button {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: #495057;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .nav-button:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+        }
         main {
             width: 100%;
             max-width: 1200px;
@@ -86,12 +107,44 @@
             border-bottom: 1px solid #e9ecef;
             padding-bottom: 0.5rem;
         }
+        .status-panel {
+            padding: 0.75rem 1.25rem;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            color: #495057;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #adb5bd; /* Gray for Idle */
+            margin-right: 10px;
+            transition: background-color 0.2s;
+        }
+        .status-indicator.active {
+            background-color: #28a745; /* Green for Dragging */
+        }
     </style>
 </head>
 <body>
+    <div class="header-nav">
+        <a href="/" class="nav-button">← ホームへ戻る</a>
+    </div>
     <main>
         <div id="drop-target">
             ここにファイルをドラッグ＆ドロップしてください
+        </div>
+
+        <div id="drag-status" class="status-panel">
+            <span id="status-dot" class="status-indicator"></span>
+            <span id="status-text">待機中 (Idle)</span>
+            <span id="drag-info" style="margin-left: auto; font-family: monospace; font-size: 0.9em; color: #6c757d;"></span>
         </div>
 
         <div class="log-container-wrapper">
@@ -107,6 +160,9 @@
         const dropTarget = document.getElementById('drop-target');
         const logContainer = document.getElementById('log-container');
         const clearLogBtn = document.getElementById('clear-log');
+        const statusText = document.getElementById('status-text');
+        const statusDot = document.getElementById('status-dot');
+        const dragInfo = document.getElementById('drag-info');
 
         const log = (message, ...details) => {
             const entry = document.createElement('div');
@@ -123,6 +179,16 @@
             }
         };
 
+        const updateStatus = (text, isActive, info = '') => {
+            statusText.textContent = text;
+            if (isActive) {
+                statusDot.classList.add('active');
+            } else {
+                statusDot.classList.remove('active');
+            }
+            dragInfo.textContent = info;
+        };
+
         clearLogBtn.addEventListener('click', () => {
             logContainer.innerHTML = '';
             console.clear();
@@ -134,24 +200,28 @@
             event.preventDefault();
             dropTarget.classList.add('hover');
             log('dragenter: ドロップターゲットに入りました');
+            updateStatus('ドラッグ中 (Dragging)', true);
         });
 
         dropTarget.addEventListener('dragover', (event) => {
             event.preventDefault(); // ドロップを許可
-            log('dragover: ターゲット上でドラッグが継続中です', {
-                types: event.dataTransfer.types,
-                effectAllowed: event.dataTransfer.effectAllowed
-            });
+            // log('dragover: ...') は削除してログ出力を抑制
+            
+            // インジケーターの情報を更新
+            const info = `types: [${event.dataTransfer.types.join(', ')}] | effectAllowed: ${event.dataTransfer.effectAllowed} | x: ${event.clientX}, y: ${event.clientY}`;
+            updateStatus('ドラッグ中 (Dragging)', true, info);
         });
 
         dropTarget.addEventListener('dragleave', (event) => {
             dropTarget.classList.remove('hover');
             log('dragleave: ドロップターゲットから離れました');
+            updateStatus('待機中 (Idle)', false);
         });
 
         dropTarget.addEventListener('drop', (event) => {
             event.preventDefault(); // デフォルトの動作（ファイルを開くなど）をキャンセル
             dropTarget.classList.remove('hover');
+            updateStatus('ドロップ処理完了 (Dropped)', false);
             log('--- drop: ドロップイベントが発生しました！ ---');
 
             const dataTransfer = event.dataTransfer;

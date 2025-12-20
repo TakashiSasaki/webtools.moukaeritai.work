@@ -97,8 +97,20 @@
         <div class="note"><code>package=com.google.android.apps.maps</code> (パッケージ指定)</div>
       </li>
       <li>
-        <a href="intent:#Intent;action=android.intent.action.DIAL;data=tel:00012345678;end">電話ダイヤル画面を開く</a>
-        <div class="note"><code>action=android.intent.action.DIAL</code></div>
+        <a href="intent://00012345678#Intent;scheme=tel;action=android.intent.action.DIAL;end">電話ダイヤル画面を開く (Intent修正版)</a>
+        <div class="note"><code>intent://[NUMBER]#Intent;scheme=tel;action=...</code></div>
+      </li>
+      <li>
+        <a href="tel:00012345678">電話ダイヤル画面を開く (標準 tel: リンク)</a>
+        <div class="note">最も互換性が高い標準的な書き方</div>
+      </li>
+      <li>
+        <a href="intent://#Intent;action=com.google.android.googlequicksearchbox.GOOGLE_SEARCH;S.query=Gemini%20AI;end">Google アプリで検索を実行</a>
+        <div class="note"><code>action=...GOOGLE_SEARCH</code> + クエリ文字列</div>
+      </li>
+      <li>
+        <a href="intent://www.youtube.com/watch?v=dQw4w9WgXcQ#Intent;scheme=https;package=com.google.android.youtube;end">YouTube アプリで動画を再生</a>
+        <div class="note"><code>package=com.google.android.youtube</code> 指定</div>
       </li>
       <li>
         <a href="intent:#Intent;package=com.android.vending;end">Google Play ストアを起動</a>

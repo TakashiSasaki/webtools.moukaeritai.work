@@ -183,7 +183,7 @@ document.getElementById("copyDataPng1").onclick = async () => {
     const blob = await canvasToBlob(dataCanvases[0], "image/png");
     const item = new ClipboardItem({ "image/png": blob });
     await navigator.clipboard.write([item]);
-    log("SUCCESS: data: image/png（1 item）");
+    log(`SUCCESS: data: image/png（1 item）[${blob.size} bytes]`);
   } catch (e) {
     log("FAIL: data: image/png（1 item）");
     log(String(e));
@@ -194,11 +194,14 @@ document.getElementById("copyDataPng3").onclick = async () => {
   clearLog();
   try {
     const items = [];
+    let totalBytes = 0;
     for (const c of dataCanvases) {
-      items.push(new ClipboardItem({ "image/png": await canvasToBlob(c, "image/png") }));
+      const blob = await canvasToBlob(c, "image/png");
+      totalBytes += blob.size;
+      items.push(new ClipboardItem({ "image/png": blob }));
     }
     await navigator.clipboard.write(items);
-    log("SUCCESS: data: image/png（3 items）");
+    log(`SUCCESS: data: image/png（3 items）[total ${totalBytes} bytes]`);
   } catch (e) {
     log("FAIL: data: image/png（3 items）");
     log(String(e));
@@ -209,12 +212,14 @@ document.getElementById("copyDataImgHtml").onclick = async () => {
   clearLog();
   try {
     const html = dataImgs[0].outerHTML;
+    const blobHtml = new Blob([html], { type: "text/html" });
+    const blobPlain = new Blob([html], { type: "text/plain" });
     const item = new ClipboardItem({
-      "text/html": new Blob([html], { type: "text/html" }),
-      "text/plain": new Blob([html], { type: "text/plain" }),
+      "text/html": blobHtml,
+      "text/plain": blobPlain,
     });
     await navigator.clipboard.write([item]);
-    log("SUCCESS: data: IMG 単体 → text/html");
+    log(`SUCCESS: data: IMG 単体 → text/html [html:${blobHtml.size}, text:${blobPlain.size} bytes]`);
   } catch (e) {
     log("FAIL: data: IMG 単体 → text/html");
     log(String(e));
@@ -225,12 +230,14 @@ document.getElementById("copyDataDivHtml").onclick = async () => {
   clearLog();
   try {
     const html = dataDiv.outerHTML;
+    const blobHtml = new Blob([html], { type: "text/html" });
+    const blobPlain = new Blob([html], { type: "text/plain" });
     const item = new ClipboardItem({
-      "text/html": new Blob([html], { type: "text/html" }),
-      "text/plain": new Blob([html], { type: "text/plain" }),
+      "text/html": blobHtml,
+      "text/plain": blobPlain,
     });
     await navigator.clipboard.write([item]);
-    log("SUCCESS: data: DIV（複数 IMG）→ text/html");
+    log(`SUCCESS: data: DIV（複数 IMG）→ text/html [html:${blobHtml.size}, text:${blobPlain.size} bytes]`);
   } catch (e) {
     log("FAIL: data: DIV（複数 IMG）→ text/html");
     log(String(e));
@@ -286,9 +293,9 @@ function buildFileImgs(format) {
            const blob = await fetchImgBlob(img);
            sizeText = (blob.size / 1024).toFixed(1) + " KB";
         }
-        info.innerText = `${img.naturalWidth} x ${img.naturalHeight}\n${sizeText}`;
+        info.innerText = `${img.naturalWidth} x ${img.naturalHeight}\n${sizeText} (${format.toUpperCase()})`;
       } catch (e) {
-        info.innerText = `${img.naturalWidth} x ${img.naturalHeight}\n(Size?)`;
+        info.innerText = `${img.naturalWidth} x ${img.naturalHeight}\n(Size?) (${format.toUpperCase()})`;
       }
     };
 
@@ -344,12 +351,14 @@ document.getElementById("copyFileImgHtml").onclick = async () => {
   clearLog();
   try {
     const html = currentSingleFileImg().outerHTML;
+    const blobHtml = new Blob([html], { type: "text/html" });
+    const blobPlain = new Blob([html], { type: "text/plain" });
     const item = new ClipboardItem({
-      "text/html": new Blob([html], { type: "text/html" }),
-      "text/plain": new Blob([html], { type: "text/plain" }),
+      "text/html": blobHtml,
+      "text/plain": blobPlain,
     });
     await navigator.clipboard.write([item]);
-    log(`SUCCESS: file: IMG 単体 → text/html（src=image1_small.${fileFormat}）`);
+    log(`SUCCESS: file: IMG 単体 → text/html（src=image1_small.${fileFormat}）[html:${blobHtml.size}, text:${blobPlain.size} bytes]`);
   } catch (e) {
     log("FAIL: file: IMG 単体 → text/html");
     log(String(e));
@@ -360,12 +369,14 @@ document.getElementById("copyFileDivHtml").onclick = async () => {
   clearLog();
   try {
     const html = fileDiv.outerHTML;
+    const blobHtml = new Blob([html], { type: "text/html" });
+    const blobPlain = new Blob([html], { type: "text/plain" });
     const item = new ClipboardItem({
-      "text/html": new Blob([html], { type: "text/html" }),
-      "text/plain": new Blob([html], { type: "text/plain" }),
+      "text/html": blobHtml,
+      "text/plain": blobPlain,
     });
     await navigator.clipboard.write([item]);
-    log(`SUCCESS: file: DIV（複数 IMG）→ text/html（format=${fileFormat}）`);
+    log(`SUCCESS: file: DIV（複数 IMG）→ text/html（format=${fileFormat}）[html:${blobHtml.size}, text:${blobPlain.size} bytes]`);
   } catch (e) {
     log("FAIL: file: DIV（複数 IMG）→ text/html");
     log(String(e));
@@ -380,7 +391,7 @@ document.getElementById("copyFileRaw1").onclick = async () => {
     const mime = blob.type || "application/octet-stream";
     const item = new ClipboardItem({ [mime]: blob });
     await navigator.clipboard.write([item]);
-    log(`SUCCESS: file: 画像バイト（fetch blob）1 item（mime=${mime}, src=${img.src}）`);
+    log(`SUCCESS: file: 画像バイト（fetch blob）1 item（mime=${mime}, src=${img.src}）[${blob.size} bytes]`);
   } catch (e) {
     log("FAIL: file: 画像バイト（fetch blob）1 item");
     log(String(e));
@@ -391,13 +402,15 @@ document.getElementById("copyFileRaw3").onclick = async () => {
   clearLog();
   try {
     const items = [];
+    let totalBytes = 0;
     for (const img of fileImgs) {
       const blob = await fetchImgBlob(img);
+      totalBytes += blob.size;
       const mime = blob.type || "application/octet-stream";
       items.push(new ClipboardItem({ [mime]: blob }));
     }
     await navigator.clipboard.write(items);
-    log(`SUCCESS: file: 画像バイト（fetch blob）3 items（format=${fileFormat}）`);
+    log(`SUCCESS: file: 画像バイト（fetch blob）3 items（format=${fileFormat}）[total ${totalBytes} bytes]`);
   } catch (e) {
     log("FAIL: file: 画像バイト（fetch blob）3 items");
     log(String(e));
@@ -411,7 +424,7 @@ document.getElementById("copyFilePngViaCanvas1").onclick = async () => {
     const blob = await imgToPngBlobViaCanvas(img);
     const item = new ClipboardItem({ "image/png": blob });
     await navigator.clipboard.write([item]);
-    log(`SUCCESS: file: canvas変換PNG 1 item（src=${img.src}）`);
+    log(`SUCCESS: file: canvas変換PNG 1 item（src=${img.src}）[${blob.size} bytes]`);
   } catch (e) {
     log("FAIL: file: canvas変換PNG 1 item");
     log(String(e));
@@ -422,12 +435,14 @@ document.getElementById("copyFilePngViaCanvas3").onclick = async () => {
   clearLog();
   try {
     const items = [];
+    let totalBytes = 0;
     for (const img of fileImgs) {
       const blob = await imgToPngBlobViaCanvas(img);
+      totalBytes += blob.size;
       items.push(new ClipboardItem({ "image/png": blob }));
     }
     await navigator.clipboard.write(items);
-    log(`SUCCESS: file: canvas変換PNG 3 items（format=${fileFormat}）`);
+    log(`SUCCESS: file: canvas変換PNG 3 items（format=${fileFormat}）[total ${totalBytes} bytes]`);
   } catch (e) {
     log("FAIL: file: canvas変換PNG 3 items");
     log(String(e));

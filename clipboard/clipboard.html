@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <title>Clipboard API 総合実験ページ（dataURL + file src）</title>
+  <style>
+    body { font-family: sans-serif; line-height: 1.4; }
+    h1 { margin-bottom: 0.3em; }
+    h2 { margin-top: 1.6em; }
+    button, select { font-size: 14px; padding: 6px 10px; margin: 4px 6px 4px 0; }
+    .note { color: #444; font-size: 13px; }
+    .preview { margin-top: 12px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .cell { border: 1px solid #ccc; padding: 8px; }
+    .label { font-size: 12px; color: #444; margin-bottom: 4px; }
+    canvas, img { border: 1px solid #999; display: block; }
+    .container { display: flex; gap: 8px; border: 1px dashed #aaa; padding: 8px; flex-wrap: wrap; }
+    pre { background: #f6f6f6; border: 1px solid #ddd; padding: 8px; white-space: pre-wrap; }
+    code { background: #eee; padding: 0 4px; }
+    .panel { border: 1px solid #ddd; padding: 10px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Clipboard API 総合実験ページ（dataURL + file src）</h1>
+
+  <p class="note">
+    このページは Clipboard API の挙動を環境差（OS/Browser/App）込みで繰り返し観測するためのベンチです。<br>
+    ファイル画像の実験には、同一ディレクトリに以下の9ファイルを配置してください：<br>
+    <code>image1.png image2.png image3.png image1.jpg image2.jpg image3.jpg image1.webp image2.webp image3.webp</code><br>
+    ※推奨：<code>http://localhost</code> などで配信して開く（<code>file://</code> は制限が出やすい）
+  </p>
+
+  <h2>A. data URL 生成画像（Canvas / IMG 同時表示）</h2>
+  <div id="previewData" class="preview"></div>
+  <div class="panel">
+    <div>
+      <button id="copyDataPng1">data: image/png（1 item）</button>
+      <button id="copyDataPng3">data: image/png（3 items）</button>
+      <button id="copyDataImgHtml">data: IMG 単体 → text/html</button>
+      <button id="copyDataDivHtml">data: DIV（複数 IMG）→ text/html</button>
+    </div>
+  </div>
+
+  <h2>B. ファイル画像（IMG の src が imageN.(png|jpg|webp)）</h2>
+  <div class="panel">
+    <label>形式: </label>
+    <select id="fileFormat">
+      <option value="png">png</option>
+      <option value="jpg">jpg</option>
+      <option value="webp">webp</option>
+    </select>
+    <button id="reloadFiles">ファイル画像を再読み込み</button>
+    <div class="note">※ Word などへの貼り付けは、通常 <code>text/html</code> が最も再現性高く複数画像を展開しやすいです。</div>
+  </div>
+
+  <div class="panel">
+    <div class="label">表示中のファイル IMG（div で囲われた実体）</div>
+    <div id="fileContainer" class="container"></div>
+  </div>
+
+  <div class="panel">
+    <div>
+      <button id="copyFileImgHtml">file: IMG 単体 → text/html</button>
+      <button id="copyFileDivHtml">file: DIV（複数 IMG）→ text/html</button>
+    </div>
+    <div>
+      <button id="copyFileRaw1">file: 画像バイト（fetch blob）1 item</button>
+      <button id="copyFileRaw3">file: 画像バイト（fetch blob）3 items</button>
+      <button id="copyFilePngViaCanvas1">file: canvas変換PNG 1 item</button>
+      <button id="copyFilePngViaCanvas3">file: canvas変換PNG 3 items</button>
+    </div>
+  </div>
+
+  <h2>ログ</h2>
+  <pre id="log" aria-live="polite"></pre>
+
+<script>
+/* ========= 共通ユーティリティ ========= */
+const log = (m) => {
+  const el = document.getElementById("log");
+  el.textContent += m + "\n";
+};
+const clearLog = () => document.getElementById("log").textContent = "";
+
+async function ensureImgLoaded(img) {
+  // decode() があるときはそちら優先
+  if (img.complete && img.naturalWidth > 0) return;
+  if (img.decode) {
+    await img.decode();
+    return;
+  }
+  await new Promise((res, rej) => {
+    img.onload = () => res();
+    img.onerror = (e) => rej(e);
+  });
+}
+
+async function canvasToBlob(canvas, mime = "image/png") {
+  return new Promise((res, rej) => {
+    canvas.toBlob((b) => b ? res(b) : rej(new Error("toBlob() returned null")), mime);
+  });
+}
+
+/* ========= A. dataURL 生成画像 ========= */
+function createCanvas(label, color) {
+  const c = document.createElement("canvas");
+  c.width = 140; c.height = 100;
+  const ctx = c.getContext("2d");
+  ctx.fillStyle = color;
+  ctx.fillRect(0, 0, c.width, c.height);
+  ctx.fillStyle = "white";
+  ctx.font = "18px sans-serif";
+  ctx.fillText(label, 20, 60);
+  return c;
+}
+
+function canvasToImg(canvas) {
+  const img = document.createElement("img");
+  img.src = canvas.toDataURL("image/png");
+  img.width = canvas.width;
+  img.height = canvas.height;
+  img.alt = "dataURL image";
+  img.decoding = "async";
+  img.loading = "eager";
+  return img;
+}
+
+const defs = [
+  { label: "IMG 1", color: "#d9534f" },
+  { label: "IMG 2", color: "#5bc0de" },
+  { label: "IMG 3", color: "#5cb85c" }
+];
+
+const dataCanvases = [];
+const dataImgs = [];
+const dataDiv = document.createElement("div");
+dataDiv.className = "container";
+
+(function renderDataPreview() {
+  const preview = document.getElementById("previewData");
+  preview.innerHTML = "";
+
+  defs.forEach(d => {
+    const canvas = createCanvas(d.label, d.color);
+    const img = canvasToImg(canvas);
+
+    dataCanvases.push(canvas);
+    dataImgs.push(img);
+    dataDiv.appendChild(img);
+
+    const row = document.createElement("div");
+    row.className = "row";
+
+    const left = document.createElement("div");
+    left.className = "cell";
+    left.innerHTML = `<div class="label">Canvas</div>`;
+    left.appendChild(canvas);
+
+    const right = document.createElement("div");
+    right.className = "cell";
+    right.innerHTML = `<div class="label">IMG（data URL）</div>`;
+    right.appendChild(img.cloneNode(true));
+
+    row.appendChild(left);
+    row.appendChild(right);
+    preview.appendChild(row);
+  });
+
+  const box = document.createElement("div");
+  box.className = "cell";
+  box.innerHTML = `<div class="label">DIV（複数 IMG / data URL）</div>`;
+  box.appendChild(dataDiv.cloneNode(true));
+  preview.appendChild(box);
+})();
+
+document.getElementById("copyDataPng1").onclick = async () => {
+  clearLog();
+  try {
+    const blob = await canvasToBlob(dataCanvases[0], "image/png");
+    const item = new ClipboardItem({ "image/png": blob });
+    await navigator.clipboard.write([item]);
+    log("SUCCESS: data: image/png（1 item）");
+  } catch (e) {
+    log("FAIL: data: image/png（1 item）");
+    log(String(e));
+  }
+};
+
+document.getElementById("copyDataPng3").onclick = async () => {
+  clearLog();
+  try {
+    const items = [];
+    for (const c of dataCanvases) {
+      items.push(new ClipboardItem({ "image/png": await canvasToBlob(c, "image/png") }));
+    }
+    await navigator.clipboard.write(items);
+    log("SUCCESS: data: image/png（3 items）");
+  } catch (e) {
+    log("FAIL: data: image/png（3 items）");
+    log(String(e));
+  }
+};
+
+document.getElementById("copyDataImgHtml").onclick = async () => {
+  clearLog();
+  try {
+    const html = dataImgs[0].outerHTML;
+    const item = new ClipboardItem({
+      "text/html": new Blob([html], { type: "text/html" }),
+      "text/plain": new Blob([html], { type: "text/plain" }),
+    });
+    await navigator.clipboard.write([item]);
+    log("SUCCESS: data: IMG 単体 → text/html");
+  } catch (e) {
+    log("FAIL: data: IMG 単体 → text/html");
+    log(String(e));
+  }
+};
+
+document.getElementById("copyDataDivHtml").onclick = async () => {
+  clearLog();
+  try {
+    const html = dataDiv.outerHTML;
+    const item = new ClipboardItem({
+      "text/html": new Blob([html], { type: "text/html" }),
+      "text/plain": new Blob([html], { type: "text/plain" }),
+    });
+    await navigator.clipboard.write([item]);
+    log("SUCCESS: data: DIV（複数 IMG）→ text/html");
+  } catch (e) {
+    log("FAIL: data: DIV（複数 IMG）→ text/html");
+    log(String(e));
+  }
+};
+
+/* ========= B. ファイル IMG（src= imageN.ext） ========= */
+let fileFormat = "png";
+let fileImgs = [];           // DOM上の実体
+let fileDiv = null;          // DOM上の container(div)
+
+function buildFileImgs(format) {
+  fileImgs = [];
+  const cont = document.getElementById("fileContainer");
+  cont.innerHTML = "";
+  cont.className = "container";
+  fileDiv = cont;
+
+  for (let i = 1; i <= 3; i++) {
+    const img = document.createElement("img");
+    img.src = `image${i}.${format}`;
+    img.alt = `image${i}.${format}`;
+    img.width = 140;
+    img.height = 100;
+    img.decoding = "async";
+    img.loading = "eager";
+    img.addEventListener("error", () => {
+      // 404でもページは動くのでログだけ出す
+      log(`WARN: 読み込み失敗: ${img.src}`);
+    });
+    fileImgs.push(img);
+    cont.appendChild(img);
+  }
+}
+
+async function fetchImgBlob(img) {
+  // サーバが Content-Type を付けてくれると blob.type が入る
+  const r = await fetch(img.src, { cache: "no-store" });
+  if (!r.ok) throw new Error(`fetch failed: ${img.src} (${r.status})`);
+  return await r.blob();
+}
+
+async function imgToPngBlobViaCanvas(img) {
+  await ensureImgLoaded(img);
+  const c = document.createElement("canvas");
+  c.width = img.naturalWidth;
+  c.height = img.naturalHeight;
+  const ctx = c.getContext("2d");
+  ctx.drawImage(img, 0, 0);
+  return await canvasToBlob(c, "image/png");
+}
+
+function currentSingleFileImg() {
+  // 単体実験用（先頭）
+  return fileImgs[0];
+}
+
+buildFileImgs(fileFormat);
+
+document.getElementById("fileFormat").onchange = (e) => {
+  fileFormat = e.target.value;
+};
+
+document.getElementById("reloadFiles").onclick = () => {
+  clearLog();
+  buildFileImgs(fileFormat);
+  log(`INFO: ファイル画像を再構築しました（format=${fileFormat}）`);
+};
+
+document.getElementById("copyFileImgHtml").onclick = async () => {
+  clearLog();
+  try {
+    const html = currentSingleFileImg().outerHTML;
+    const item = new ClipboardItem({
+      "text/html": new Blob([html], { type: "text/html" }),
+      "text/plain": new Blob([html], { type: "text/plain" }),
+    });
+    await navigator.clipboard.write([item]);
+    log(`SUCCESS: file: IMG 単体 → text/html（src=image1.${fileFormat}）`);
+  } catch (e) {
+    log("FAIL: file: IMG 単体 → text/html");
+    log(String(e));
+  }
+};
+
+document.getElementById("copyFileDivHtml").onclick = async () => {
+  clearLog();
+  try {
+    const html = fileDiv.outerHTML;
+    const item = new ClipboardItem({
+      "text/html": new Blob([html], { type: "text/html" }),
+      "text/plain": new Blob([html], { type: "text/plain" }),
+    });
+    await navigator.clipboard.write([item]);
+    log(`SUCCESS: file: DIV（複数 IMG）→ text/html（format=${fileFormat}）`);
+  } catch (e) {
+    log("FAIL: file: DIV（複数 IMG）→ text/html");
+    log(String(e));
+  }
+};
+
+document.getElementById("copyFileRaw1").onclick = async () => {
+  clearLog();
+  try {
+    const img = currentSingleFileImg();
+    const blob = await fetchImgBlob(img);
+    const mime = blob.type || "application/octet-stream";
+    const item = new ClipboardItem({ [mime]: blob });
+    await navigator.clipboard.write([item]);
+    log(`SUCCESS: file: 画像バイト（fetch blob）1 item（mime=${mime}, src=${img.src}）`);
+  } catch (e) {
+    log("FAIL: file: 画像バイト（fetch blob）1 item");
+    log(String(e));
+  }
+};
+
+document.getElementById("copyFileRaw3").onclick = async () => {
+  clearLog();
+  try {
+    const items = [];
+    for (const img of fileImgs) {
+      const blob = await fetchImgBlob(img);
+      const mime = blob.type || "application/octet-stream";
+      items.push(new ClipboardItem({ [mime]: blob }));
+    }
+    await navigator.clipboard.write(items);
+    log(`SUCCESS: file: 画像バイト（fetch blob）3 items（format=${fileFormat}）`);
+  } catch (e) {
+    log("FAIL: file: 画像バイト（fetch blob）3 items");
+    log(String(e));
+  }
+};
+
+document.getElementById("copyFilePngViaCanvas1").onclick = async () => {
+  clearLog();
+  try {
+    const img = currentSingleFileImg();
+    const blob = await imgToPngBlobViaCanvas(img);
+    const item = new ClipboardItem({ "image/png": blob });
+    await navigator.clipboard.write([item]);
+    log(`SUCCESS: file: canvas変換PNG 1 item（src=${img.src}）`);
+  } catch (e) {
+    log("FAIL: file: canvas変換PNG 1 item");
+    log(String(e));
+  }
+};
+
+document.getElementById("copyFilePngViaCanvas3").onclick = async () => {
+  clearLog();
+  try {
+    const items = [];
+    for (const img of fileImgs) {
+      const blob = await imgToPngBlobViaCanvas(img);
+      items.push(new ClipboardItem({ "image/png": blob }));
+    }
+    await navigator.clipboard.write(items);
+    log(`SUCCESS: file: canvas変換PNG 3 items（format=${fileFormat}）`);
+  } catch (e) {
+    log("FAIL: file: canvas変換PNG 3 items");
+    log(String(e));
+  }
+};
+</script>
+</body>
+</html>

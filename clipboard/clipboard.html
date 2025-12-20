@@ -69,6 +69,10 @@
       <button id="copyFileDivHtml">file: DIV（複数 IMG）→ text/html</button>
     </div>
     <div>
+      <button id="copyFileImgDataUrlHtml">file: IMG 単体(DataURL化) → text/html</button>
+      <button id="copyFileDivDataUrlHtml">file: DIV 複数(DataURL化) → text/html</button>
+    </div>
+    <div>
       <button id="copyFileRaw1">file: 画像バイト（fetch blob）1 item</button>
       <button id="copyFileRaw3">file: 画像バイト（fetch blob）3 items</button>
       <button id="copyFilePngViaCanvas1">file: Canvas経由でPNGに変換して1枚コピー（JPG/WebP等もPNGとして転送）</button>
@@ -399,6 +403,74 @@ document.getElementById("copyFileDivHtml").onclick = async () => {
     log(`SUCCESS: file: DIV（複数 IMG）→ text/html（format=${fileFormat}）[html:${blobHtml.size}, text:${blobPlain.size} bytes]`);
   } catch (e) {
     log("FAIL: file: DIV（複数 IMG）→ text/html");
+    log(String(e));
+  }
+};
+
+function blobToDataURL(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+document.getElementById("copyFileImgDataUrlHtml").onclick = async () => {
+  clearLog();
+  try {
+    const img = currentSingleFileImg();
+    const blob = await fetchImgBlob(img);
+    const dataUrl = await blobToDataURL(blob);
+    
+    // クローンを作成して src を DataURL に差し替える
+    const clone = img.cloneNode(true);
+    clone.src = dataUrl;
+    
+    const html = clone.outerHTML;
+    const blobHtml = new Blob([html], { type: "text/html" });
+    const blobPlain = new Blob([html], { type: "text/plain" });
+    const item = new ClipboardItem({
+      "text/html": blobHtml,
+      "text/plain": blobPlain,
+    });
+    await navigator.clipboard.write([item]);
+    log(`SUCCESS: file: IMG 単体(DataURL化) → text/html [html:${blobHtml.size}, text:${blobPlain.size} bytes]`);
+  } catch (e) {
+    log("FAIL: file: IMG 単体(DataURL化) → text/html");
+    log(String(e));
+  }
+};
+
+document.getElementById("copyFileDivDataUrlHtml").onclick = async () => {
+  clearLog();
+  try {
+    // コンテナごとクローン
+    const cloneDiv = fileDiv.cloneNode(true);
+    const cloneImgs = cloneDiv.querySelectorAll("img");
+    
+    // 元の画像リストと同期して処理
+    for (let i = 0; i < fileImgs.length; i++) {
+        const originalImg = fileImgs[i];
+        const blob = await fetchImgBlob(originalImg);
+        const dataUrl = await blobToDataURL(blob);
+        // クローン側の img の src を差し替え
+        if (cloneImgs[i]) {
+            cloneImgs[i].src = dataUrl;
+        }
+    }
+
+    const html = cloneDiv.outerHTML;
+    const blobHtml = new Blob([html], { type: "text/html" });
+    const blobPlain = new Blob([html], { type: "text/plain" });
+    const item = new ClipboardItem({
+      "text/html": blobHtml,
+      "text/plain": blobPlain,
+    });
+    await navigator.clipboard.write([item]);
+    log(`SUCCESS: file: DIV 複数(DataURL化) → text/html [html:${blobHtml.size}, text:${blobPlain.size} bytes]`);
+  } catch (e) {
+    log("FAIL: file: DIV 複数(DataURL化) → text/html");
     log(String(e));
   }
 };

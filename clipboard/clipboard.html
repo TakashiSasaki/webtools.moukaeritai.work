@@ -53,7 +53,7 @@
       <option value="ico">ico</option>
       <option value="avif">avif</option>
     </select>
-    <button id="reloadFiles">ファイル画像を再読み込み</button>
+    <button id="reloadFiles">選択した形式でファイル画像を再読み込み</button>
     <div class="note">※ Word などへの貼り付けは、通常 <code>text/html</code> が最も再現性高く複数画像を展開しやすいです。</div>
   </div>
 
@@ -292,6 +292,8 @@ buildFileImgs(fileFormat);
 
 document.getElementById("fileFormat").onchange = (e) => {
   fileFormat = e.target.value;
+  // 自動的に再読み込み
+  document.getElementById("reloadFiles").click();
 };
 
 document.getElementById("reloadFiles").onclick = () => {

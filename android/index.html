@@ -113,8 +113,12 @@
         <div class="note"><code>google.navigation:q=...</code> (カスタムスキーム)</div>
       </li>
       <li>
-        <a href="intent:#Intent;action=android.intent.action.INSERT;package=com.google.android.calendar;type=vnd.android.cursor.dir/event;S.title=TestEvent;end">Google カレンダーで予定作成 (Package指定)</a>
-        <div class="note"><code>package=com.google.android.calendar</code> を指定</div>
+        <a href="https://calendar.google.com/calendar/r/eventedit?text=TestEvent&details=Description">Google カレンダー (HTTPS App Link)</a>
+        <div class="note">HTTPSリンク (アプリが対応していれば起動、なければWeb)</div>
+      </li>
+      <li>
+        <a href="geo:0,0?q=Tokyo+Tower">地図を開く (geo: スキーム)</a>
+        <div class="note">標準的な <code>geo:</code> スキーム</div>
       </li>
       <li>
         <a href="line://msg/text/Hello">LINE でメッセージを送る (scheme)</a>

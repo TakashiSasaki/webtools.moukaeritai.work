@@ -89,15 +89,23 @@
         <div class="note"><code>action=android.settings.SETTINGS</code></div>
       </li>
       <li>
-        <a href="intent:#Intent;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;data=https://www.google.com;end">ブラウザで Google を開く (Intent経由)</a>
+        <a href="intent://www.google.com#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end">ブラウザで Google を開く (修正版)</a>
+        <div class="note"><code>intent://[HOST]#Intent;scheme=https;...;end</code> 形式</div>
+      </li>
+      <li>
+        <a href="intent://maps.google.com/maps?q=Tokyo+Station#Intent;scheme=https;package=com.google.android.apps.maps;end">Google マップで「東京駅」を表示</a>
+        <div class="note"><code>package=com.google.android.apps.maps</code> (パッケージ指定)</div>
+      </li>
+      <li>
+        <a href="intent:#Intent;action=android.intent.action.DIAL;data=tel:00012345678;end">電話ダイヤル画面を開く</a>
+        <div class="note"><code>action=android.intent.action.DIAL</code></div>
       </li>
       <li>
         <a href="intent:#Intent;package=com.android.vending;end">Google Play ストアを起動</a>
         <div class="note"><code>package=com.android.vending</code></div>
       </li>
       <li>
-        <a href="intent://details?id=com.google.android.youtube#Intent;scheme=market;end">YouTube ページを Play ストアで開く</a>
-        <div class="note"><code>scheme=market</code></div>
+        <a href="intent://details?id=com.google.android.youtube#Intent;scheme=market;end">YouTube ページを Play ストアで開く (Intent)</a>
       </li>
       <li>
         <a href="market://details?id=com.google.android.youtube">market:// スキーム (YouTube)</a>

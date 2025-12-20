@@ -38,6 +38,7 @@
       <button id="copyDataPng3">data: image/png（3 items）</button>
       <button id="copyDataImgHtml">data: IMG 単体 → text/html</button>
       <button id="copyDataDivHtml">data: DIV（複数 IMG）→ text/html</button>
+      <button id="copyDataImgsHtml">data: 複数 IMG（DIVなし）→ text/html</button>
     </div>
   </div>
 
@@ -240,6 +241,25 @@ document.getElementById("copyDataDivHtml").onclick = async () => {
     log(`SUCCESS: data: DIV（複数 IMG）→ text/html [html:${blobHtml.size}, text:${blobPlain.size} bytes]`);
   } catch (e) {
     log("FAIL: data: DIV（複数 IMG）→ text/html");
+    log(String(e));
+  }
+};
+
+document.getElementById("copyDataImgsHtml").onclick = async () => {
+  clearLog();
+  try {
+    // 3つのIMGタグを連結した文字列を作成
+    const html = dataImgs.map(img => img.outerHTML).join("");
+    const blobHtml = new Blob([html], { type: "text/html" });
+    const blobPlain = new Blob([html], { type: "text/plain" });
+    const item = new ClipboardItem({
+      "text/html": blobHtml,
+      "text/plain": blobPlain,
+    });
+    await navigator.clipboard.write([item]);
+    log(`SUCCESS: data: 複数 IMG（DIVなし）→ text/html [html:${blobHtml.size}, text:${blobPlain.size} bytes]`);
+  } catch (e) {
+    log("FAIL: data: 複数 IMG（DIVなし）→ text/html");
     log(String(e));
   }
 };

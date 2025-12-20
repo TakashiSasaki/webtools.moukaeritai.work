@@ -26,6 +26,10 @@ The modern standard. If the app is installed, it intercepts the URL; otherwise, 
 *   **Code**: `<a href="https://calendar.google.com/calendar/r/eventedit?text=Event&details=Desc">`
 *   **Result**: Opens the Google Calendar app if installed and configured to handle this URL. This is the **recommended replacement** for the failed `INSERT` intent.
 
+### ✅ Google Find My Device (デバイスを探す)
+*   **Code**: `<a href="https://www.google.com/android/find">`
+*   **Result**: Reliably opens the "Find My Device" app via App Link.
+
 ### ✅ YouTube
 *   **Code**: `<a href="https://www.youtube.com/watch?v=...">`
 *   **Code (Intent Fallback)**: `<a href="intent://www.youtube.com/watch?v=...#Intent;scheme=https;package=com.google.android.youtube;end">`

@@ -29,6 +29,14 @@ Targeting specific features inside the Google App often fails due to security re
 *   **Result**: Redirects to Play Store.
 *   **Reason**: The Google App does not claim the `https` scheme for search URLs when launched from Chrome (to keep the user in the browser ecosystem), or the specific activity is protected.
 
+### ❌ Find My Device Launcher Intent
+*   **Attempted Code**:
+    ```html
+    <a href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.google.android.apps.adm;end">...</a>
+    ```
+*   **Result**: Redirects to Play Store.
+*   **Reason**: Direct launcher intent to this package from Chrome is restricted or fails to resolve to a valid activity. Use HTTPS link instead.
+
 ---
 
 ## 2. Calendar Insertion (`android.intent.action.INSERT`)

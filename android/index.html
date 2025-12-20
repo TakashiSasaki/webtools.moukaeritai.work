@@ -109,12 +109,16 @@
         <div class="note">単純なアプリ起動 (LAUNCHER)</div>
       </li>
       <li>
-        <a href="intent:#Intent;action=android.intent.action.VOICE_COMMAND;package=com.google.android.googlequicksearchbox;end">Google 音声検索を起動</a>
-        <div class="note"><code>action=android.intent.action.VOICE_COMMAND</code></div>
+        <a href="google.navigation:q=Tokyo+Tower">Google マップナビを起動 (scheme)</a>
+        <div class="note"><code>google.navigation:q=...</code> (カスタムスキーム)</div>
       </li>
       <li>
-        <a href="intent:#Intent;action=android.intent.action.INSERT;data=content://com.android.calendar/events;type=vnd.android.cursor.dir/event;S.title=TestEvent;end">カレンダーに予定を追加 (MIME指定)</a>
-        <div class="note"><code>type=vnd.android.cursor.dir/event</code> を追加</div>
+        <a href="intent:#Intent;action=android.intent.action.INSERT;type=vnd.android.cursor.dir/event;S.title=TestEvent;end">カレンダーに予定を追加 (Dataなし/Typeのみ)</a>
+        <div class="note"><code>data</code>属性を削除し、<code>type</code>のみ指定</div>
+      </li>
+      <li>
+        <a href="mailto:?subject=Test">メールを作成 (mailto:)</a>
+        <div class="note">標準的な <code>mailto:</code> スキーム</div>
       </li>
       <li>
         <a href="sms:?body=Hello">SMS を作成 (sms: スキーム)</a>

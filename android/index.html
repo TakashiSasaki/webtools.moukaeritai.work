@@ -105,8 +105,12 @@
         <div class="note">最も互換性が高い標準的な書き方</div>
       </li>
       <li>
-        <a href="intent://#Intent;action=com.google.android.googlequicksearchbox.GOOGLE_SEARCH;S.query=Gemini%20AI;end">Google アプリで検索を実行</a>
-        <div class="note"><code>action=...GOOGLE_SEARCH</code> + クエリ文字列</div>
+        <a href="intent:#Intent;action=android.intent.action.WEB_SEARCH;S.query=Gemini%20AI;end">ウェブ検索を実行 (WEB_SEARCH Intent)</a>
+        <div class="note"><code>action=android.intent.action.WEB_SEARCH</code></div>
+      </li>
+      <li>
+        <a href="intent:#Intent;action=android.intent.action.WEB_SEARCH;S.query=Gemini%20AI;package=com.google.android.googlequicksearchbox;end">Google アプリで検索 (パッケージ指定)</a>
+        <div class="note"><code>package=com.google.android.googlequicksearchbox</code></div>
       </li>
       <li>
         <a href="intent://www.youtube.com/watch?v=dQw4w9WgXcQ#Intent;scheme=https;package=com.google.android.youtube;end">YouTube アプリで動画を再生</a>

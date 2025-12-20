@@ -105,12 +105,12 @@
         <div class="note">最も互換性が高い標準的な書き方</div>
       </li>
       <li>
-        <a href="intent:#Intent;action=android.intent.action.WEB_SEARCH;S.query=Gemini%20AI;end">ウェブ検索を実行 (WEB_SEARCH Intent)</a>
-        <div class="note"><code>action=android.intent.action.WEB_SEARCH</code></div>
+        <a href="intent://www.google.com/search?q=Gemini+AI#Intent;scheme=https;package=com.google.android.googlequicksearchbox;end">Google アプリで検索結果を開く (URL Intent)</a>
+        <div class="note">URL を Google アプリ (package指定) で開かせる形式</div>
       </li>
       <li>
-        <a href="intent:#Intent;action=android.intent.action.WEB_SEARCH;S.query=Gemini%20AI;package=com.google.android.googlequicksearchbox;end">Google アプリで検索 (パッケージ指定)</a>
-        <div class="note"><code>package=com.google.android.googlequicksearchbox</code></div>
+        <a href="intent:#Intent;action=android.intent.action.INSERT;data=content://com.android.calendar/events;S.title=Test%20Event;end">カレンダーに予定を追加</a>
+        <div class="note"><code>action=android.intent.action.INSERT</code> (カレンダー)</div>
       </li>
       <li>
         <a href="intent://www.youtube.com/watch?v=dQw4w9WgXcQ#Intent;scheme=https;package=com.google.android.youtube;end">YouTube アプリで動画を再生</a>

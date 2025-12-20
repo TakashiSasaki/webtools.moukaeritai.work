@@ -2,48 +2,44 @@
 
 This document records intent patterns and URI schemes that successfully launched external applications from Chrome on Android.
 
-## 1. Standard URI Schemes
+## 1. Custom & Standard URI Schemes
 The most reliable method. These work across most devices and do not rely on complex `intent:` syntax.
 
-### ✅ Phone / SMS / Mail
-*   **Phone**: `<a href="tel:09012345678">`
-*   **SMS**: `<a href="sms:?body=Message">` (Note: `?body=` is the standard, though support varies slightly).
-*   **Mail**: `<a href="mailto:?subject=Test">`
-
-### ✅ Maps & Navigation
-*   **Geo URI**: `<a href="geo:0,0?q=Tokyo+Tower">` (Opens default map app).
-*   **Google Maps Navigation**: `<a href="google.navigation:q=Tokyo+Tower">` (Specific to Google Maps, highly reliable).
-
-### ✅ Messaging Apps
+### ✅ Messaging / Social Apps
 *   **LINE**: `<a href="line://msg/text/Message">`
+*   **Slack**: `<a href="slack://open">`
+*   **Discord**: `discord://` (if supported) or HTTPS Links.
+
+### ✅ Standard Tools
+*   **Phone**: `<a href="tel:09012345678">`
+*   **SMS**: `<a href="sms:?body=Message">`
+*   **Mail**: `<a href="mailto:?subject=Test">`
+*   **Maps (Geo)**: `<a href="geo:0,0?q=Tokyo+Tower">`
+*   **Maps (Nav)**: `<a href="google.navigation:q=Tokyo+Tower">`
 
 ---
 
 ## 2. HTTPS App Links (Universal Links)
 The modern standard. If the app is installed, it intercepts the URL; otherwise, it loads the webpage.
 
-### ✅ Google Calendar
-*   **Code**: `<a href="https://calendar.google.com/calendar/r/eventedit?text=Event&details=Desc">`
-*   **Result**: Opens the Google Calendar app if installed and configured to handle this URL. This is the **recommended replacement** for the failed `INSERT` intent.
-
-### ✅ Google Find My Device (デバイスを探す)
-*   **Code**: `<a href="https://www.google.com/android/find">`
-*   **Result**: Reliably opens the "Find My Device" app via App Link.
-
 ### ✅ YouTube
 *   **Code**: `<a href="https://www.youtube.com/watch?v=...">`
 *   **Code (Intent Fallback)**: `<a href="intent://www.youtube.com/watch?v=...#Intent;scheme=https;package=com.google.android.youtube;end">`
 *   **Result**: Reliably opens the YouTube app.
 
+### ✅ Discord
+*   **Code**: `<a href="https://discord.com/app">`
+*   **Result**: Reliably opens the Discord app via App Link.
+
+### ✅ Google Chat
+*   **Code**: `<a href="https://mail.google.com/chat/u/0/">`
+*   **Result**: Opens the Chat interface (often within the Gmail app).
+
 ---
 
-## 3. Specific `intent:` Syntax
+## 3. Specific `intent:` Syntax (Conditional)
 
-### ✅ Launching an App (Main Launcher)
-*   **Code**: `intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.google.android.googlequicksearchbox;end`
-*   **Result**: Opens the Google App (Home screen).
-*   **Note**: Requires knowing the exact package name. Useful for simply "opening" an app without passing complex data.
-
-### ✅ Correct `tel:` Intent
+### ⚠️ Correct `tel:` Intent
 *   **Code**: `intent://09012345678#Intent;scheme=tel;action=android.intent.action.DIAL;end`
-*   **Result**: Opens the dialer. Useful if you need to specify `S.browser_fallback_url` (which `tel:` links don't support).
+*   **Result**: Opens the dialer. This works because the Dialer explicitly supports external intents.
+*   **Note**: General "Package Launch" intents (`action=MAIN`) often fail to the Play Store on modern Android/Chrome. Use standard schemes instead.

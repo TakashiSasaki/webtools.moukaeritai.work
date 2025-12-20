@@ -6,66 +6,32 @@ This document records intent patterns that failed to work as expected on Chrome 
 Targeting specific features inside the Google App often fails due to security restrictions (non-exported activities) or browser blocking.
 
 ### ❌ Voice Search (`android.intent.action.VOICE_COMMAND`)
-*   **Attempted Code**:
-    ```html
-    <a href="intent:#Intent;action=android.intent.action.VOICE_COMMAND;package=com.google.android.googlequicksearchbox;end">...</a>
-    ```
 *   **Result**: Redirects to the Google App page on Play Store.
-*   **Reason**: The Activity handling `VOICE_COMMAND` is likely not exported for external browser triggering, causing the intent resolution to fail and fallback to the market.
 
 ### ❌ Web Search Action (`android.intent.action.WEB_SEARCH`)
-*   **Attempted Code**:
-    ```html
-    <a href="intent:#Intent;action=android.intent.action.WEB_SEARCH;S.query=test;end">...</a>
-    ```
 *   **Result**: No response or Play Store redirect.
-*   **Reason**: This generic action is often restricted in modern Android versions when invoked from a web context to prevent hijacking.
-
-### ❌ Opening Search Results in App (`intent://...package=...`)
-*   **Attempted Code**:
-    ```html
-    <a href="intent://www.google.com/search?q=...#Intent;scheme=https;package=com.google.android.googlequicksearchbox;end">...</a>
-    ```
-*   **Result**: Redirects to Play Store.
-*   **Reason**: The Google App does not claim the `https` scheme for search URLs when launched from Chrome (to keep the user in the browser ecosystem), or the specific activity is protected.
-
-### ❌ Find My Device Launcher Intent
-*   **Attempted Code**:
-    ```html
-    <a href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.google.android.apps.adm;end">...</a>
-    ```
-*   **Result**: Redirects to Play Store.
-*   **Reason**: Direct launcher intent to this package from Chrome is restricted or fails to resolve to a valid activity. Use HTTPS link instead.
 
 ---
 
-## 2. Calendar Insertion (`android.intent.action.INSERT`)
+## 2. Generic "Launcher" Intents (Package Specified)
+Even attempting to simply "Launch" an app by its package name often fails if the app doesn't explicitly export its Launcher Activity for browser invocation.
+
+### ❌ `action=MAIN`, `category=LAUNCHER`
+*   **Attempted Code**:
+    ```html
+    <a href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.discord;end">...</a>
+    ```
+*   **Result**: **Redirects to Play Store** (even if the app is installed).
+*   **Reason**: Modern Android/Chrome restricts launching arbitrary activities. Unless the app's Manifest specifically adds the `BROWSABLE` category to its Main Activity (which is rare), the Intent resolution fails from the browser context, triggering the Market fallback.
+*   **Solution**: Use **Custom Schemes** (e.g., `slack://`) or **HTTPS App Links**.
+
+---
+
+## 3. Calendar Insertion (`android.intent.action.INSERT`)
 Invoking the native calendar insert intent is notoriously unreliable from the web.
 
 ### ❌ Using `data` with `content://`
-*   **Attempted Code**:
-    ```html
-    <a href="intent:#Intent;action=android.intent.action.INSERT;data=content://com.android.calendar/events;S.title=Test;end">...</a>
-    ```
 *   **Result**: Nothing happens (Silent failure).
-*   **Reason**: Chrome treats `content://` URIs as local/protected resources and blocks them from being initiated by a web page for security reasons.
 
 ### ❌ Using `type` only (without `data`)
-*   **Attempted Code**:
-    ```html
-    <a href="intent:#Intent;action=android.intent.action.INSERT;type=vnd.android.cursor.dir/event;S.title=Test;end">...</a>
-    ```
-    (Tested with and without `package=com.google.android.calendar`)
 *   **Result**: Nothing happens or Play Store redirect.
-*   **Reason**: Without a data URI, the intent might be too ambiguous, or the `INSERT` action for this MIME type requires permissions or contexts that a browser cannot provide.
-
----
-
-## 3. Generic "Dialer" Intent with `data` parameter
-### ❌ `action=DIAL` with `data` extra
-*   **Attempted Code**:
-    ```html
-    <a href="intent:#Intent;action=android.intent.action.DIAL;data=tel:090...;end">...</a>
-    ```
-*   **Result**: Failed to open correctly on some devices/versions.
-*   **Reason**: The `tel:` URI should be in the intent's data field (URI part), not as an extra, or the syntax was slightly off for Chrome's parsing. The correct way is `intent://[NUMBER]#Intent;scheme=tel;action=...`.

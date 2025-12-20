@@ -2,13 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://webtools.moukaeritai.work/</loc>
-    <lastmod>2025-12-19</lastmod>
+    <lastmod>2025-12-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://webtools.moukaeritai.work/index.html</loc>
-    <lastmod>2025-12-19</lastmod>
+    <lastmod>2025-12-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -22,6 +22,18 @@
     <loc>https://webtools.moukaeritai.work/drop.html</loc>
     <lastmod>2025-12-19</lastmod>
     <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://webtools.moukaeritai.work/clipboard/</loc>
+    <lastmod>2025-12-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://webtools.moukaeritai.work/android/</loc>
+    <lastmod>2025-12-20</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 </urlset>

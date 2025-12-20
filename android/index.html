@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Android App Launch Tester</title>
+  <style>
+    body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: 0 auto; color: #333; }
+    .top-right {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    .top-right a {
+      display: inline-block;
+      text-decoration: none;
+      color: #333;
+      border: 1px solid #ccc;
+      padding: 6px 12px;
+      border-radius: 4px;
+      background: #f8f9fa;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+    .top-right a:hover { background: #e2e6ea; }
+    
+    h1 { border-bottom: 2px solid #34a853; padding-bottom: 10px; }
+    h2 { margin-top: 2em; color: #1e8e3e; }
+    
+    .panel { border: 1px solid #ddd; padding: 15px; border-radius: 8px; background: #f9f9f9; margin-bottom: 20px; }
+    .input-group { margin-bottom: 15px; }
+    input[type="text"] { width: 100%; padding: 8px; box-sizing: border-box; font-family: monospace; border: 1px solid #ccc; border-radius: 4px; }
+    
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #34a853;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    button:hover { background-color: #2d8e47; }
+    
+    code { background: #eee; padding: 2px 4px; border-radius: 4px; }
+    pre { background: #f4f4f4; padding: 10px; border-radius: 4px; overflow-x: auto; border: 1px solid #ddd; font-size: 13px; }
+    
+    .link-list { list-style: none; padding: 0; }
+    .link-list li { margin-bottom: 10px; }
+    .link-list a { color: #1a73e8; text-decoration: none; font-weight: bold; }
+    .link-list a:hover { text-decoration: underline; }
+    
+    .note { font-size: 0.9em; color: #666; margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <div class="top-right">
+    <div><a href="https://webtools.moukaeritai.work/">🔙webtools.moukaeritai.work</a></div>
+    <div><a href="https://moukaeritai.work/">🔙🔙moukaeritai.work</a></div>
+  </div>
+
+  <h1>Android App Launch Tester</h1>
+  
+  <p>
+    Android の <code>intent:</code> スキームやカスタムスキームを使用して、ウェブブラウザから外部アプリを起動する実験用ページです。
+  </p>
+
+  <section class="panel">
+    <h2>1. 自由入力 Intent テスト</h2>
+    <div class="input-group">
+      <label for="intentInput">Intent URI:</label>
+      <input type="text" id="intentInput" placeholder="intent://...#Intent;scheme=...;package=...;end" value="intent:#Intent;action=android.settings.SETTINGS;end">
+      <div class="note">例: <code>intent:#Intent;action=android.settings.SETTINGS;end</code> (設定画面)</div>
+    </div>
+    <button id="launchBtn">起動実行 (window.location)</button>
+    <div class="note">※ Chrome では <code>window.location</code> による自動遷移はユーザーアクションが必要です。</div>
+  </section>
+
+  <section class="panel">
+    <h2>2. プリセットリンク</h2>
+    <ul class="link-list">
+      <li>
+        <a href="intent:#Intent;action=android.settings.SETTINGS;end">Android 設定画面を開く</a>
+        <div class="note"><code>action=android.settings.SETTINGS</code></div>
+      </li>
+      <li>
+        <a href="intent:#Intent;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;data=https://www.google.com;end">ブラウザで Google を開く (Intent経由)</a>
+      </li>
+      <li>
+        <a href="intent:#Intent;package=com.android.vending;end">Google Play ストアを起動</a>
+        <div class="note"><code>package=com.android.vending</code></div>
+      </li>
+      <li>
+        <a href="intent://details?id=com.google.android.youtube#Intent;scheme=market;end">YouTube ページを Play ストアで開く</a>
+        <div class="note"><code>scheme=market</code></div>
+      </li>
+      <li>
+        <a href="market://details?id=com.google.android.youtube">market:// スキーム (YouTube)</a>
+      </li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <h2>解説: Android Intent URI の構造</h2>
+    <pre>intent:
+   HOST/URI-path // Optional host
+   #Intent;
+      package=[string];
+      action=[string];
+      category=[string];
+      component=[string];
+      scheme=[string];
+   end;</pre>
+    <p>
+      Chrome 25 以降では、従来のカスタムスキーム（<code>myapp://</code>）よりも、この <code>intent:</code> 構文が推奨されています。
+      アプリがインストールされていない場合のフォールバック挙動などを制御できるためです。
+    </p>
+  </section>
+
+  <script>
+    document.getElementById('launchBtn').onclick = function() {
+      const uri = document.getElementById('intentInput').value;
+      if (uri) {
+        console.log('Launching:', uri);
+        window.location.href = uri;
+      }
+    };
+  </script>
+</body>
+</html>

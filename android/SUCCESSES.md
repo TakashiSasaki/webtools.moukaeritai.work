@@ -31,9 +31,9 @@ The modern standard. If the app is installed, it intercepts the URL; otherwise, 
 *   **Code**: `<a href="https://discord.com/app">`
 *   **Result**: Reliably opens the Discord app via App Link.
 
-### ✅ Google Chat
-*   **Code**: `<a href="https://mail.google.com/chat/u/0/">`
-*   **Result**: Opens the Chat interface (often within the Gmail app).
+### ⚠️ Google Chat (Conditional)
+*   **Code**: `<a href="https://chat.google.com/">` or `<a href="https://mail.google.com/chat/u/0/">`
+*   **Result**: May open the app, but often redirects to a "Install App" landing page in the browser. Unreliable as a direct app launcher.
 
 ---
 

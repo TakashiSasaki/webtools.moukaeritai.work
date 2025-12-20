@@ -113,8 +113,12 @@
         <div class="note"><code>google.navigation:q=...</code> (カスタムスキーム)</div>
       </li>
       <li>
-        <a href="intent:#Intent;action=android.intent.action.INSERT;type=vnd.android.cursor.dir/event;S.title=TestEvent;end">カレンダーに予定を追加 (Dataなし/Typeのみ)</a>
-        <div class="note"><code>data</code>属性を削除し、<code>type</code>のみ指定</div>
+        <a href="intent:#Intent;action=android.intent.action.INSERT;package=com.google.android.calendar;type=vnd.android.cursor.dir/event;S.title=TestEvent;end">Google カレンダーで予定作成 (Package指定)</a>
+        <div class="note"><code>package=com.google.android.calendar</code> を指定</div>
+      </li>
+      <li>
+        <a href="line://msg/text/Hello">LINE でメッセージを送る (scheme)</a>
+        <div class="note"><code>line://msg/text/...</code> (LINEアプリ)</div>
       </li>
       <li>
         <a href="mailto:?subject=Test">メールを作成 (mailto:)</a>

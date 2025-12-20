@@ -250,19 +250,57 @@ function buildFileImgs(format) {
   fileDiv = cont;
 
   for (let i = 1; i <= 3; i++) {
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "flex";
+    wrapper.style.flexDirection = "column";
+    wrapper.style.alignItems = "center";
+    wrapper.style.border = "1px solid #ddd";
+    wrapper.style.padding = "4px";
+    wrapper.style.background = "#fff";
+
     const img = document.createElement("img");
     img.src = `image${i}_small.${format}`;
     img.alt = `image${i}_small.${format}`;
     img.width = 140;
-    img.height = 100;
+    // height auto to maintain aspect ratio for display if needed, but code sets 100
+    img.height = 100; 
+    img.style.objectFit = "contain"; // Ensure aspect ratio inside fixed box
     img.decoding = "async";
     img.loading = "eager";
-    img.addEventListener("error", () => {
-      // 404でもページは動くのでログだけ出す
+    
+    const info = document.createElement("div");
+    info.style.fontSize = "11px";
+    info.style.color = "#555";
+    info.style.marginTop = "4px";
+    info.innerText = "Loading...";
+
+    img.onload = async () => {
+      try {
+        const r = await fetch(img.src, { method: 'HEAD' });
+        const size = r.headers.get('content-length');
+        let sizeText = "";
+        if (size) {
+           sizeText = (parseInt(size) / 1024).toFixed(1) + " KB";
+        } else {
+           // Fallback to GET if HEAD fails or no content-length (e.g. some local servers)
+           const blob = await fetchImgBlob(img);
+           sizeText = (blob.size / 1024).toFixed(1) + " KB";
+        }
+        info.innerText = `${img.naturalWidth} x ${img.naturalHeight}\n${sizeText}`;
+      } catch (e) {
+        info.innerText = `${img.naturalWidth} x ${img.naturalHeight}\n(Size?)`;
+      }
+    };
+
+    img.onerror = () => {
       log(`WARN: 読み込み失敗: ${img.src}`);
-    });
+      info.innerText = "Load Failed";
+    };
+
     fileImgs.push(img);
-    cont.appendChild(img);
+    wrapper.appendChild(img);
+    wrapper.appendChild(info);
+    cont.appendChild(wrapper);
   }
 }
 

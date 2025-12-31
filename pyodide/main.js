@@ -105,6 +105,7 @@ if ('serviceWorker' in navigator) {
 
   // Cache Management UI
   const cacheStatusEl = document.getElementById('cache-status');
+  const storageInfoEl = document.getElementById('storage-info');
   const resetBtn = document.getElementById('reset-cache-btn');
 
   async function updateCacheUI() {
@@ -114,13 +115,13 @@ if ('serviceWorker' in navigator) {
     const keys = await caches.keys();
     const hasCache = keys.length > 0;
 
-    let sizeInfo = '';
-    if (navigator.storage && navigator.storage.estimate) {
+    if (navigator.storage && navigator.storage.estimate && storageInfoEl) {
       try {
         const estimate = await navigator.storage.estimate();
         if (estimate.usage) {
-          const mb = (estimate.usage / (1024 * 1024)).toFixed(2);
-          sizeInfo = `, ~${mb} MB`;
+          const usedMB = (estimate.usage / (1024 * 1024)).toFixed(1);
+          const quotaMB = (estimate.quota / (1024 * 1024)).toFixed(0);
+          storageInfoEl.textContent = `• ${usedMB} MB used (of ~${quotaMB} MB quota)`;
         }
       } catch (e) {
         console.warn('Storage estimate failed:', e);
@@ -128,7 +129,7 @@ if ('serviceWorker' in navigator) {
     }
 
     if (hasController || hasCache) {
-      cacheStatusEl.textContent = `App Cache: Active (${keys.length} caches${sizeInfo})`;
+      cacheStatusEl.textContent = `App Cache: Active (${keys.length} caches)`;
       cacheStatusEl.classList.add('text-green-400');
       resetBtn.classList.remove('hidden');
     } else {

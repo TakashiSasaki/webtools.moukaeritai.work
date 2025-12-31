@@ -114,8 +114,21 @@ if ('serviceWorker' in navigator) {
     const keys = await caches.keys();
     const hasCache = keys.length > 0;
 
+    let sizeInfo = '';
+    if (navigator.storage && navigator.storage.estimate) {
+      try {
+        const estimate = await navigator.storage.estimate();
+        if (estimate.usage) {
+          const mb = (estimate.usage / (1024 * 1024)).toFixed(2);
+          sizeInfo = `, ~${mb} MB`;
+        }
+      } catch (e) {
+        console.warn('Storage estimate failed:', e);
+      }
+    }
+
     if (hasController || hasCache) {
-      cacheStatusEl.textContent = `App Cache: Active (${keys.length} caches)`;
+      cacheStatusEl.textContent = `App Cache: Active (${keys.length} caches${sizeInfo})`;
       cacheStatusEl.classList.add('text-green-400');
       resetBtn.classList.remove('hidden');
     } else {

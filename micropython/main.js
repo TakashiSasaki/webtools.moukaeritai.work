@@ -22,7 +22,8 @@ try {
     },
     stderr: (data) => {
       term.write(data);
-    }
+    },
+    linebuffer: false,
   });
 
   term.writeln("MicroPython ready.");

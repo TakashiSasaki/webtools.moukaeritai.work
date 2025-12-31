@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pyodide-repl-v1';
+const CACHE_NAME = 'pyodide-repl-v2';
 const PRECACHE_URLS = [
   './',
   './index.html',
@@ -20,7 +20,16 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Opened cache');
-        return cache.addAll(PRECACHE_URLS);
+        return Promise.all(
+          PRECACHE_URLS.map(url => {
+            const request = new Request(url, { mode: url.startsWith('http') ? 'no-cors' : 'same-origin' });
+            return fetch(request).then(response => {
+              return cache.put(url, response);
+            }).catch(err => {
+              console.warn('Failed to precache:', url, err);
+            });
+          })
+        );
       })
   );
 });

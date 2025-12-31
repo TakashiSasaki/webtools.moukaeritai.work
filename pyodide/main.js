@@ -118,14 +118,15 @@ if ('serviceWorker' in navigator) {
     if (navigator.storage && navigator.storage.estimate && storageInfoEl) {
       try {
         const estimate = await navigator.storage.estimate();
-        if (estimate.usage) {
-          const usedMB = (estimate.usage / (1024 * 1024)).toFixed(1);
-          const quotaMB = (estimate.quota / (1024 * 1024)).toFixed(0);
-          storageInfoEl.textContent = `• ${usedMB} MB used (of ~${quotaMB} MB quota)`;
-        }
+        const usedMB = ((estimate.usage || 0) / (1024 * 1024)).toFixed(1);
+        const quotaMB = ((estimate.quota || 0) / (1024 * 1024)).toFixed(0);
+        storageInfoEl.textContent = `• ${usedMB} MB used (of ~${quotaMB} MB quota)`;
       } catch (e) {
         console.warn('Storage estimate failed:', e);
+        storageInfoEl.textContent = '• Storage info unavailable';
       }
+    } else {
+        console.log('Storage API not supported');
     }
 
     if (hasController || hasCache) {

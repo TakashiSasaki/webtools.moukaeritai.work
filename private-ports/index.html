@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>プライベートポート番号生成 (49152-65535)</title>
+    <link rel="canonical" href="https://webtools.moukaeritai.work/private-ports/">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* テキストエリアの自動高さ調整 */
+        textarea {
+            resize: none;
+            overflow: hidden;
+            min-height: 4rem; /* 最小高さを設定 */
+        }
+        /* Interフォントの設定 */
+        body {
+            font-family: "Inter", sans-serif;
+        }
+        /* 入力フィールドの基本クラス */
+        .input-base {
+            transition: all 0.15s ease-in-out;
+        }
+        /* Tailwind CSSがロードされる前に適用されるクラス */
+        .w-full { width: 100%; }
+        .p-3 { padding: 0.75rem; }
+        .border-2 { border-width: 2px; }
+        .rounded-lg { border-radius: 0.5rem; }
+        /* オーバーレイ用の非表示状態 */
+        .toast-hidden {
+            opacity: 0;
+            transform: translateY(20px);
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen p-4 sm:p-8">
+
+    <!-- コピー成功オーバーレイ表示 (Toast Notification) -->
+    <div id="toastMessage" class="fixed bottom-5 right-5 z-50 p-4 bg-green-600 text-white rounded-lg shadow-xl toast-hidden 
+                                  transition-all duration-300 ease-in-out pointer-events-none">
+        コピーしました！
+    </div>
+
+    <div class="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-xl shadow-2xl">
+        <h1 class="text-3xl font-extrabold text-indigo-700 mb-6 border-b-4 border-indigo-200 pb-2">
+            文字列からプライベートポート番号を生成
+        </h1>
+        <p class="text-gray-600 mb-8">
+            入力された文字列（サービス名など）から、IANAで割り当てられているプライベートポート範囲 (49152 ～ 65535) のポート番号を一意に生成します。
+        </p>
+
+        <div class="space-y-4 mb-8">
+            <label for="inputString" class="block text-lg font-medium text-gray-700">
+                入力文字列 (サービス名など):
+            </label>
+            
+            <!-- 入力フィールドとボタンを横並びにするための flex コンテナ -->
+            <div class="flex flex-col sm:flex-row gap-2">
+                <input type="text" id="inputString" 
+                       placeholder="文字列を入力してください"
+                       class="input-base w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 flex-grow"
+                       value="myservice">
+                
+                <!-- ボタンを小さくし、入力欄の右に配置 -->
+                <button onclick="calculateAndDisplay()"
+                        class="px-4 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition duration-150 transform hover:scale-[1.01] flex-shrink-0">
+                    再計算
+                </button>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 pt-4 border-t-2 border-gray-100">計算結果</h2>
+        
+        <div class="space-y-6">
+            <!-- ポート番号表示 -->
+            <div>
+                <h3 class="text-xl font-semibold text-gray-600 mb-2">ポート番号 (49152 - 65535)</h3>
+                
+                <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+                    <span id="portDisplay" class="p-3 border border-gray-300 bg-gray-50 rounded-lg text-gray-800 font-mono text-3xl font-bold flex-grow text-center sm:text-left">
+                        ---
+                    </span>
+                    
+                    <button id="copyPortButton" onclick="copyToClipboard('portDisplay')"
+                            class="px-4 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-150 transform hover:scale-[1.05] flex-shrink-0 w-full sm:w-auto">
+                        コピー
+                    </button>
+                </div>
+            </div>
+
+            <!-- localhost URL表示 -->
+            <div>
+                <h3 class="text-xl font-semibold text-gray-600 mb-2">ローカルアドレス (localhost)</h3>
+                <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+                    <span id="localhostDisplay" class="p-3 border border-gray-300 bg-gray-50 rounded-lg text-gray-800 font-mono text-lg flex-grow">
+                        localhost:---
+                    </span>
+                    
+                    <div class="flex flex-wrap gap-2 justify-end sm:flex-nowrap w-full sm:w-auto">
+                         <button onclick="copyToClipboard('localhostDisplay')"
+                                class="px-4 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-150 transform hover:scale-[1.05] flex-shrink-0 w-full sm:w-auto">
+                            コピー
+                        </button>
+                        <button onclick="openUrl('http')"
+                                class="px-4 py-3 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600 focus:outline-none focus:ring-4 focus:ring-purple-300 transition duration-150 transform hover:scale-[1.05] flex-shrink-0 w-full sm:w-auto">
+                            HTTPで開く
+                        </button>
+                        <button onclick="openUrl('https')"
+                                class="px-4 py-3 bg-teal-500 text-white font-semibold rounded-lg shadow-md hover:bg-teal-600 focus:outline-none focus:ring-4 focus:ring-teal-300 transition duration-150 transform hover:scale-[1.05] flex-shrink-0 w-full sm:w-auto">
+                            HTTPSで開く
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 詳細情報 (ハッシュ値など) -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-500 mb-2">計算の詳細 (SHA-256)</h3>
+                <p class="text-sm text-gray-500 mb-2">
+                    入力文字列のSHA-256ハッシュ値を整数化し、<code>(Hash % 16384) + 49152</code> で算出しています。
+                </p>
+                <div class="space-y-2">
+                     <div class="flex flex-col">
+                        <span class="text-xs font-semibold text-gray-400">ハッシュ値 (Hex):</span>
+                        <div id="hashValueHex" class="text-xs text-gray-500 font-mono bg-gray-100 p-2 rounded border break-all"></div>
+                     </div>
+                     <div class="flex flex-col">
+                        <span class="text-xs font-semibold text-gray-400">ハッシュ値 (Integer):</span>
+                        <div id="hashValueDec" class="text-xs text-gray-500 font-mono bg-gray-100 p-2 rounded border break-all max-h-24 overflow-y-auto"></div>
+                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript ロジック -->
+    <script>
+        const textEncoder = new TextEncoder();
+
+        // --- 汎用ユーティリティ関数 ---
+
+        function bufferToHex(buffer) {
+            return Array.from(new Uint8Array(buffer))
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('');
+        }
+
+        function bufferToBigInt(buffer) {
+            const hex = bufferToHex(buffer);
+            return BigInt(`0x${hex}`);
+        }
+
+        function openUrl(protocol) {
+            const port = document.getElementById('portDisplay').textContent.trim();
+            if (port && !isNaN(port)) {
+                const url = `${protocol}://localhost:${port}`;
+                window.open(url, '_blank');
+            } else {
+                console.warn('有効なポート番号が表示されていません。');
+            }
+        }
+
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            let textToCopy = (element.tagName === 'TEXTAREA' || element.tagName === 'INPUT') 
+                             ? element.value : element.textContent.trim();
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    showCopyMessage();
+                }).catch(err => {
+                    fallbackCopyTextToClipboard(textToCopy);
+                });
+            } else {
+                fallbackCopyTextToClipboard(textToCopy);
+            }
+        }
+        
+        function fallbackCopyTextToClipboard(text) {
+            const tempTextArea = document.createElement("textarea");
+            tempTextArea.value = text;
+            tempTextArea.style.position = "fixed"; 
+            tempTextArea.style.left = "-9999px"; 
+            document.body.appendChild(tempTextArea);
+            tempTextArea.focus();
+            tempTextArea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showCopyMessage();
+                }
+            } catch (err) {
+                console.error('Fallback: コピー中にエラーが発生しました', err);
+            }
+
+            document.body.removeChild(tempTextArea);
+        }
+
+        function showCopyMessage() {
+            const toastElement = document.getElementById('toastMessage');
+            if (toastElement) {
+                toastElement.classList.remove('toast-hidden');
+                toastElement.classList.add('opacity-100', 'translate-y-0', 'visible');
+
+                setTimeout(() => {
+                    toastElement.classList.remove('opacity-100', 'translate-y-0', 'visible');
+                    toastElement.classList.add('toast-hidden');
+                }, 2000);
+            }
+        }
+
+        // --- メイン処理 ---
+        async function calculateAndDisplay() {
+            const inputElement = document.getElementById('inputString');
+            const inputString = inputElement.value;
+
+            const portDisplayElement = document.getElementById('portDisplay');
+            const localhostDisplayElement = document.getElementById('localhostDisplay');
+            const hashValueHexElement = document.getElementById('hashValueHex');
+            const hashValueDecElement = document.getElementById('hashValueDec');
+            
+            if (!inputString) {
+                portDisplayElement.textContent = '---';
+                localhostDisplayElement.textContent = 'localhost:---';
+                hashValueHexElement.textContent = '';
+                hashValueDecElement.textContent = '';
+                return;
+            }
+
+            try {
+                const data = textEncoder.encode(inputString);
+                // SHA-256ハッシュ値を計算
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+
+                const hashBigInt = bufferToBigInt(hashBuffer);
+                
+                // ポート番号計算: (Hash % 16384) + 49152
+                const range = 16384n;
+                const offset = 49152n;
+                const port = (hashBigInt % range) + offset;
+                const portStr = port.toString();
+
+                // 表示更新
+                portDisplayElement.textContent = portStr;
+                localhostDisplayElement.textContent = `localhost:${portStr}`;
+                
+                hashValueHexElement.textContent = bufferToHex(hashBuffer);
+                hashValueDecElement.textContent = hashBigInt.toString();
+                
+            } catch (error) {
+                console.error("ハッシュ計算中にエラーが発生しました:", error);
+                portDisplayElement.textContent = 'Error';
+            }
+        }
+
+        // --- イベントリスナー ---
+        const inputElement = document.getElementById('inputString');
+        inputElement.addEventListener('input', calculateAndDisplay);
+        
+        // 初期実行
+        window.onload = calculateAndDisplay;
+    </script>
+</body>
+</html>

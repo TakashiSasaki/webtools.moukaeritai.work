@@ -1,51 +1,79 @@
 <!doctype html>
 <html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="stylesheet" href="https://unpkg.com/@xterm/xterm@5.4.0/css/xterm.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-      html, body { height: 100%; margin: 0; display: flex; flex-direction: column; background-color: #1a1a1a; color: white; }
-      #header { padding: 1rem; background-color: #2d2d2d; border-bottom: 1px solid #444; }
-      #term { flex-grow: 1; overflow: hidden; }
-      .back-button {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        z-index: 100;
-      }
-    </style>
-    <title>MicroPython REPL - Browser-based Python</title>
-  </head>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="https://unpkg.com/@xterm/xterm@5.4.0/css/xterm.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></script>
+  <script src="../js/components/app-layout.js"></script>
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      background-color: #1a1a1a;
+      color: white;
+    }
+
+    #header {
+      padding: 1rem;
+      background-color: #2d2d2d;
+      border-bottom: 1px solid #444;
+    }
+
+    #term {
+      flex-grow: 1;
+      overflow: hidden;
+      background-color: black;
+    }
+
+    /* Ensure proper sizing when inside app-layout */
+    app-layout {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+  <title>MicroPython REPL - Browser-based Python</title>
+</head>
+
+<body>
+
   <body>
-    <div id="header" class="relative pr-40">
-      <h1 class="text-2xl font-bold text-indigo-400">MicroPython REPL</h1>
-      <p class="text-sm text-gray-300 mt-1">
-        WebAssemblyを利用して、ブラウザ上で直接動作する <a href="https://micropython.org/" target="_blank" rel="noopener noreferrer" class="text-indigo-400 hover:underline">MicroPython</a> です。<br>
-        組み込み向けに最適化された軽量なPython実行環境をブラウザ内で試せます。
-      </p>
-      <div class="mt-2 flex gap-4 text-xs text-gray-400">
-        <span>MicroPython (WebAssembly port)</span>
-        <span>•</span>
-        <span><a href="https://xtermjs.org/" target="_blank" rel="noopener noreferrer" class="hover:underline">xterm.js</a> based console</span>
+    <app-layout>
+      <div class="flex flex-col h-full bg-[#1a1a1a] text-white">
+        <div id="header" class="relative">
+          <h1 class="text-2xl font-bold text-indigo-400">MicroPython REPL</h1>
+          <p class="text-sm text-gray-300 mt-1">
+            WebAssemblyを利用して、ブラウザ上で直接動作する <a href="https://micropython.org/" target="_blank" rel="noopener noreferrer"
+              class="text-indigo-400 hover:underline">MicroPython</a> です。<br>
+            組み込み向けに最適化された軽量なPython実行環境をブラウザ内で試せます。
+          </p>
+          <div class="mt-2 flex gap-4 text-xs text-gray-400">
+            <span>MicroPython (WebAssembly port)</span>
+            <span>•</span>
+            <span><a href="https://xtermjs.org/" target="_blank" rel="noopener noreferrer"
+                class="hover:underline">xterm.js</a> based console</span>
+          </div>
+          <div class="mt-1 flex items-center gap-2 text-xs text-gray-400">
+            <span id="cache-status">Checking cache...</span>
+            <span id="storage-info"></span>
+            <button id="reset-cache-btn"
+              class="border border-gray-600 px-2 py-0.5 rounded hover:bg-gray-700 text-gray-300 transition-colors hidden">
+              Reset Cache
+            </button>
+          </div>
+        </div>
+        <div id="term" class="flex-grow"></div>
       </div>
-      <div class="mt-1 flex items-center gap-2 text-xs text-gray-400">
-        <span id="cache-status">Checking cache...</span>
-        <span id="storage-info"></span>
-        <button id="reset-cache-btn" class="border border-gray-600 px-2 py-0.5 rounded hover:bg-gray-700 text-gray-300 transition-colors hidden">
-          Reset Cache
-        </button>
-      </div>
-      <div class="back-button">
-        <a href="../" class="text-sm border border-gray-600 px-3 py-1.5 rounded-lg bg-black/50 backdrop-blur-sm hover:bg-gray-800 text-gray-300 transition-colors shadow-sm font-medium">
-            🔙 Back to WebTools
-        </a>
-      </div>
-    </div>
-    <div id="term"></div>
+    </app-layout>
     <script src="https://unpkg.com/@xterm/xterm@5.4.0/lib/xterm.js"></script>
     <script src="https://unpkg.com/@xterm/addon-fit@0.9.0/lib/addon-fit.js"></script>
     <script type="module" src="./main.js"></script>
   </body>
+
 </html>

@@ -16,6 +16,7 @@
             });
         }
     </script>
+    <script src="../js/components/app-layout.js"></script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -163,147 +164,144 @@
 </head>
 
 <body>
-    <div class="header-nav" style="gap: 0.5rem;">
-        <a href="readme.html" class="nav-button">DOCS</a>
-        <a href="https://moukaeritai.work" class="nav-button" target="moukaeritai.work">moukaeritai.work</a>
-        <a href="../" class="nav-button">← ホームへ戻る</a>
-    </div>
-    <main>
-        <div style="text-align: center; margin-bottom: 1rem; color: #495057;">
-            <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Drop Event Tester</h1>
-            <p style="margin: 0; font-size: 0.95rem;">ブラウザが受け取るドラッグ＆ドロップイベント（ファイルやテキストのメタデータ）をリアルタイムで解析・表示します。</p>
-        </div>
-        <div id="drop-target">
-            ここにファイルをドラッグ＆ドロップしてください
-        </div>
-
-        <div id="drag-status" class="status-panel">
-            <span id="status-dot" class="status-indicator"></span>
-            <span id="status-text">待機中 (Idle)</span>
-            <span id="drag-info"
-                style="margin-left: auto; font-family: monospace; font-size: 0.9em; color: #6c757d;"></span>
-        </div>
-
-        <div class="log-container-wrapper">
-            <div class="log-header">
-                <span>イベントログ</span>
-                <button id="clear-log">ログを消去</button>
+    <app-layout>
+        <main>
+            <div style="text-align: center; margin-bottom: 1rem; color: #495057;">
+                <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Drop Event Tester</h1>
+                <p style="margin: 0; font-size: 0.95rem;">ブラウザが受け取るドラッグ＆ドロップイベント（ファイルやテキストのメタデータ）をリアルタイムで解析・表示します。</p>
             </div>
-            <div id="log-container"></div>
-        </div>
-    </main>
+            <div id="drop-target">
+                ここにファイルをドラッグ＆ドロップしてください
+            </div>
 
-    <script>
-        const dropTarget = document.getElementById('drop-target');
-        const logContainer = document.getElementById('log-container');
-        const clearLogBtn = document.getElementById('clear-log');
-        const statusText = document.getElementById('status-text');
-        const statusDot = document.getElementById('status-dot');
-        const dragInfo = document.getElementById('drag-info');
+            <div id="drag-status" class="status-panel">
+                <span id="status-dot" class="status-indicator"></span>
+                <span id="status-text">待機中 (Idle)</span>
+                <span id="drag-info"
+                    style="margin-left: auto; font-family: monospace; font-size: 0.9em; color: #6c757d;"></span>
+            </div>
 
-        const log = (message, ...details) => {
-            const entry = document.createElement('div');
-            entry.className = 'log-entry';
-            entry.textContent = message;
-            logContainer.appendChild(entry);
-            logContainer.scrollTop = logContainer.scrollHeight; // 自動スクロール
+            <div class="log-container-wrapper">
+                <div class="log-header">
+                    <span>イベントログ</span>
+                    <button id="clear-log">ログを消去</button>
+                </div>
+                <div id="log-container"></div>
+            </div>
+        </main>
 
-            // 開発者コンソールには詳細オブジェクトも出力
-            if (details.length > 0) {
-                console.log(message, ...details);
-            } else {
-                console.log(message);
-            }
-        };
+        <script>
+            const dropTarget = document.getElementById('drop-target');
+            const logContainer = document.getElementById('log-container');
+            const clearLogBtn = document.getElementById('clear-log');
+            const statusText = document.getElementById('status-text');
+            const statusDot = document.getElementById('status-dot');
+            const dragInfo = document.getElementById('drag-info');
 
-        const updateStatus = (text, isActive, info = '') => {
-            statusText.textContent = text;
-            if (isActive) {
-                statusDot.classList.add('active');
-            } else {
-                statusDot.classList.remove('active');
-            }
-            dragInfo.textContent = info;
-        };
+            const log = (message, ...details) => {
+                const entry = document.createElement('div');
+                entry.className = 'log-entry';
+                entry.textContent = message;
+                logContainer.appendChild(entry);
+                logContainer.scrollTop = logContainer.scrollHeight; // 自動スクロール
 
-        clearLogBtn.addEventListener('click', () => {
-            logContainer.innerHTML = '';
-            console.clear();
-        });
-
-        log('ページの準備ができました。ドロップを待っています...');
-
-        dropTarget.addEventListener('dragenter', (event) => {
-            event.preventDefault();
-            dropTarget.classList.add('hover');
-            log('dragenter: ドロップターゲットに入りました');
-            updateStatus('ドラッグ中 (Dragging)', true);
-        });
-
-        dropTarget.addEventListener('dragover', (event) => {
-            event.preventDefault(); // ドロップを許可
-            // log('dragover: ...') は削除してログ出力を抑制
-
-            // インジケーターの情報を更新
-            const info = `types: [${event.dataTransfer.types.join(', ')}] | effectAllowed: ${event.dataTransfer.effectAllowed} | x: ${event.clientX}, y: ${event.clientY}`;
-            updateStatus('ドラッグ中 (Dragging)', true, info);
-        });
-
-        dropTarget.addEventListener('dragleave', (event) => {
-            dropTarget.classList.remove('hover');
-            log('dragleave: ドロップターゲットから離れました');
-            updateStatus('待機中 (Idle)', false);
-        });
-
-        dropTarget.addEventListener('drop', (event) => {
-            event.preventDefault(); // デフォルトの動作（ファイルを開くなど）をキャンセル
-            dropTarget.classList.remove('hover');
-            updateStatus('ドロップ処理完了 (Dropped)', false);
-            log('--- drop: ドロップイベントが発生しました！ ---');
-
-            const dataTransfer = event.dataTransfer;
-            log(`Drop Effect: ${dataTransfer.dropEffect}`);
-            log(`Effect Allowed: ${dataTransfer.effectAllowed}`);
-            const types = dataTransfer.types;
-            log(`利用可能なデータ型 (types): [${types.join(', ')}]`);
-
-            if (dataTransfer.items && dataTransfer.items.length > 0) {
-                log(`DataTransfer.items (${dataTransfer.items.length}個):`);
-                for (let i = 0; i < dataTransfer.items.length; i++) {
-                    const item = dataTransfer.items[i];
-                    log(`  Item ${i}: kind=${item.kind}, type=${item.type}`);
-
-                    if (item.kind === 'file') {
-                        const file = item.getAsFile();
-                        if (file) {
-                            log(`    -> File: name=${file.name}, size=${file.size} bytes, type=${file.type}`);
-                        }
-                    } else if (item.kind === 'string') {
-                        item.getAsString((s) => {
-                            log(`    -> String [${item.type}]: ${s.substring(0, 200)}${s.length > 200 ? '...' : ''}`);
-                        });
-                    }
+                // 開発者コンソールには詳細オブジェクトも出力
+                if (details.length > 0) {
+                    console.log(message, ...details);
+                } else {
+                    console.log(message);
                 }
-            } else if (dataTransfer.files && dataTransfer.files.length > 0) {
-                log(`DataTransfer.files (${dataTransfer.files.length}個) [旧API]:`);
-                for (let i = 0; i < dataTransfer.files.length; i++) {
-                    const file = dataTransfer.files[i];
-                    log(`  File ${i}: name=${file.name}, size=${file.size} bytes, type=${file.type}`);
-                }
-            } else {
-                log('DataTransfer.items も DataTransfer.files も空です。');
-            }
+            };
 
-            // getData() も試す
-            types.forEach(type => {
-                const data = dataTransfer.getData(type);
-                if (data) {
-                    log(`getData('${type}'): ${data.substring(0, 200)}${data.length > 200 ? '...' : ''}`);
+            const updateStatus = (text, isActive, info = '') => {
+                statusText.textContent = text;
+                if (isActive) {
+                    statusDot.classList.add('active');
+                } else {
+                    statusDot.classList.remove('active');
                 }
+                dragInfo.textContent = info;
+            };
+
+            clearLogBtn.addEventListener('click', () => {
+                logContainer.innerHTML = '';
+                console.clear();
             });
-            log('--- イベント処理終了 ---');
-        });
-    </script>
+
+            log('ページの準備ができました。ドロップを待っています...');
+
+            dropTarget.addEventListener('dragenter', (event) => {
+                event.preventDefault();
+                dropTarget.classList.add('hover');
+                log('dragenter: ドロップターゲットに入りました');
+                updateStatus('ドラッグ中 (Dragging)', true);
+            });
+
+            dropTarget.addEventListener('dragover', (event) => {
+                event.preventDefault(); // ドロップを許可
+                // log('dragover: ...') は削除してログ出力を抑制
+
+                // インジケーターの情報を更新
+                const info = `types: [${event.dataTransfer.types.join(', ')}] | effectAllowed: ${event.dataTransfer.effectAllowed} | x: ${event.clientX}, y: ${event.clientY}`;
+                updateStatus('ドラッグ中 (Dragging)', true, info);
+            });
+
+            dropTarget.addEventListener('dragleave', (event) => {
+                dropTarget.classList.remove('hover');
+                log('dragleave: ドロップターゲットから離れました');
+                updateStatus('待機中 (Idle)', false);
+            });
+
+            dropTarget.addEventListener('drop', (event) => {
+                event.preventDefault(); // デフォルトの動作（ファイルを開くなど）をキャンセル
+                dropTarget.classList.remove('hover');
+                updateStatus('ドロップ処理完了 (Dropped)', false);
+                log('--- drop: ドロップイベントが発生しました！ ---');
+
+                const dataTransfer = event.dataTransfer;
+                log(`Drop Effect: ${dataTransfer.dropEffect}`);
+                log(`Effect Allowed: ${dataTransfer.effectAllowed}`);
+                const types = dataTransfer.types;
+                log(`利用可能なデータ型 (types): [${types.join(', ')}]`);
+
+                if (dataTransfer.items && dataTransfer.items.length > 0) {
+                    log(`DataTransfer.items (${dataTransfer.items.length}個):`);
+                    for (let i = 0; i < dataTransfer.items.length; i++) {
+                        const item = dataTransfer.items[i];
+                        log(`  Item ${i}: kind=${item.kind}, type=${item.type}`);
+
+                        if (item.kind === 'file') {
+                            const file = item.getAsFile();
+                            if (file) {
+                                log(`    -> File: name=${file.name}, size=${file.size} bytes, type=${file.type}`);
+                            }
+                        } else if (item.kind === 'string') {
+                            item.getAsString((s) => {
+                                log(`    -> String [${item.type}]: ${s.substring(0, 200)}${s.length > 200 ? '...' : ''}`);
+                            });
+                        }
+                    }
+                } else if (dataTransfer.files && dataTransfer.files.length > 0) {
+                    log(`DataTransfer.files (${dataTransfer.files.length}個) [旧API]:`);
+                    for (let i = 0; i < dataTransfer.files.length; i++) {
+                        const file = dataTransfer.files[i];
+                        log(`  File ${i}: name=${file.name}, size=${file.size} bytes, type=${file.type}`);
+                    }
+                } else {
+                    log('DataTransfer.items も DataTransfer.files も空です。');
+                }
+
+                // getData() も試す
+                types.forEach(type => {
+                    const data = dataTransfer.getData(type);
+                    if (data) {
+                        log(`getData('${type}'): ${data.substring(0, 200)}${data.length > 200 ? '...' : ''}`);
+                    }
+                });
+                log('--- イベント処理終了 ---');
+            });
+        </script>
+    </app-layout>
 </body>
 
 </html>

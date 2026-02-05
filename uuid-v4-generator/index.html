@@ -16,6 +16,7 @@
             });
         }
     </script>
+    <script src="../js/components/app-layout.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .uuid-font {
@@ -52,175 +53,178 @@
     </style>
 </head>
 
-<body class="bg-slate-100 text-slate-900 min-h-screen p-2 md:p-6 flex items-center justify-center">
-    <div class="w-full max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden border border-slate-200">
-        <!-- Header -->
-        <div class="bg-slate-900 px-5 py-3 text-white flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <i class="fas fa-random text-emerald-400"></i>
-                <h1 class="text-sm font-bold uppercase tracking-widest">UUID v4 Generator</h1>
-            </div>
-            <div class="flex items-center gap-2">
-                <a href="readme.html" class="text-[10px] text-slate-400 hover:text-white transition-colors">DOCS</a>
-                <a href="../" class="text-[10px] text-slate-400 hover:text-white transition-colors">HOME</a>
-            </div>
-        </div>
+<body class="bg-slate-100 text-slate-900 min-h-screen">
+    <app-layout>
+        <div class="flex items-center justify-center min-h-full py-6">
+            <div class="w-full max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden border border-slate-200">
+                <!-- Header -->
+                <div class="bg-slate-900 px-5 py-3 text-white flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-random text-emerald-400"></i>
+                        <h1 class="text-sm font-bold uppercase tracking-widest">UUID v4 Generator</h1>
+                    </div>
+                </div>
 
-        <div class="p-6 space-y-6">
-            <!-- Main Generator -->
-            <div class="space-y-4">
-                <div class="flex justify-between items-end">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase">Generated UUID v4</label>
-                    <div class="flex gap-2">
-                        <button id="copy-btn"
-                            class="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 uppercase tracking-tighter">
-                            <i class="fas fa-copy mr-1"></i> Copy
+                <div class="p-6 space-y-6">
+                    <!-- Main Generator -->
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-end">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Generated UUID v4</label>
+                            <div class="flex gap-2">
+                                <button id="copy-btn"
+                                    class="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 uppercase tracking-tighter">
+                                    <i class="fas fa-copy mr-1"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="result-display" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                            <div id="uuid-text"
+                                class="text-2xl md:text-3xl font-bold uuid-font tracking-tight text-slate-800 break-all">
+                                <!-- UUID will be here -->
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button id="gen-btn"
+                                class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+                                <i class="fas fa-sync-alt"></i> GENERATE NEW
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Inspector -->
+                    <div class="p-4 border border-slate-100 rounded-xl bg-slate-50 space-y-3">
+                        <div class="text-[9px] font-bold text-slate-400 uppercase">Bit Inspector</div>
+                        <div id="inspector-ui" class="uuid-font text-lg md:text-xl leading-none break-all text-center">
+                        </div>
+                        <div class="flex justify-center gap-6 text-[10px]">
+                            <span class="flex items-center gap-1">
+                                <span class="w-3 h-3 bg-red-500 rounded-full"></span>
+                                <span>Version: <span id="info-ver" class="font-bold text-red-600">4</span>
+                                    (Random)</span>
+                            </span>
+                            <span class="flex items-center gap-1">
+                                <span class="w-3 h-3 bg-blue-500 rounded-full"></span>
+                                <span>Variant: <span id="info-var" class="font-bold text-blue-600"></span> (RFC
+                                    9562)</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Batch Tool (Optional) -->
+                    <div class="space-y-4 pt-4 border-t border-slate-100">
+                        <div class="flex justify-between items-center">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Batch
+                                Generation</label>
+                            <div class="flex items-center gap-2">
+                                <input type="number" id="batch-count" value="10" min="1" max="100"
+                                    class="w-16 p-1 text-xs border border-slate-200 rounded text-center outline-none">
+                                <button id="batch-gen-btn"
+                                    class="text-[10px] font-bold bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded transition-colors uppercase">Generate</button>
+                            </div>
+                        </div>
+                        <textarea id="batch-display" readonly
+                            class="w-full h-32 p-3 bg-slate-50 border border-slate-200 rounded-xl uuid-font text-xs resize-none focus:outline-none"
+                            placeholder="Batch results will appear here..."></textarea>
+                        <button id="batch-copy-btn"
+                            class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-[10px] font-bold rounded-lg uppercase transition-colors">
+                            <i class="fas fa-copy mr-1"></i> Copy All
                         </button>
                     </div>
                 </div>
-
-                <div id="result-display" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
-                    <div id="uuid-text"
-                        class="text-2xl md:text-3xl font-bold uuid-font tracking-tight text-slate-800 break-all">
-                        <!-- UUID will be here -->
-                    </div>
-                </div>
-
-                <div class="flex gap-3">
-                    <button id="gen-btn"
-                        class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
-                        <i class="fas fa-sync-alt"></i> GENERATE NEW
-                    </button>
-                </div>
             </div>
 
-            <!-- Inspector -->
-            <div class="p-4 border border-slate-100 rounded-xl bg-slate-50 space-y-3">
-                <div class="text-[9px] font-bold text-slate-400 uppercase">Bit Inspector</div>
-                <div id="inspector-ui" class="uuid-font text-lg md:text-xl leading-none break-all text-center"></div>
-                <div class="flex justify-center gap-6 text-[10px]">
-                    <span class="flex items-center gap-1">
-                        <span class="w-3 h-3 bg-red-500 rounded-full"></span>
-                        <span>Version: <span id="info-ver" class="font-bold text-red-600">4</span> (Random)</span>
-                    </span>
-                    <span class="flex items-center gap-1">
-                        <span class="w-3 h-3 bg-blue-500 rounded-full"></span>
-                        <span>Variant: <span id="info-var" class="font-bold text-blue-600"></span> (RFC 9562)</span>
-                    </span>
-                </div>
+            <!-- Toast Notification -->
+            <div id="toast"
+                class="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-2 bg-slate-800 text-white text-xs rounded-full opacity-0 transition-opacity pointer-events-none z-50">
+                Copied to clipboard!
             </div>
 
-            <!-- Batch Tool (Optional) -->
-            <div class="space-y-4 pt-4 border-t border-slate-100">
-                <div class="flex justify-between items-center">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Batch
-                        Generation</label>
-                    <div class="flex items-center gap-2">
-                        <input type="number" id="batch-count" value="10" min="1" max="100"
-                            class="w-16 p-1 text-xs border border-slate-200 rounded text-center outline-none">
-                        <button id="batch-gen-btn"
-                            class="text-[10px] font-bold bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded transition-colors uppercase">Generate</button>
-                    </div>
-                </div>
-                <textarea id="batch-display" readonly
-                    class="w-full h-32 p-3 bg-slate-50 border border-slate-200 rounded-xl uuid-font text-xs resize-none focus:outline-none"
-                    placeholder="Batch results will appear here..."></textarea>
-                <button id="batch-copy-btn"
-                    class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-[10px] font-bold rounded-lg uppercase transition-colors">
-                    <i class="fas fa-copy mr-1"></i> Copy All
-                </button>
-            </div>
-        </div>
-    </div>
+            <script>
+                const uuidText = document.getElementById('uuid-text');
+                const inspectorUi = document.getElementById('inspector-ui');
+                const infoVar = document.getElementById('info-var');
+                const genBtn = document.getElementById('gen-btn');
+                const copyBtn = document.getElementById('copy-btn');
+                const toast = document.getElementById('toast');
 
-    <!-- Toast Notification -->
-    <div id="toast"
-        class="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-2 bg-slate-800 text-white text-xs rounded-full opacity-0 transition-opacity pointer-events-none z-50">
-        Copied to clipboard!
-    </div>
+                const batchGenBtn = document.getElementById('batch-gen-btn');
+                const batchCount = document.getElementById('batch-count');
+                const batchDisplay = document.getElementById('batch-display');
+                const batchCopyBtn = document.getElementById('batch-copy-btn');
 
-    <script>
-        const uuidText = document.getElementById('uuid-text');
-        const inspectorUi = document.getElementById('inspector-ui');
-        const infoVar = document.getElementById('info-var');
-        const genBtn = document.getElementById('gen-btn');
-        const copyBtn = document.getElementById('copy-btn');
-        const toast = document.getElementById('toast');
-
-        const batchGenBtn = document.getElementById('batch-gen-btn');
-        const batchCount = document.getElementById('batch-count');
-        const batchDisplay = document.getElementById('batch-display');
-        const batchCopyBtn = document.getElementById('batch-copy-btn');
-
-        function generateUUIDv4() {
-            if (crypto.randomUUID) {
-                return crypto.randomUUID();
-            }
-            // Fallback for older browsers or insecure contexts
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-                const r = Math.random() * 16 | 0;
-                const v = c == 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
-        }
-
-        function showToast() {
-            toast.classList.replace('opacity-0', 'opacity-100');
-            setTimeout(() => toast.classList.replace('opacity-100', 'opacity-0'), 2000);
-        }
-
-        function updateUI(uuid) {
-            uuidText.textContent = uuid;
-            uuidText.classList.remove('animate-fade-in');
-            void uuidText.offsetWidth; // trigger reflow
-            uuidText.classList.add('animate-fade-in');
-
-            // Update Inspector
-            const chars = uuid.split('');
-            let html = '';
-            chars.forEach((char, i) => {
-                if (i === 14) {
-                    html += `<span class="highlight-v">${char}</span>`;
-                } else if (i === 19) {
-                    html += `<span class="highlight-var">${char}</span>`;
-                    infoVar.textContent = char.toUpperCase();
-                } else {
-                    html += `<span class="text-slate-400">${char}</span>`;
+                function generateUUIDv4() {
+                    if (crypto.randomUUID) {
+                        return crypto.randomUUID();
+                    }
+                    // Fallback for older browsers or insecure contexts
+                    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                        const r = Math.random() * 16 | 0;
+                        const v = c == 'x' ? r : (r & 0x3 | 0x8);
+                        return v.toString(16);
+                    });
                 }
-            });
-            inspectorUi.innerHTML = html;
-        }
 
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(showToast);
-        }
+                function showToast() {
+                    toast.classList.replace('opacity-0', 'opacity-100');
+                    setTimeout(() => toast.classList.replace('opacity-100', 'opacity-0'), 2000);
+                }
 
-        genBtn.addEventListener('click', () => {
-            updateUI(generateUUIDv4());
-        });
+                function updateUI(uuid) {
+                    uuidText.textContent = uuid;
+                    uuidText.classList.remove('animate-fade-in');
+                    void uuidText.offsetWidth; // trigger reflow
+                    uuidText.classList.add('animate-fade-in');
 
-        copyBtn.addEventListener('click', () => {
-            copyToClipboard(uuidText.textContent);
-        });
+                    // Update Inspector
+                    const chars = uuid.split('');
+                    let html = '';
+                    chars.forEach((char, i) => {
+                        if (i === 14) {
+                            html += `<span class="highlight-v">${char}</span>`;
+                        } else if (i === 19) {
+                            html += `<span class="highlight-var">${char}</span>`;
+                            infoVar.textContent = char.toUpperCase();
+                        } else {
+                            html += `<span class="text-slate-400">${char}</span>`;
+                        }
+                    });
+                    inspectorUi.innerHTML = html;
+                }
 
-        batchGenBtn.addEventListener('click', () => {
-            const count = Math.min(Math.max(parseInt(batchCount.value) || 1, 1), 100);
-            const list = [];
-            for (let i = 0; i < count; i++) {
-                list.push(generateUUIDv4());
-            }
-            batchDisplay.value = list.join('\n');
-        });
+                function copyToClipboard(text) {
+                    navigator.clipboard.writeText(text).then(showToast);
+                }
 
-        batchCopyBtn.addEventListener('click', () => {
-            if (batchDisplay.value) {
-                copyToClipboard(batchDisplay.value);
-            }
-        });
+                genBtn.addEventListener('click', () => {
+                    updateUI(generateUUIDv4());
+                });
 
-        // Initialize
-        updateUI(generateUUIDv4());
-    </script>
+                copyBtn.addEventListener('click', () => {
+                    copyToClipboard(uuidText.textContent);
+                });
+
+                batchGenBtn.addEventListener('click', () => {
+                    const count = Math.min(Math.max(parseInt(batchCount.value) || 1, 1), 100);
+                    const list = [];
+                    for (let i = 0; i < count; i++) {
+                        list.push(generateUUIDv4());
+                    }
+                    batchDisplay.value = list.join('\n');
+                });
+
+                batchCopyBtn.addEventListener('click', () => {
+                    if (batchDisplay.value) {
+                        copyToClipboard(batchDisplay.value);
+                    }
+                });
+
+                // Initialize
+                updateUI(generateUUIDv4());
+            </script>
+        </div>
+    </app-layout>
 </body>
 
 </html>

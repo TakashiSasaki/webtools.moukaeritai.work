@@ -1,13 +1,33 @@
 <!doctype html>
 <html lang="ja">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Android App Launch Tester</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="../js/components/app-layout.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('../sw.js')
+          .then(reg => console.log('SW Registered', reg))
+          .catch(err => console.error('SW Registration failed', err));
+      });
+    }
+  </script>
   <style>
-    body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 900px; margin: 0 auto; color: #333; }
-    
+    body {
+      font-family: sans-serif;
+      line-height: 1.6;
+      padding: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+      color: #333;
+    }
+
     /* Top Navigation */
     .top-right {
       position: absolute;
@@ -19,6 +39,7 @@
       gap: 8px;
       z-index: 100;
     }
+
     .top-right a {
       display: inline-block;
       text-decoration: none;
@@ -30,10 +51,17 @@
       font-size: 14px;
       white-space: nowrap;
     }
-    .top-right a:hover { background: #e2e6ea; }
 
-    h1 { border-bottom: 2px solid #34a853; padding-bottom: 10px; margin-bottom: 20px; }
-    
+    .top-right a:hover {
+      background: #e2e6ea;
+    }
+
+    h1 {
+      border-bottom: 2px solid #34a853;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+
     /* Tabs */
     .tabs {
       display: flex;
@@ -41,6 +69,7 @@
       border-bottom: 1px solid #ddd;
       margin-bottom: 20px;
     }
+
     .tab-btn {
       padding: 10px 20px;
       cursor: pointer;
@@ -52,9 +81,11 @@
       margin-right: 5px;
       border-radius: 5px 5px 0 0;
     }
+
     .tab-btn:hover {
       background-color: #f0f0f0;
     }
+
     .tab-btn.active {
       background-color: #fff;
       border-color: #ddd;
@@ -69,18 +100,41 @@
       display: none;
       animation: fadein 0.3s;
     }
+
     .tab-content.active {
       display: block;
     }
+
     @keyframes fadein {
-      from { opacity: 0; }
-      to   { opacity: 1; }
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
     }
 
-    .panel { border: 1px solid #ddd; padding: 15px; border-radius: 8px; background: #f9f9f9; }
-    .input-group { margin-bottom: 15px; }
-    input[type="text"] { width: 100%; padding: 8px; box-sizing: border-box; font-family: monospace; border: 1px solid #ccc; border-radius: 4px; }
-    
+    .panel {
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 8px;
+      background: #f9f9f9;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+      font-family: monospace;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
     button.action-btn {
       padding: 10px 20px;
       font-size: 16px;
@@ -91,256 +145,317 @@
       border-radius: 4px;
       transition: background 0.2s;
     }
-    button.action-btn:hover { background-color: #2d8e47; }
-    
-    code { background: #eee; padding: 2px 4px; border-radius: 4px; font-family: monospace; }
-    pre { background: #f4f4f4; padding: 10px; border-radius: 4px; overflow-x: auto; border: 1px solid #ddd; font-size: 13px; }
-    
-    .link-list { list-style: none; padding: 0; }
-    .link-list li { margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-    .link-list a { color: #1a73e8; text-decoration: none; font-weight: bold; font-size: 1.1em; }
-    .link-list a:hover { text-decoration: underline; }
-    
-    .note { font-size: 0.9em; color: #666; margin-top: 5px; }
+
+    button.action-btn:hover {
+      background-color: #2d8e47;
+    }
+
+    code {
+      background: #eee;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+    pre {
+      background: #f4f4f4;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+      border: 1px solid #ddd;
+      font-size: 13px;
+    }
+
+    .link-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .link-list li {
+      margin-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+
+    .link-list a {
+      color: #1a73e8;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+
+    .link-list a:hover {
+      text-decoration: underline;
+    }
+
+    .note {
+      font-size: 0.9em;
+      color: #666;
+      margin-top: 5px;
+    }
 
     /* Markdown Styles */
-    .markdown-body h2 { border-bottom: 1px solid #eee; padding-bottom: 0.3em; margin-top: 1.5em; }
-    .markdown-body h3 { margin-top: 1.2em; }
-    .markdown-body ul { padding-left: 20px; }
-    .markdown-body li { margin-bottom: 0.5em; }
+    .markdown-body h2 {
+      border-bottom: 1px solid #eee;
+      padding-bottom: 0.3em;
+      margin-top: 1.5em;
+    }
+
+    .markdown-body h3 {
+      margin-top: 1.2em;
+    }
+
+    .markdown-body ul {
+      padding-left: 20px;
+    }
+
+    .markdown-body li {
+      margin-bottom: 0.5em;
+    }
   </style>
 </head>
+
 <body>
-  <div class="top-right">
-    <div><a href="https://webtools.moukaeritai.work/">🔙webtools.moukaeritai.work</a></div>
-    <div><a href="https://moukaeritai.work/">🔙🔙moukaeritai.work</a></div>
-  </div>
+  <app-layout>
+    <div class="px-6 py-6">
 
-  <h1>Android App Launch Tester</h1>
-  
-  <p>
-    Android の <code>intent:</code> スキームやカスタムスキームを使用して、ウェブブラウザから外部アプリを起動する実験用ページです。
-  </p>
+      <h1>Android App Launch Tester</h1>
 
-  <!-- Tabs Navigation -->
-  <div class="tabs">
-    <button class="tab-btn active" onclick="openTab(event, 'tab-input')">自由入力テスト</button>
-    <button class="tab-btn" onclick="openTab(event, 'tab-presets')">プリセットリンク</button>
-    <button class="tab-btn" onclick="openTab(event, 'tab-explanation')">解説文書</button>
-    <button class="tab-btn" onclick="openTab(event, 'tab-successes')">成功ケース</button>
-    <button class="tab-btn" onclick="openTab(event, 'tab-failures')">失敗ケース</button>
-  </div>
+      <p>
+        Android の <code>intent:</code> スキームやカスタムスキームを使用して、ウェブブラウザから外部アプリを起動する実験用ページです。
+      </p>
 
-  <!-- Tab 1: 自由入力テスト -->
-  <div id="tab-input" class="tab-content active">
-    <section class="panel">
-      <h2>自由入力 Intent テスト</h2>
-      <div class="input-group">
-        <label for="intentInput">Intent URI:</label>
-        <input type="text" id="intentInput" placeholder="intent://...#Intent;scheme=...;package=...;end" value="intent:#Intent;action=android.settings.SETTINGS;end">
-        <div class="note">例: <code>intent:#Intent;action=android.settings.SETTINGS;end</code> (設定画面)</div>
+      <!-- Tabs Navigation -->
+      <div class="tabs">
+        <button class="tab-btn active" onclick="openTab(event, 'tab-input')">自由入力テスト</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab-presets')">プリセットリンク</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab-explanation')">解説文書</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab-successes')">成功ケース</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab-failures')">失敗ケース</button>
       </div>
-      <button id="launchBtn" class="action-btn">起動実行 (window.location)</button>
-      <div class="note">※ Chrome では <code>window.location</code> による自動遷移はユーザーアクションが必要です。</div>
-    </section>
-  </div>
 
-  <!-- Tab 2: プリセットリンク -->
-  <div id="tab-presets" class="tab-content">
-    <section class="panel">
-      <h2>プリセットリンク集</h2>
-      <ul class="link-list">
-        <li>
-          <a href="https://www.google.com/android/find">Google「デバイスを探す」 (HTTPS App Link)</a>
-          <div class="note">HTTPSリンク (アプリがあれば起動、なければWeb版)</div>
-        </li>
-        <li>
-          <a href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=jp.co.yahoo.android.weather.type1;end">Yahoo!天気を起動 (Package)</a>
-          <div class="note"><code>package=jp.co.yahoo.android.weather.type1</code></div>
-        </li>
-        <li>
-          <a href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.discord;end">Discord を起動 (Package)</a>
-          <div class="note"><code>package=com.discord</code></div>
-        </li>
-        <li>
-          <a href="https://discord.com/app">Discord を起動 (HTTPS Link)</a>
-          <div class="note"><code>https://discord.com/app</code></div>
-        </li>
-        <li>
-          <a href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.Slack;end">Slack を起動 (Package)</a>
-          <div class="note"><code>package=com.Slack</code></div>
-        </li>
-        <li>
-          <a href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.google.android.apps.dynamite;end">Google Chat を起動 (Package)</a>
-          <div class="note"><code>package=com.google.android.apps.dynamite</code></div>
-        </li>
-        <li>
-          <a href="https://mail.google.com/chat/u/0/">Google Chat (Gmail 経由 URL)</a>
-          <div class="note">Gmail 統合版のパス。ランディングページで止まる可能性あり</div>
-        </li>
-        <li>
-          <a href="https://chat.google.com/">Google Chat (単独 URL)</a>
-          <div class="note"><code>chat.google.com</code>。App Link として機能するかテスト</div>
-        </li>
-        <li>
-          <a href="slack://open">Slack を起動 (scheme)</a>
-          <div class="note"><code>slack://open</code> (Deep Link)</div>
-        </li>
-        <li>
-          <a href="intent:#Intent;action=android.settings.SETTINGS;end">Android 設定画面を開く</a>
-          <div class="note"><code>action=android.settings.SETTINGS</code></div>
-        </li>
-        <li>
-          <a href="intent://www.google.com#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end">ブラウザで Google を開く (修正版)</a>
-          <div class="note"><code>intent://[HOST]#Intent;scheme=https;...;end</code> 形式</div>
-        </li>
-        <li>
-          <a href="intent://maps.google.com/maps?q=Tokyo+Station#Intent;scheme=https;package=com.google.android.apps.maps;end">Google マップで「東京駅」を表示</a>
-          <div class="note"><code>package=com.google.android.apps.maps</code> (パッケージ指定)</div>
-        </li>
-        <li>
-          <a href="intent://00012345678#Intent;scheme=tel;action=android.intent.action.DIAL;end">電話ダイヤル画面を開く (Intent修正版)</a>
-          <div class="note"><code>intent://[NUMBER]#Intent;scheme=tel;action=...</code></div>
-        </li>
-        <li>
-          <a href="tel:00012345678">電話ダイヤル画面を開く (標準 tel: リンク)</a>
-          <div class="note">最も互換性が高い標準的な書き方</div>
-        </li>
-        <li>
-          <a href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.google.android.googlequicksearchbox;end">Google アプリを起動 (検索なし)</a>
-          <div class="note">単純なアプリ起動 (LAUNCHER)</div>
-        </li>
-        <li>
-          <a href="google.navigation:q=Tokyo+Tower">Google マップナビを起動 (scheme)</a>
-          <div class="note"><code>google.navigation:q=...</code> (カスタムスキーム)</div>
-        </li>
-        <li>
-          <a href="https://calendar.google.com/calendar/r/eventedit?text=TestEvent&details=Description">Google カレンダー (HTTPS App Link)</a>
-          <div class="note">HTTPSリンク (アプリが対応していれば起動、なければWeb)</div>
-        </li>
-        <li>
-          <a href="geo:0,0?q=Tokyo+Tower">地図を開く (geo: スキーム)</a>
-          <div class="note">標準的な <code>geo:</code> スキーム</div>
-        </li>
-        <li>
-          <a href="line://msg/text/Hello">LINE でメッセージを送る (scheme)</a>
-          <div class="note"><code>line://msg/text/...</code> (LINEアプリ)</div>
-        </li>
-        <li>
-          <a href="mailto:?subject=Test">メールを作成 (mailto:)</a>
-          <div class="note">標準的な <code>mailto:</code> スキーム</div>
-        </li>
-        <li>
-          <a href="sms:?body=Hello">SMS を作成 (sms: スキーム)</a>
-          <div class="note">標準的な <code>sms:</code> スキーム</div>
-        </li>
-        <li>
-          <a href="intent://www.youtube.com/watch?v=dQw4w9WgXcQ#Intent;scheme=https;package=com.google.android.youtube;end">YouTube アプリで動画を再生</a>
-          <div class="note"><code>package=com.google.android.youtube</code> 指定</div>
-      </li>
-        <li>
-          <a href="intent:#Intent;package=com.android.vending;end">Google Play ストアを起動</a>
-          <div class="note"><code>package=com.android.vending</code></div>
-        </li>
-        <li>
-          <a href="intent://details?id=com.google.android.youtube#Intent;scheme=market;end">YouTube ページを Play ストアで開く (Intent)</a>
-        </li>
-        <li>
-          <a href="market://details?id=com.google.android.youtube">market:// スキーム (YouTube)</a>
-        </li>
-      </ul>
-    </section>
-  </div>
+      <!-- Tab 1: 自由入力テスト -->
+      <div id="tab-input" class="tab-content active">
+        <section class="panel">
+          <h2>自由入力 Intent テスト</h2>
+          <div class="input-group">
+            <label for="intentInput">Intent URI:</label>
+            <input type="text" id="intentInput" placeholder="intent://...#Intent;scheme=...;package=...;end"
+              value="intent:#Intent;action=android.settings.SETTINGS;end">
+            <div class="note">例: <code>intent:#Intent;action=android.settings.SETTINGS;end</code> (設定画面)</div>
+          </div>
+          <button id="launchBtn" class="action-btn">起動実行 (window.location)</button>
+          <div class="note">※ Chrome では <code>window.location</code> による自動遷移はユーザーアクションが必要です。</div>
+        </section>
+      </div>
 
-  <!-- Tab 3: 解説文書 -->
-  <div id="tab-explanation" class="tab-content">
-    <div class="panel markdown-body" id="md-explanation">Loading EXPLANATION.md...</div>
-  </div>
+      <!-- Tab 2: プリセットリンク -->
+      <div id="tab-presets" class="tab-content">
+        <section class="panel">
+          <h2>プリセットリンク集</h2>
+          <ul class="link-list">
+            <li>
+              <a href="https://www.google.com/android/find">Google「デバイスを探す」 (HTTPS App Link)</a>
+              <div class="note">HTTPSリンク (アプリがあれば起動、なければWeb版)</div>
+            </li>
+            <li>
+              <a
+                href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=jp.co.yahoo.android.weather.type1;end">Yahoo!天気を起動
+                (Package)</a>
+              <div class="note"><code>package=jp.co.yahoo.android.weather.type1</code></div>
+            </li>
+            <li>
+              <a
+                href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.discord;end">Discord
+                を起動 (Package)</a>
+              <div class="note"><code>package=com.discord</code></div>
+            </li>
+            <li>
+              <a href="https://discord.com/app">Discord を起動 (HTTPS Link)</a>
+              <div class="note"><code>https://discord.com/app</code></div>
+            </li>
+            <li>
+              <a
+                href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.Slack;end">Slack
+                を起動 (Package)</a>
+              <div class="note"><code>package=com.Slack</code></div>
+            </li>
+            <li>
+              <a
+                href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.google.android.apps.dynamite;end">Google
+                Chat を起動 (Package)</a>
+              <div class="note"><code>package=com.google.android.apps.dynamite</code></div>
+            </li>
+            <li>
+              <a href="https://mail.google.com/chat/u/0/">Google Chat (Gmail 経由 URL)</a>
+              <div class="note">Gmail 統合版のパス。ランディングページで止まる可能性あり</div>
+            </li>
+            <li>
+              <a href="https://chat.google.com/">Google Chat (単独 URL)</a>
+              <div class="note"><code>chat.google.com</code>。App Link として機能するかテスト</div>
+            </li>
+            <li>
+              <a href="slack://open">Slack を起動 (scheme)</a>
+              <div class="note"><code>slack://open</code> (Deep Link)</div>
+            </li>
+            <li>
+              <a href="intent:#Intent;action=android.settings.SETTINGS;end">Android 設定画面を開く</a>
+              <div class="note"><code>action=android.settings.SETTINGS</code></div>
+            </li>
+            <li>
+              <a
+                href="intent://www.google.com#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end">ブラウザで
+                Google を開く (修正版)</a>
+              <div class="note"><code>intent://[HOST]#Intent;scheme=https;...;end</code> 形式</div>
+            </li>
+            <li>
+              <a
+                href="intent://maps.google.com/maps?q=Tokyo+Station#Intent;scheme=https;package=com.google.android.apps.maps;end">Google
+                マップで「東京駅」を表示</a>
+              <div class="note"><code>package=com.google.android.apps.maps</code> (パッケージ指定)</div>
+            </li>
+            <li>
+              <a href="intent://00012345678#Intent;scheme=tel;action=android.intent.action.DIAL;end">電話ダイヤル画面を開く
+                (Intent修正版)</a>
+              <div class="note"><code>intent://[NUMBER]#Intent;scheme=tel;action=...</code></div>
+            </li>
+            <li>
+              <a href="tel:00012345678">電話ダイヤル画面を開く (標準 tel: リンク)</a>
+              <div class="note">最も互換性が高い標準的な書き方</div>
+            </li>
+            <li>
+              <a
+                href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.google.android.googlequicksearchbox;end">Google
+                アプリを起動 (検索なし)</a>
+              <div class="note">単純なアプリ起動 (LAUNCHER)</div>
+            </li>
+            <li>
+              <a href="google.navigation:q=Tokyo+Tower">Google マップナビを起動 (scheme)</a>
+              <div class="note"><code>google.navigation:q=...</code> (カスタムスキーム)</div>
+            </li>
+            <li>
+              <a href="https://calendar.google.com/calendar/r/eventedit?text=TestEvent&details=Description">Google カレンダー
+                (HTTPS App Link)</a>
+              <div class="note">HTTPSリンク (アプリが対応していれば起動、なければWeb)</div>
+            </li>
+            <li>
+              <a href="geo:0,0?q=Tokyo+Tower">地図を開く (geo: スキーム)</a>
+              <div class="note">標準的な <code>geo:</code> スキーム</div>
+            </li>
+            <li>
+              <a href="line://msg/text/Hello">LINE でメッセージを送る (scheme)</a>
+              <div class="note"><code>line://msg/text/...</code> (LINEアプリ)</div>
+            </li>
+            <li>
+              <a href="mailto:?subject=Test">メールを作成 (mailto:)</a>
+              <div class="note">標準的な <code>mailto:</code> スキーム</div>
+            </li>
+            <li>
+              <a href="sms:?body=Hello">SMS を作成 (sms: スキーム)</a>
+              <div class="note">標準的な <code>sms:</code> スキーム</div>
+            </li>
+            <li>
+              <a
+                href="intent://www.youtube.com/watch?v=dQw4w9WgXcQ#Intent;scheme=https;package=com.google.android.youtube;end">YouTube
+                アプリで動画を再生</a>
+              <div class="note"><code>package=com.google.android.youtube</code> 指定</div>
+            </li>
+            <li>
+              <a href="intent:#Intent;package=com.android.vending;end">Google Play ストアを起動</a>
+              <div class="note"><code>package=com.android.vending</code></div>
+            </li>
+            <li>
+              <a href="intent://details?id=com.google.android.youtube#Intent;scheme=market;end">YouTube ページを Play ストアで開く
+                (Intent)</a>
+            </li>
+            <li>
+              <a href="market://details?id=com.google.android.youtube">market:// スキーム (YouTube)</a>
+            </li>
+          </ul>
+        </section>
+      </div>
 
-  <!-- Tab 4: 成功ケース -->
-  <div id="tab-successes" class="tab-content">
-    <div class="panel markdown-body" id="md-successes">Loading SUCCESSES.md...</div>
-  </div>
+      <!-- Tab 3: 解説文書 -->
+      <div id="tab-explanation" class="tab-content">
+        <div class="panel markdown-body" id="md-explanation">Loading EXPLANATION.md...</div>
+      </div>
 
-  <!-- Tab 5: 失敗ケース -->
-  <div id="tab-failures" class="tab-content">
-    <div class="panel markdown-body" id="md-failures">Loading FAILURES.md...</div>
-  </div>
+      <!-- Tab 4: 成功ケース -->
+      <div id="tab-successes" class="tab-content">
+        <div class="panel markdown-body" id="md-successes">Loading SUCCESSES.md...</div>
+      </div>
 
-  <script>
-    // Tab Switching Logic
-    function openTab(evt, tabName) {
-      const tabContents = document.getElementsByClassName("tab-content");
-      for (let i = 0; i < tabContents.length; i++) {
-        tabContents[i].style.display = "none";
-        tabContents[i].classList.remove("active");
-      }
-      
-      const tabBtns = document.getElementsByClassName("tab-btn");
-      for (let i = 0; i < tabBtns.length; i++) {
-        tabBtns[i].className = tabBtns[i].className.replace(" active", "");
-      }
-      
-      const target = document.getElementById(tabName);
-      target.style.display = "block";
-      // Trigger reflow for animation if needed
-      void target.offsetWidth; 
-      target.classList.add("active");
-      
-      evt.currentTarget.className += " active";
-    }
+      <!-- Tab 5: 失敗ケース -->
+      <div id="tab-failures" class="tab-content">
+        <div class="panel markdown-body" id="md-failures">Loading FAILURES.md...</div>
+      </div>
 
-    // Free Input Launch Logic
-    document.getElementById('launchBtn').onclick = function() {
-      const uri = document.getElementById('intentInput').value;
-      if (uri) {
-        console.log('Launching:', uri);
-        window.location.href = uri;
-      }
-    };
+      <script>
+        // Tab Switching Logic
+        function openTab(evt, tabName) {
+          const tabContents = document.getElementsByClassName("tab-content");
+          for (let i = 0; i < tabContents.length; i++) {
+            tabContents[i].style.display = "none";
+            tabContents[i].classList.remove("active");
+          }
 
-    // Markdown Loader
-    async function loadMarkdown(file, elementId) {
-      try {
-        const response = await fetch(file);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const tabBtns = document.getElementsByClassName("tab-btn");
+          for (let i = 0; i < tabBtns.length; i++) {
+            tabBtns[i].className = tabBtns[i].className.replace(" active", "");
+          }
+
+          const target = document.getElementById(tabName);
+          target.style.display = "block";
+          // Trigger reflow for animation if needed
+          void target.offsetWidth;
+          target.classList.add("active");
+
+          evt.currentTarget.className += " active";
         }
-        const text = await response.text();
-        const el = document.getElementById(elementId);
-        el.innerHTML = marked.parse(text);
-        
-        // Make links in markdown open in new tab? Optional, but good for docs
-        const links = el.getElementsByTagName('a');
-        for (let a of links) {
-           // If it's an intent or custom scheme, don't force target=_blank as it might block
-           if (a.href.startsWith('http')) {
-             a.target = "_blank";
-             a.rel = "noopener noreferrer";
-           }
+
+        // Free Input Launch Logic
+        document.getElementById('launchBtn').onclick = function () {
+          const uri = document.getElementById('intentInput').value;
+          if (uri) {
+            console.log('Launching:', uri);
+            window.location.href = uri;
+          }
+        };
+
+        // Markdown Loader
+        async function loadMarkdown(file, elementId) {
+          try {
+            const response = await fetch(file);
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const text = await response.text();
+            const el = document.getElementById(elementId);
+            el.innerHTML = marked.parse(text);
+
+            // Make links in markdown open in new tab? Optional, but good for docs
+            const links = el.getElementsByTagName('a');
+            for (let a of links) {
+              // If it's an intent or custom scheme, don't force target=_blank as it might block
+              if (a.href.startsWith('http')) {
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+              }
+            }
+          } catch (e) {
+            document.getElementById(elementId).innerText = "Error loading " + file + ": " + e.message;
+          }
         }
-      } catch (e) {
-        document.getElementById(elementId).innerText = "Error loading " + file + ": " + e.message;
-      }
-    }
 
-    // Load MD files
-    loadMarkdown('EXPLANATION.md', 'md-explanation');
-    loadMarkdown('SUCCESSES.md', 'md-successes');
-    loadMarkdown('FAILURES.md', 'md-failures');
-  </script>
+        // Load MD files
+        loadMarkdown('EXPLANATION.md', 'md-explanation');
+        loadMarkdown('SUCCESSES.md', 'md-successes');
+        loadMarkdown('FAILURES.md', 'md-failures');
+      </script>
 
-  <footer style="margin-top: 60px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 14px; margin-bottom: 40px;">
-    <p>&copy; 2025 WebTools hosted on webtools.moukaeritai.work</p>
-    <p>Created by <a href="https://x.com/TakashiSasaki" target="_blank" rel="noopener noreferrer" style="color: #34a853; text-decoration: none; font-weight: bold;">Takashi SASAKI</a></p>
-    <p style="margin-top: 15px; display: flex; justify-content: center; gap: 10px; align-items: center;">
-      <a href="https://github.com/TakashiSasaki/webtools.moukaeritai.work" target="_blank" rel="noopener noreferrer">
-        <img src="https://img.shields.io/badge/GitHub-View_on_GitHub-black?logo=github" alt="GitHub">
-      </a>
-      <a href="https://github.com/codespaces" target="_blank" rel="noopener noreferrer">
-        <img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces">
-      </a>
-    </p>
-  </footer>
+      </footer>
+    </div>
+  </app-layout>
 </body>
+
 </html>

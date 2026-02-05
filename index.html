@@ -19,6 +19,7 @@
             });
         }
     </script>
+    <script src="js/components/app-layout.js"></script>
     <style>
         body {
             font-family: "Inter", sans-serif;
@@ -35,246 +36,242 @@
     </style>
 </head>
 
-<body class="bg-gray-100 min-h-screen p-4 sm:p-8 relative">
+<body class="bg-gray-100 min-h-screen">
+    <app-layout>
 
-    <div class="absolute top-4 right-4">
-        <a href="https://moukaeritai.work/"
-            class="text-sm border border-gray-300 px-3 py-1.5 rounded-lg bg-white/80 backdrop-blur-sm hover:bg-indigo-50 hover:border-indigo-300 text-gray-700 transition-colors shadow-sm font-medium">
-            🔙🔙moukaeritai.work
-        </a>
-    </div>
+        <div class="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-xl shadow-2xl">
+            <header class="mb-8 border-b-4 border-indigo-200 pb-4">
+                <h1 class="text-4xl font-extrabold text-indigo-700">
+                    WebTools by webtools.moukaeritai.work
+                </h1>
+                <p class="text-gray-600 mt-2 text-lg">
+                    ウェブブラウザで動作する、ニッチな用途のツールたち。
+                </p>
+            </header>
 
-    <div class="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-xl shadow-2xl">
-        <header class="mb-8 border-b-4 border-indigo-200 pb-4">
-            <h1 class="text-4xl font-extrabold text-indigo-700">
-                WebTools by webtools.moukaeritai.work
-            </h1>
-            <p class="text-gray-600 mt-2 text-lg">
-                ウェブブラウザで動作する、ニッチな用途のツールたち。
-            </p>
-        </header>
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">利用可能なツール</h2>
 
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">利用可能なツール</h2>
+            <div class="grid gap-6">
 
-        <div class="grid gap-6">
-
-            <!-- ツール項目 1: 127.html -->
-            <a href="loopback-addresses/"
-                class="tool-card block p-6 bg-white border border-gray-200 rounded-xl shadow-lg hover:bg-indigo-50 hover:border-indigo-400">
-                <div class="flex items-start">
-                    <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4 flex-shrink-0">
-                        <!-- Icon: Hash / Numbering -->
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
-                        </svg>
+                <!-- ツール項目 1: 127.html -->
+                <a href="loopback-addresses/"
+                    class="tool-card block p-6 bg-white border border-gray-200 rounded-xl shadow-lg hover:bg-indigo-50 hover:border-indigo-400">
+                    <div class="flex items-start">
+                        <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4 flex-shrink-0">
+                            <!-- Icon: Hash / Numbering -->
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-indigo-700">ハッシュ値に基づく 127.x.x.x 生成</h3>
+                            <p class="text-gray-600 mt-1">
+                                入力されたドメイン名ラベル（小文字、63バイト制限）のSHA-256ハッシュ値を計算し、巨大な整数を254進数（1-254表記）およびローカルIPアドレス風形式（127.B1.B2.B3）で表示します。
+                            </p>
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-indigo-700">ハッシュ値に基づく 127.x.x.x 生成</h3>
-                        <p class="text-gray-600 mt-1">
-                            入力されたドメイン名ラベル（小文字、63バイト制限）のSHA-256ハッシュ値を計算し、巨大な整数を254進数（1-254表記）およびローカルIPアドレス風形式（127.B1.B2.B3）で表示します。
-                        </p>
-                    </div>
-                </div>
-            </a>
-
-            <!-- ツール項目: private-ports/ -->
-            <a href="private-ports/"
-                class="tool-card block p-6 bg-white border border-gray-200 rounded-xl shadow-lg hover:bg-indigo-50 hover:border-indigo-400">
-                <div class="flex items-start">
-                    <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4 flex-shrink-0">
-                        <!-- Icon: Network / Server -->
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                            </path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-indigo-700">文字列からプライベートポート番号を生成</h3>
-                        <p class="text-gray-600 mt-1">
-                            文字列（サービス名など）から、IANAプライベートポート範囲 (49152-65535) の一意なポート番号を生成します。開発環境のポート重複回避に便利です。
-                        </p>
-                    </div>
-                </div>
-            </a>
-
-            <!-- ツール項目 2: drop-event-tester/ -->
-            <a href="drop-event-tester/"
-                class="tool-card block p-6 bg-white border border-gray-200 rounded-xl shadow-lg hover:bg-indigo-50 hover:border-indigo-400">
-                <div class="flex items-start">
-                    <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4 flex-shrink-0">
-                        <!-- Icon: Document / File Drop -->
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
-                            </path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-indigo-700">Drop Event Tester</h3>
-                        <p class="text-gray-600 mt-1">
-                            ブラウザが受け取るドラッグ＆ドロップイベントのメタデータを解析し、DataTransferに含まれるアイテムの種類、ファイル名、テキスト内容などを表示します。
-                        </p>
-                    </div>
-                </div>
-            </a>
-
-            <!-- ツール項目 3: clipboard/ -->
-            <a href="clipboard/"
-                class="tool-card block p-6 bg-white border border-gray-200 rounded-xl shadow-lg hover:bg-indigo-50 hover:border-indigo-400">
-                <div class="flex items-start">
-                    <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4 flex-shrink-0">
-                        <!-- Icon: Clipboard -->
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
-                            </path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-indigo-700">Clipboard API 総合実験</h3>
-                        <p class="text-gray-600 mt-1">
-                            ブラウザの Clipboard API の挙動を確認するための実験ページです。画像（Data URL / ファイル）や HTML 形式でのコピーを試せます。
-                        </p>
-                    </div>
-                </div>
-            </a>
-
-            <!-- ツール項目 4: android-app-link/ -->
-            <a href="android-app-link/"
-                class="tool-card block p-6 bg-white border border-gray-200 rounded-xl shadow-lg hover:bg-indigo-50 hover:border-indigo-400">
-                <div class="flex items-start">
-                    <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4 flex-shrink-0">
-                        <!-- Icon: Smartphone -->
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-indigo-700">Android App Launch Tester</h3>
-                        <p class="text-gray-600 mt-1">
-                            Android の <code>intent:</code> スキームやカスタムスキームを使用して、ウェブページからアプリを起動する挙動の実験用ページです。
-                        </p>
-                    </div>
-                </div>
-            </a>
-
-            <!-- ツール項目 5: uuid-v3-v5-generator/ -->
-            <a href="uuid-v3-v5-generator/"
-                class="tool-card block p-6 bg-white border border-gray-200 rounded-xl shadow-lg hover:bg-indigo-50 hover:border-indigo-400">
-                <div class="flex items-start">
-                    <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4 flex-shrink-0">
-                        <!-- Icon: Fingerprint / ID -->
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0012 3m0 18a9.96 9.96 0 006.191-2.146m-12.383 0A9.96 9.96 0 013 12a9.963 9.963 0 010-0h0m16.383 1.146a9.942 9.942 0 01-1.938 1.808m-8.141-8.236A10.044 10.044 0 0112 3c1.442 0 2.8.303 4.026.85m-6.026 15.303A9.965 9.965 0 0112 21c1.11 0 2.176-.181 3.176-.514m-9.352-7.332A9.962 9.962 0 0112 9c1.02 0 1.993.152 2.908.432m-8.158 8.014a9.952 9.952 0 01-1.423-4.008M15 15l1.9-1.9">
-                            </path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-indigo-700">UUID v3/v5 Generator</h3>
-                        <p class="text-gray-600 mt-1">
-                            RFC 9562 準拠の名前ベース UUID (v3/v5) 生成と検証ツール。ライブラリ実装とネイティブアルゴリズムの整合性を確認できます。
-                        </p>
-                    </div>
-                </div>
-            </a>
-
-            <!-- ツール項目 6: uuid-v4-generator/ -->
-            <a href="uuid-v4-generator/"
-                class="tool-card block p-6 bg-white border border-gray-200 rounded-xl shadow-lg hover:bg-indigo-50 hover:border-indigo-400">
-                <div class="flex items-start">
-                    <div class="p-3 bg-emerald-100 rounded-full text-emerald-600 mr-4 flex-shrink-0">
-                        <!-- Icon: Random / Shuffle -->
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-emerald-700">UUID v4 Generator</h3>
-                        <p class="text-gray-600 mt-1">
-                            RFC 9562 準拠の完全ランダムな UUID (v4) 生成ツール。一括生成、クリップボードコピー、詳細なビット解析機能を備えています。
-                        </p>
-                    </div>
-                </div>
-            </a>
-
-            <!-- ツール項目 6: micropython/ -->
-            <a href="micropython/"
-                class="tool-card block p-6 bg-white border border-gray-200 rounded-xl shadow-lg hover:bg-indigo-50 hover:border-indigo-400">
-                <div class="flex items-start">
-                    <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4 flex-shrink-0">
-                        <!-- Icon: Code / Terminal -->
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                            </path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-indigo-700">MicroPython REPL</h3>
-                        <p class="text-gray-600 mt-1">
-                            WebAssembly Port の MicroPython をブラウザ上で実行。軽量な Python 環境での学習や実験が可能です。
-                        </p>
-                    </div>
-                </div>
-            </a>
-
-            <!-- ツール項目 7: pyodide/ -->
-            <a href="pyodide/"
-                class="tool-card block p-6 bg-white border border-gray-200 rounded-xl shadow-lg hover:bg-indigo-50 hover:border-indigo-400">
-                <div class="flex items-start">
-                    <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4 flex-shrink-0">
-                        <!-- Icon: Chip / Lightning -->
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-indigo-700">Pyodide REPL</h3>
-                        <p class="text-gray-600 mt-1">
-                            フル機能の Python 3.13 環境をブラウザ上で実行。科学計算ライブラリなどもサポートする強力な実行環境です。
-                        </p>
-                    </div>
-                </div>
-            </a>
-
-            <!-- ツール項目 5: (今後の追加ツール用) -->
-
-        </div>
-
-        <footer class="mt-12 pt-6 border-t border-gray-200 text-center text-gray-500">
-            <p>&copy; 2025 WebTools hosted on webtools.moukaeritai.work</p>
-            <p class="mt-2">Created by <a href="https://x.com/TakashiSasaki" class="text-indigo-600 hover:underline"
-                    target="_blank" rel="noopener noreferrer">Takashi SASAKI</a></p>
-            <div class="mt-4 flex justify-center gap-4">
-                <a href="https://github.com/TakashiSasaki/webtools.moukaeritai.work" target="_blank"
-                    rel="noopener noreferrer">
-                    <img src="https://img.shields.io/badge/GitHub-View_on_GitHub-black?logo=github" alt="GitHub">
                 </a>
-                <a href="https://github.com/codespaces/potential-goggles-gw9rqw6x6c97p" target="_blank"
-                    rel="noopener noreferrer">
-                    <img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces">
+
+                <!-- ツール項目: private-ports/ -->
+                <a href="private-ports/"
+                    class="tool-card block p-6 bg-white border border-gray-200 rounded-xl shadow-lg hover:bg-indigo-50 hover:border-indigo-400">
+                    <div class="flex items-start">
+                        <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4 flex-shrink-0">
+                            <!-- Icon: Network / Server -->
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                </path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-indigo-700">文字列からプライベートポート番号を生成</h3>
+                            <p class="text-gray-600 mt-1">
+                                文字列（サービス名など）から、IANAプライベートポート範囲 (49152-65535) の一意なポート番号を生成します。開発環境のポート重複回避に便利です。
+                            </p>
+                        </div>
+                    </div>
                 </a>
-                <a href="https://fly.io/dashboard" target="_blank" rel="noopener noreferrer">
-                    <img src="https://img.shields.io/badge/Fly.io-Dashboard-blueviolet" alt="Fly.io Dashboard">
+
+                <!-- ツール項目 2: drop-event-tester/ -->
+                <a href="drop-event-tester/"
+                    class="tool-card block p-6 bg-white border border-gray-200 rounded-xl shadow-lg hover:bg-indigo-50 hover:border-indigo-400">
+                    <div class="flex items-start">
+                        <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4 flex-shrink-0">
+                            <!-- Icon: Document / File Drop -->
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                                </path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-indigo-700">Drop Event Tester</h3>
+                            <p class="text-gray-600 mt-1">
+                                ブラウザが受け取るドラッグ＆ドロップイベントのメタデータを解析し、DataTransferに含まれるアイテムの種類、ファイル名、テキスト内容などを表示します。
+                            </p>
+                        </div>
+                    </div>
                 </a>
+
+                <!-- ツール項目 3: clipboard/ -->
+                <a href="clipboard/"
+                    class="tool-card block p-6 bg-white border border-gray-200 rounded-xl shadow-lg hover:bg-indigo-50 hover:border-indigo-400">
+                    <div class="flex items-start">
+                        <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4 flex-shrink-0">
+                            <!-- Icon: Clipboard -->
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                                </path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-indigo-700">Clipboard API 総合実験</h3>
+                            <p class="text-gray-600 mt-1">
+                                ブラウザの Clipboard API の挙動を確認するための実験ページです。画像（Data URL / ファイル）や HTML 形式でのコピーを試せます。
+                            </p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- ツール項目 4: android-app-link/ -->
+                <a href="android-app-link/"
+                    class="tool-card block p-6 bg-white border border-gray-200 rounded-xl shadow-lg hover:bg-indigo-50 hover:border-indigo-400">
+                    <div class="flex items-start">
+                        <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4 flex-shrink-0">
+                            <!-- Icon: Smartphone -->
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-indigo-700">Android App Launch Tester</h3>
+                            <p class="text-gray-600 mt-1">
+                                Android の <code>intent:</code> スキームやカスタムスキームを使用して、ウェブページからアプリを起動する挙動の実験用ページです。
+                            </p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- ツール項目 5: uuid-v3-v5-generator/ -->
+                <a href="uuid-v3-v5-generator/"
+                    class="tool-card block p-6 bg-white border border-gray-200 rounded-xl shadow-lg hover:bg-indigo-50 hover:border-indigo-400">
+                    <div class="flex items-start">
+                        <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4 flex-shrink-0">
+                            <!-- Icon: Fingerprint / ID -->
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0012 3m0 18a9.96 9.96 0 006.191-2.146m-12.383 0A9.96 9.96 0 013 12a9.963 9.963 0 010-0h0m16.383 1.146a9.942 9.942 0 01-1.938 1.808m-8.141-8.236A10.044 10.044 0 0112 3c1.442 0 2.8.303 4.026.85m-6.026 15.303A9.965 9.965 0 0112 21c1.11 0 2.176-.181 3.176-.514m-9.352-7.332A9.962 9.962 0 0112 9c1.02 0 1.993.152 2.908.432m-8.158 8.014a9.952 9.952 0 01-1.423-4.008M15 15l1.9-1.9">
+                                </path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-indigo-700">UUID v3/v5 Generator</h3>
+                            <p class="text-gray-600 mt-1">
+                                RFC 9562 準拠の名前ベース UUID (v3/v5) 生成と検証ツール。ライブラリ実装とネイティブアルゴリズムの整合性を確認できます。
+                            </p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- ツール項目 6: uuid-v4-generator/ -->
+                <a href="uuid-v4-generator/"
+                    class="tool-card block p-6 bg-white border border-gray-200 rounded-xl shadow-lg hover:bg-indigo-50 hover:border-indigo-400">
+                    <div class="flex items-start">
+                        <div class="p-3 bg-emerald-100 rounded-full text-emerald-600 mr-4 flex-shrink-0">
+                            <!-- Icon: Random / Shuffle -->
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-emerald-700">UUID v4 Generator</h3>
+                            <p class="text-gray-600 mt-1">
+                                RFC 9562 準拠の完全ランダムな UUID (v4) 生成ツール。一括生成、クリップボードコピー、詳細なビット解析機能を備えています。
+                            </p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- ツール項目 6: micropython/ -->
+                <a href="micropython/"
+                    class="tool-card block p-6 bg-white border border-gray-200 rounded-xl shadow-lg hover:bg-indigo-50 hover:border-indigo-400">
+                    <div class="flex items-start">
+                        <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4 flex-shrink-0">
+                            <!-- Icon: Code / Terminal -->
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-indigo-700">MicroPython REPL</h3>
+                            <p class="text-gray-600 mt-1">
+                                WebAssembly Port の MicroPython をブラウザ上で実行。軽量な Python 環境での学習や実験が可能です。
+                            </p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- ツール項目 7: pyodide/ -->
+                <a href="pyodide/"
+                    class="tool-card block p-6 bg-white border border-gray-200 rounded-xl shadow-lg hover:bg-indigo-50 hover:border-indigo-400">
+                    <div class="flex items-start">
+                        <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4 flex-shrink-0">
+                            <!-- Icon: Chip / Lightning -->
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-indigo-700">Pyodide REPL</h3>
+                            <p class="text-gray-600 mt-1">
+                                フル機能の Python 3.13 環境をブラウザ上で実行。科学計算ライブラリなどもサポートする強力な実行環境です。
+                            </p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- ツール項目 5: (今後の追加ツール用) -->
+
             </div>
-        </footer>
-    </div>
+
+            <footer class="mt-12 pt-6 border-t border-gray-200 text-center text-gray-500">
+                <p>&copy; 2025 WebTools hosted on webtools.moukaeritai.work</p>
+                <p class="mt-2">Created by <a href="https://x.com/TakashiSasaki" class="text-indigo-600 hover:underline"
+                        target="_blank" rel="noopener noreferrer">Takashi SASAKI</a></p>
+                <div class="mt-4 flex justify-center gap-4">
+                    <a href="https://github.com/TakashiSasaki/webtools.moukaeritai.work" target="_blank"
+                        rel="noopener noreferrer">
+                        <img src="https://img.shields.io/badge/GitHub-View_on_GitHub-black?logo=github" alt="GitHub">
+                    </a>
+                    <a href="https://github.com/codespaces/potential-goggles-gw9rqw6x6c97p" target="_blank"
+                        rel="noopener noreferrer">
+                        <img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces">
+                    </a>
+                    <a href="https://fly.io/dashboard" target="_blank" rel="noopener noreferrer">
+                        <img src="https://img.shields.io/badge/Fly.io-Dashboard-blueviolet" alt="Fly.io Dashboard">
+                    </a>
+                </div>
+            </footer>
+        </div>
+    </app-layout>
 </body>
 
 </html>

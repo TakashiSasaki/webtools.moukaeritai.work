@@ -15,3 +15,14 @@ When the user provides large PNG files for experimental purposes, follow this wo
 4.  **Version Control**: Commit the newly created files with clear, descriptive messages.
 
 This process ensures a consistent set of test assets for the web tools in this repository.
+
+# 以下の記述はこのドキュメント AGENTS.md に含めたい内容なので、あとでマージするべし。
+
+- このリポジトリは最終的に https://webtools.moukaeritai.work/ に公開される予定
+- ローカルサーバでのプレビューができるように、可能な限り相対パスでリンクする。
+- このリポジトリではブラウザ単体でサーバとの通信なく使用できるツールを公開している。
+- sitemap.xml には各ツールへのリンクと各ツールのドキュメントへのリンクを含めること。
+- サービスワーカーを作成し、サービスワーカーではオンラインならネットにアクセスしてコンテンツを取得し、オフラインならローカルストレージからコンテンツを取得する。
+- マニフェストを書いて、このウェブサイトをアプリとしてインストールできるようにする。
+- 新しいツールを書いた時にはサイトマップにも追加すること
+

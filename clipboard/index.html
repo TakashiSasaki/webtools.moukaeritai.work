@@ -211,12 +211,28 @@
       <div id="previewData" class="preview"></div>
       <div class="panel">
         <div class="flex flex-wrap gap-2">
-          <button id="copyDataPng1"><i class="fas fa-image mr-2 text-red-500"></i>data: image/png（1 item）</button>
-          <button id="copyDataPng3"><i class="fas fa-images mr-2 text-red-500"></i>data: image/png（3 items）</button>
-          <button id="copyDataImgHtml"><i class="fas fa-code mr-2 text-indigo-500"></i>data: IMG 単体 → HTML</button>
-          <button id="copyDataDivHtml"><i class="fas fa-layer-group mr-2 text-indigo-500"></i>data: DIV（複数） →
-            HTML</button>
-          <button id="copyDataImgsHtml"><i class="fas fa-tags mr-2 text-indigo-500"></i>data: 複数画像 → HTML</button>
+          <button id="copyDataPng1" title="純粋な画像を1つコピーします"><i class="fas fa-image mr-2 text-red-500"></i>data:
+            image/png（1 item）</button>
+          <button id="copyDataPng3" title="複数の画像アイテムを一度にコピーします"><i class="fas fa-images mr-2 text-red-500"></i>data:
+            image/png（3 items）</button>
+          <button id="copyDataImgHtml" title="<img>タグとしてリッチテキスト形式でコピーします"><i
+              class="fas fa-code mr-2 text-indigo-500"></i>data: IMG 単体 → HTML</button>
+          <button id="copyDataDivHtml" title="複数の<img>を含む<div>としてコピーします"><i
+              class="fas fa-layer-group mr-2 text-indigo-500"></i>data: DIV（複数） → HTML</button>
+          <button id="copyDataImgsHtml" title="ラッパーなしで複数の<img>タグをコピーします"><i
+              class="fas fa-tags mr-2 text-indigo-500"></i>data: 複数画像 → HTML</button>
+        </div>
+        <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-500">
+          <div class="flex items-start bg-slate-50 p-2 rounded border border-slate-100">
+            <i class="fas fa-info-circle mt-0.5 mr-2 text-slate-400"></i>
+            <div><strong>image/png (Binary):</strong> Canvasから生成したバイナリデータを直接コピーします。ペイントソフトやSlackへの「画像」としての貼り付けに最適です。
+            </div>
+          </div>
+          <div class="flex items-start bg-slate-50 p-2 rounded border border-slate-100">
+            <i class="fas fa-info-circle mt-0.5 mr-2 text-slate-400"></i>
+            <div><strong>text/html (DataURL):</strong>
+              画像をBase64文字列化した状態でタグとしてコピーします。Officeアプリ等に「レイアウトを維持したまま画像付き」で貼り付けられます。</div>
+          </div>
         </div>
       </div>
 
@@ -243,23 +259,43 @@
 
       <div class="panel">
         <div class="flex flex-wrap gap-2 mb-2">
-          <button id="copyFileImgHtml"><i class="fas fa-file-code mr-2 text-blue-500"></i>file: IMG 単体 → HTML</button>
-          <button id="copyFileDivHtml"><i class="fas fa-folder-open mr-2 text-blue-500"></i>file: DIV（複数） →
-            HTML</button>
+          <button id="copyFileImgHtml" title="相対パスのままHTMLタグとしてコピーします"><i
+              class="fas fa-file-code mr-2 text-blue-500"></i>file: 相対パス → HTML</button>
+          <button id="copyFileDivHtml" title="相対パスの複数<img>を含む<div>としてコピーします"><i
+              class="fas fa-folder-open mr-2 text-blue-500"></i>file: DIV(相対パス) → HTML</button>
         </div>
         <div class="flex flex-wrap gap-2 mb-2">
-          <button id="copyFileImgDataUrlHtml"><i class="fas fa-bolt mr-2 text-yellow-500"></i>file: IMG 単体(DataURL) →
-            HTML</button>
-          <button id="copyFileDivDataUrlHtml"><i class="fas fa-bolt-lightning mr-2 text-yellow-500"></i>file: DIV
-            複数(DataURL) → HTML</button>
+          <button id="copyFileImgDataUrlHtml" title="ファイルをDataURLに変換してHTMLタグとしてコピーします"><i
+              class="fas fa-bolt mr-2 text-yellow-500"></i>file: DataURL化 → HTML</button>
+          <button id="copyFileDivDataUrlHtml" title="全画像をDataURL化してHTMLとしてコピーします"><i
+              class="fas fa-bolt-lightning mr-2 text-yellow-500"></i>file: DIV 複数(DataURL) → HTML</button>
         </div>
         <div class="flex flex-wrap gap-2">
-          <button id="copyFileRaw1"><i class="fas fa-file-export mr-2 text-emerald-500"></i>file: Blob 1枚</button>
-          <button id="copyFileRaw3"><i class="fas fa-file-zipper mr-2 text-emerald-500"></i>file: Blob 3枚</button>
-          <button id="copyFilePngViaCanvas1"><i class="fas fa-wand-magic-sparkles mr-2 text-purple-500"></i>file:
-            Canvas経由PNG(1)</button>
-          <button id="copyFilePngViaCanvas3"><i class="fas fa-wand-magic-sparkles mr-2 text-purple-500"></i>file:
-            Canvas経由PNG(3)</button>
+          <button id="copyFileRaw1" title="サーバーからfetchしたBlobをそのままコピーします"><i
+              class="fas fa-file-export mr-2 text-emerald-500"></i>file: Raw Blob (1)</button>
+          <button id="copyFileRaw3" title="複数のRaw Blobを一度にコピーします"><i
+              class="fas fa-file-zipper mr-2 text-emerald-500"></i>file: Raw Blob (3)</button>
+          <button id="copyFilePngViaCanvas1" title="Canvas経由でPNGに再変換してコピーします"><i
+              class="fas fa-wand-magic-sparkles mr-2 text-purple-500"></i>file: 再変換PNG (1)</button>
+          <button id="copyFilePngViaCanvas3" title="全画像をPNGに再変換して一度にコピーします"><i
+              class="fas fa-wand-magic-sparkles mr-2 text-purple-500"></i>file: 再変換PNG (3)</button>
+        </div>
+
+        <div class="mt-4 space-y-2 text-xs text-slate-500">
+          <div class="flex items-start bg-blue-50/50 p-2 rounded border border-blue-100">
+            <i class="fas fa-link mt-0.5 mr-2 text-blue-400"></i>
+            <div><strong>相対パス HTML:</strong> <code>src="image1_small.png"</code>
+              のままコピーします。貼り付け先が同じディレクトリ構成でないとリンク切れになります。</div>
+          </div>
+          <div class="flex items-start bg-yellow-50/50 p-2 rounded border border-yellow-100">
+            <i class="fas fa-bolt mt-0.5 mr-2 text-yellow-500"></i>
+            <div><strong>DataURL化 HTML:</strong> コピー直前に画像をBase64に変換してタグに埋め込みます。どこに貼り付けても画像が表示される最も堅牢なHTMLコピーです。</div>
+          </div>
+          <div class="flex items-start bg-emerald-50/50 p-2 rounded border border-emerald-100">
+            <i class="fas fa-microchip mt-0.5 mr-2 text-emerald-500"></i>
+            <div><strong>Raw Blob / 再変換PNG:</strong>
+              純粋なバイナリデータとしてコピーします。「Raw」はサーバーから取得した形式のまま、「再変換」はブラウザのCanvasで描き直したPNGを渡します。</div>
+          </div>
         </div>
       </div>
 

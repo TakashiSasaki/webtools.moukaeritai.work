@@ -44,11 +44,76 @@
       margin-top: 1.6em;
     }
 
-    button,
-    select {
+    button {
+      background: white;
+      border: 1px solid #e2e8f0;
+      color: #334155;
+      font-weight: 600;
       font-size: 14px;
-      padding: 6px 10px;
+      padding: 8px 16px;
       margin: 4px 6px 4px 0;
+      border-radius: 8px;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      outline: none;
+    }
+
+    button:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      color: #0f172a;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+      background: #f1f5f9;
+    }
+
+    /* Primary style for reload button */
+    #reloadFiles {
+      background: #6366f1;
+      color: white;
+      border-color: #4f46e5;
+    }
+
+    #reloadFiles:hover {
+      background: #4f46e5;
+      border-color: #4338ca;
+      color: white;
+    }
+
+    select {
+      background: white;
+      border: 1px solid #e2e8f0;
+      padding: 8px 32px 8px 12px;
+      margin: 4px 6px 4px 0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #334155;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 8px center;
+      background-repeat: no-repeat;
+      background-size: 1.25rem 1.25rem;
+      transition: all 0.2s;
+    }
+
+    select:hover {
+      border-color: #cbd5e1;
+    }
+
+    select:focus {
+      border-color: #6366f1;
+      outline: 2px solid #e0e7ff;
     }
 
     .note {
@@ -145,12 +210,13 @@
       <h2>A. data URL 生成画像（Canvas / IMG 同時表示）</h2>
       <div id="previewData" class="preview"></div>
       <div class="panel">
-        <div>
-          <button id="copyDataPng1">data: image/png（1 item）</button>
-          <button id="copyDataPng3">data: image/png（3 items）</button>
-          <button id="copyDataImgHtml">data: IMG 単体 → text/html</button>
-          <button id="copyDataDivHtml">data: DIV（複数 IMG）→ text/html</button>
-          <button id="copyDataImgsHtml">data: 複数 IMG（DIVなし）→ text/html</button>
+        <div class="flex flex-wrap gap-2">
+          <button id="copyDataPng1"><i class="fas fa-image mr-2 text-red-500"></i>data: image/png（1 item）</button>
+          <button id="copyDataPng3"><i class="fas fa-images mr-2 text-red-500"></i>data: image/png（3 items）</button>
+          <button id="copyDataImgHtml"><i class="fas fa-code mr-2 text-indigo-500"></i>data: IMG 単体 → HTML</button>
+          <button id="copyDataDivHtml"><i class="fas fa-layer-group mr-2 text-indigo-500"></i>data: DIV（複数） →
+            HTML</button>
+          <button id="copyDataImgsHtml"><i class="fas fa-tags mr-2 text-indigo-500"></i>data: 複数画像 → HTML</button>
         </div>
       </div>
 
@@ -166,7 +232,7 @@
           <option value="ico">ico</option>
           <option value="avif">avif</option>
         </select>
-        <button id="reloadFiles">選択した形式でファイル画像を再読み込み</button>
+        <button id="reloadFiles"><i class="fas fa-sync-alt mr-2"></i>選択した形式でファイル画像を再読み込み</button>
         <div class="note">※ Word などへの貼り付けは、通常 <code>text/html</code> が最も再現性高く複数画像を展開しやすいです。</div>
       </div>
 
@@ -176,19 +242,24 @@
       </div>
 
       <div class="panel">
-        <div>
-          <button id="copyFileImgHtml">file: IMG 単体 → text/html</button>
-          <button id="copyFileDivHtml">file: DIV（複数 IMG）→ text/html</button>
+        <div class="flex flex-wrap gap-2 mb-2">
+          <button id="copyFileImgHtml"><i class="fas fa-file-code mr-2 text-blue-500"></i>file: IMG 単体 → HTML</button>
+          <button id="copyFileDivHtml"><i class="fas fa-folder-open mr-2 text-blue-500"></i>file: DIV（複数） →
+            HTML</button>
         </div>
-        <div>
-          <button id="copyFileImgDataUrlHtml">file: IMG 単体(DataURL化) → text/html</button>
-          <button id="copyFileDivDataUrlHtml">file: DIV 複数(DataURL化) → text/html</button>
+        <div class="flex flex-wrap gap-2 mb-2">
+          <button id="copyFileImgDataUrlHtml"><i class="fas fa-bolt mr-2 text-yellow-500"></i>file: IMG 単体(DataURL) →
+            HTML</button>
+          <button id="copyFileDivDataUrlHtml"><i class="fas fa-bolt-lightning mr-2 text-yellow-500"></i>file: DIV
+            複数(DataURL) → HTML</button>
         </div>
-        <div>
-          <button id="copyFileRaw1">file: 画像バイト（fetch blob）1 item</button>
-          <button id="copyFileRaw3">file: 画像バイト（fetch blob）3 items</button>
-          <button id="copyFilePngViaCanvas1">file: Canvas経由でPNGに変換して1枚コピー（JPG/WebP等もPNGとして転送）</button>
-          <button id="copyFilePngViaCanvas3">file: Canvas経由でPNGに変換して3枚コピー（全画像をPNG化）</button>
+        <div class="flex flex-wrap gap-2">
+          <button id="copyFileRaw1"><i class="fas fa-file-export mr-2 text-emerald-500"></i>file: Blob 1枚</button>
+          <button id="copyFileRaw3"><i class="fas fa-file-zipper mr-2 text-emerald-500"></i>file: Blob 3枚</button>
+          <button id="copyFilePngViaCanvas1"><i class="fas fa-wand-magic-sparkles mr-2 text-purple-500"></i>file:
+            Canvas経由PNG(1)</button>
+          <button id="copyFilePngViaCanvas3"><i class="fas fa-wand-magic-sparkles mr-2 text-purple-500"></i>file:
+            Canvas経由PNG(3)</button>
         </div>
       </div>
 

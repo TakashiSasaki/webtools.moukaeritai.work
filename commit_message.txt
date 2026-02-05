@@ -1,7 +1,0 @@
-feat(web): move Drop Event Tester to its own subdirectory and add documentation
-
-- Relocated `drop.html` to `drop-event-tester/index.html`.
-- Created `drop-event-tester/readme.html` as a technical guide for the tool.
-- Updated the main `index.html` to point to the new tool subdirectory.
-- Added cross-linking between the tool and its documentation.
-- Updated the canonical URL and header navigation in the tool's index page.

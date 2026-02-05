@@ -1,28 +1,46 @@
-# Agent Workflow Notes
+# AGENTS.md (開発者・エージェント向けガイドライン)
 
-## Image Conversion Workflow for Experiments
-When the user provides large PNG files for experimental purposes, follow this workflow:
+この文書は、本リポジトリでの開発における基本原則、構成ルール、および特定のワークフローを定義します。
 
-1.  **Resize**: Create smaller versions (e.g., target file size < 100KB) of the images. **Important**: Always preserve the original high-resolution files and save resized versions with a suffix like `_small.png`.
-2.  **Multi-format Conversion**: From the resized (`_small`) images, generate the following formats to test browser compatibility and Clipboard API behavior:
-    *   **WebP**: High compression modern standard.
-    *   **JPG**: Standard lossy format.
-    *   **GIF**: Legacy index-color format.
-    *   **BMP**: Uncompressed Windows format.
-    *   **ICO**: Windows icon container including multiple sizes (16x16, 32x32, 48x48, 64x64).
-    *   **AVIF**: Next-generation high compression format (requires `pillow-avif-plugin`).
-3.  **Verification**: Check file sizes and ensure they meet the experiment's requirements.
-4.  **Version Control**: Commit the newly created files with clear, descriptive messages.
+## 1. プロジェクト概要
 
-This process ensures a consistent set of test assets for the web tools in this repository.
+- **目的**: ブラウザ単体で動作し、サーバーとの通信なしで完結する「ニッチで便利なツール」を提供します。
+- **公開先**: [https://webtools.moukaeritai.work/](https://webtools.moukaeritai.work/)
 
-# 以下の記述はこのドキュメント AGENTS.md に含めたい内容なので、あとでマージするべし。
+## 2. 開発基本ルール
 
-- このリポジトリは最終的に https://webtools.moukaeritai.work/ に公開される予定
-- ローカルサーバでのプレビューができるように、可能な限り相対パスでリンクする。
-- このリポジトリではブラウザ単体でサーバとの通信なく使用できるツールを公開している。
-- sitemap.xml には各ツールへのリンクと各ツールのドキュメントへのリンクを含めること。
-- サービスワーカーを作成し、サービスワーカーではオンラインならネットにアクセスしてコンテンツを取得し、オフラインならローカルストレージからコンテンツを取得する。
-- マニフェストを書いて、このウェブサイトをアプリとしてインストールできるようにする。
-- 新しいツールを書いた時にはサイトマップにも追加すること
-- 各ツールはメインの機能を実装する index.html と、その機能を説明する説明文を含む readme.html で構成する。
+### サイト構成
+- **相対パスの徹底**: GitHub Codespaces やローカル環境でのプレビューを容易にするため、内部リンクは可能な限り相対パスで記述してください。
+- **ツールの基本構成**: 各ツールは独立したディレクトリ内に配置し、以下の2ファイルで構成します。
+  - `index.html`: ツールのメイン機能の実装。
+  - `readme.html`: ツールの機能説明、技術的な仕様、および使い方の詳細。
+
+### メンテナンスと更新
+- **メインインデックスの更新**: 新しいツールを追加した際は、ルートの `index.html` に新しいツールカードを追加してください。
+- **サイトマップの自動更新**: 新しいツールやドキュメントを追加した際は、必ず `sitemap.xml` を更新し、ツール本体と `readme.html` の両方の URL を含めてください。
+
+## 3. PWA (Progressive Web App) 対応
+
+オフライン環境でもツールが動作し、ウェブアプリとしてインストール可能にするための取り組みです。
+
+- **サービスワーカー (`sw.js`)**:
+  - オンライン時はネットワークから最新のコンテンツを取得。
+  - オフライン時はキャッシュ（またはローカルストレージ）からコンテンツを返却するロジックを実装します。
+- **ウェブアプリ・マニフェスト**: プロジェクトをモバイルやデスクトップにインストール可能にするため、適切なマニフェストファイルを維持・更新します。
+
+## 4. 特定ワークフロー
+
+### 画像変換ワークフロー (実験用資産の作成)
+ユーザーが実験のために大きな画像ファイルを提供した場合、以下の手順に従ってください。
+
+1.  **リサイズ (Resize)**: ターゲットファイルサイズを 100KB 未満に抑えた縮小版を作成します。
+    - **重要**: 元の高品質ファイルは維持し、リサイズ版には `_small.png` などのサフィックスを付与してください。
+2.  **マルチフォーマット変換**: 縮小版画像をベースに、以下の各形式を生成します。
+    - **WebP**: 高圧縮な現代的標準形式。
+    - **JPG**: 標準的な非可逆圧縮形式。
+    - **GIF**: インデックスカラーによるレトロ/アニメーション形式。
+    - **BMP**: 非圧縮の Windows 標準形式。
+    - **ICO**: Windows アイコン（16x16, 32x32, 48x48, 64x64 を内包）。
+    - **AVIF**: 次世代の高圧縮形式。
+3.  **検証**: ファイルサイズが実験の要件を満たしているか確認します。
+4.  **バージョン管理**: 生成されたファイルは、明確で詳細なコミットメッセージと共に Git に追加してください。

@@ -44,3 +44,22 @@
     - **AVIF**: 次世代の高圧縮形式。
 3.  **検証**: ファイルサイズが実験の要件を満たしているか確認します。
 4.  **バージョン管理**: 生成されたファイルは、明確で詳細なコミットメッセージと共に Git に追加してください。
+
+## 5. サイトレイアウトとデザイン規定
+
+サイト全体で統一されたナビゲーションとデザインを維持するため、以下の規定に従ってください。
+
+### レイアウト共通化 (`<app-layout>`)
+- **Web Component の使用**: 全てのツールページは、`/js/components/app-layout.js` で定義された `<app-layout>` カスタム要素を使用してレイアウトを構成してください。
+- **実装方法**: `<body>` タグの直下でコンテンツ全体を `<app-layout>` タグで囲みます。内部コンテンツはコンポーネント内の `#main-slot` に自動的に移動されます。
+- **依存関係**: 各 `index.html` には以下の依存関係を必ず含めてください。
+  - `Tailwind CSS`: `<script src="https://cdn.tailwindcss.com"></script>`
+  - `Font Awesome 6.4.0`: `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">`
+  - `Layout Component`: `<script src="../js/components/app-layout.js"></script>` (パスは階層に応じる)
+
+### スタイル上の注意
+- **`body` スタイルの制限**: `app-layout` が独自のシェル（サイドバー＋メインエリア）を持つため、`body` に対して `display: flex`、`max-width`、`margin: auto`、`padding` などのレイアウトを制御するスタイルを適用しないでください。これらはレイアウトを崩す原因となります。
+- **レスポンシブ対応**: スマートフォン等の小画面ではサイドバーが隠れ、ハンバーガーメニューが表示される設計になっています。
+
+### PWA と CORS
+- **Service Worker (`sw.js`)**: 外部 CDN (Tailwind, Font Awesome) の読み込みを妨げないよう、Service Worker はクロスオリジンリクエストを無視するように設定されています。新しい外部リソースを追加する際は、`sw.js` のキャッシュ戦略に注意してください。

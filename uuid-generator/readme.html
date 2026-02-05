@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UUID v3/v5 Analyzer - Technical Readme</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .latex-font {
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        code {
+            font-family: 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', monospace;
+            background: #f1f5f9;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 leading-relaxed">
+    <div class="max-w-4xl mx-auto my-10 bg-white shadow-lg rounded-2xl overflow-hidden border border-slate-200">
+        <!-- Header -->
+        <div class="bg-slate-900 p-8 text-white">
+            <div class="flex items-center gap-4 mb-4">
+                <i class="fas fa-book-open text-blue-400 text-3xl"></i>
+                <h1 class="text-3xl font-bold">UUID v3/v5 Analyzer 解説書</h1>
+            </div>
+            <p class="text-slate-400">RFC 9562 準拠の名前ベース識別子生成と検証の技術詳解</p>
+        </div>
+
+        <nav class="p-6 bg-slate-100 border-b border-slate-200">
+            <h2 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">目次</h2>
+            <ul class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-blue-600 font-medium">
+                <li><a href="#overview" class="hover:underline">1. ツールの概要</a></li>
+                <li><a href="#name-based-uuid" class="hover:underline">2. 名前ベース UUID の原理</a></li>
+                <li><a href="#byte-order" class="hover:underline">3. バイトオーダーと Base64</a></li>
+                <li><a href="#implementation" class="hover:underline">4. 実装の技術的詳細</a></li>
+                <li><a href="#rfc-vectors" class="hover:underline">5. RFC 9562 テストベクタ</a></li>
+                <li><a href="#back-to-tool" class="hover:underline font-bold text-slate-900">→ ツール本体へ移動</a></li>
+            </ul>
+        </nav>
+
+        <div class="p-8 space-y-12">
+            <!-- Section 1 -->
+            <section id="overview">
+                <h2 class="text-2xl font-bold border-l-4 border-blue-500 pl-4 mb-6">1. ツールの概要</h2>
+                <p>
+                    本ツールは、名前ベースの UUID (Universally Unique Identifier) であるバージョン 3 (MD5) およびバージョン 5 (SHA-1) の生成プロセスを可視化し、
+                    標準的なライブラリ実装 (`uuid.js`) とネイティブなアルゴリズム実装の整合性を検証するための技術検証用アプリケーションです。
+                </p>
+                <div class="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200 text-sm text-amber-800">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    <strong>注意:</strong> 本ツールは教育および検証を目的としています。セキュリティ上、名前ベースの UUID を機密性の高い用途に使用する場合は、MD5 (v3) よりも SHA-1
+                    (v5) 以降の使用が推奨されます。
+                </div>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="name-based-uuid">
+                <h2 class="text-2xl font-bold border-l-4 border-blue-500 pl-4 mb-6">2. 名前ベース UUID の原理</h2>
+                <p>
+                    名前ベースの UUID は、ある「名前空間 (Namespace)」内の「名前 (Name)」に対して決定論的なハッシュを適用することで生成されます。
+                    生成式は概念的に以下のように定義されます：
+                </p>
+                <div class="my-6 p-4 bg-slate-900 text-white rounded-xl text-center latex-font">
+                    $UUID = \text{SetVersionAndVariant}(\text{Hash}(\text{NamespaceID} || \text{Name}))$
+                </div>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li><strong>NamespaceID</strong>: 16バイトのバイナリ表現。</li>
+                    <li><strong>||</strong>: バイト列の連結。</li>
+                    <li><strong>Hash</strong>: v3 の場合は MD5、v5 の場合は SHA-1。</li>
+                    <li><strong>SetVersionAndVariant</strong>: ハッシュの先頭16バイトを抽出し、RFC 規定のビット操作を行う。</li>
+                </ul>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="byte-order">
+                <h2 class="text-2xl font-bold border-l-4 border-blue-500 pl-4 mb-6">3. バイトオーダーと Base64</h2>
+                <p>
+                    RFC 4122 および RFC 9562 において、UUID のバイナリ形式は <strong>ネットワークバイトオーダー（ビッグエンディアン）</strong> で定義されています。
+                </p>
+                <h3 class="text-lg font-bold mt-4 mb-2">3.1 ネットワークバイトオーダーの意義</h3>
+                <p>
+                    UUID を 128 ビットの単一整数として解釈する場合、最上位バイト (MSB) が最初に格納されます。
+                    本ツールで出力される Base64 エンコーディング結果は、この 16 バイトのバイナリ配列をそのまま <code>btoa()</code> 等で変換したものです。
+                </p>
+                <h3 class="text-lg font-bold mt-4 mb-2">3.2 エンディアン変換の落とし穴</h3>
+                <p>
+                    リトルエンディアン環境（x86 等）のメモリ上で UUID フィールドを構造体として扱う際、一部のシステム（Microsoft GUID 等）では <code>time_low</code>,
+                    <code>time_mid</code> 等のフィールドをリトルエンディアンでメモリ保持するため、Base64 化する際にバイト順が入れ替わるミスが発生しがちです。
+                    本ツールでは、常に RFC 準拠のビッグエンディアン順での Base64 出力を提供します。
+                </p>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="implementation">
+                <h2 class="text-2xl font-bold border-l-4 border-blue-500 pl-4 mb-6">4. 実装の技術的詳細</h2>
+                <h3 class="text-lg font-bold mb-2">4.1 バージョンとバリアントの書き換え</h3>
+                <p>ハッシュ計算後、以下のビット操作が適用されます：</p>
+                <ul class="list-disc pl-6 space-y-2 mb-4">
+                    <li><strong>Version (4ビット)</strong>: 7番目のオクテットの上位4ビットを <code>3</code> または <code>5</code> に固定。</li>
+                    <li><strong>Variant (2ビット)</strong>: 9番目のオクテットの上位2ビットを <code>10</code> (バイナリ) に固定。これにより RFC 4122
+                        準拠を示します。</li>
+                </ul>
+                <h3 class="text-lg font-bold mb-2">4.2 MD5 (v3) の独自実装について</h3>
+                <p>
+                    モダンブラウザの <code>crypto.subtle</code> は MD5 をサポートしていません。
+                    本ツールの「Native モード」では、JavaScript のビット演算（<code>>>></code>, <code><<</code>, <code>|</code>）を用いて符号なし 32
+                    ビット演算をシミュレートし、
+                    バイト配列を直接処理する RFC 1321 互換の MD5 ロジックを実装しています。これにより、外部ライブラリと全く同一のハッシュ結果を得ることに成功しています。
+                </p>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="rfc-vectors">
+                <h2 class="text-2xl font-bold border-l-4 border-blue-500 pl-4 mb-6">5. RFC 9562 テストベクタ</h2>
+                <p>
+                    「LOAD RFC VECTOR」機能では、RFC 9562 で定義された最新のテスト用データを使用して動作を検証できます。
+                </p>
+                <div class="overflow-x-auto mt-4">
+                    <table class="w-full text-sm border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100">
+                                <th class="border p-2">Version</th>
+                                <th class="border p-2">Namespace (DNS)</th>
+                                <th class="border p-2">Name</th>
+                                <th class="border p-2">Expected UUID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border p-2 font-bold">v3</td>
+                                <td class="border p-2 font-mono">6ba7b810...</td>
+                                <td class="border p-2">www.example.com</td>
+                                <td class="border p-2 font-mono">5df41881-3aed-3515-88a7-2f4a814cf09e</td>
+                            </tr>
+                            <tr>
+                                <td class="border p-2 font-bold">v5</td>
+                                <td class="border p-2 font-mono">6ba7b810...</td>
+                                <td class="border p-2">www.example.com</td>
+                                <td class="border p-2 font-mono">2ed6657d-e927-568b-95e1-2665a8aea6a2</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <div id="back-to-tool" class="pt-10 flex justify-center border-t border-slate-100">
+                <a href="uuid_generator.html"
+                    class="bg-slate-900 text-white px-8 py-4 rounded-xl font-bold shadow-xl hover:bg-slate-800 transition-all flex items-center gap-3">
+                    <i class="fas fa-arrow-left"></i> ツール本体へ戻る
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="p-6 bg-slate-50 border-t border-slate-200 text-center text-xs text-slate-400">
+            &copy; 2024-2025 RFC 9562 Implementation Study Group
+        </footer>
+    </div>
+</body>
+
+</html>

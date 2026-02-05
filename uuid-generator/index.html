@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UUID v3/v5 Comparison Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .uuid-font {
+            font-family: 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+        }
+
+        .highlight-v {
+            color: #ef4444;
+            font-weight: bold;
+            border-bottom: 2px solid #ef4444;
+        }
+
+        .highlight-var {
+            color: #3b82f6;
+            font-weight: bold;
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        .animate-spin-slow {
+            animation: spin 3s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .segmented-control input:checked+div {
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            color: #0f172a;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 text-slate-900 min-h-screen p-2 md:p-6 flex items-center justify-center">
+    <div class="w-full max-w-4xl bg-white rounded-xl shadow-2xl overflow-hidden border border-slate-200">
+        <!-- Compact Header -->
+        <div class="bg-slate-900 px-5 py-3 text-white flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-fingerprint text-blue-400"></i>
+                <h1 class="text-sm font-bold uppercase tracking-widest">UUID v3/v5 Analyzer</h1>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="uuid_docs.html" class="text-[10px] text-slate-400 hover:text-white transition-colors">DOCS</a>
+                <button id="test-vector-btn"
+                    class="bg-blue-600 hover:bg-blue-500 text-[10px] font-bold px-3 py-1 rounded transition-all active:scale-95">
+                    LOAD RFC VECTOR
+                </button>
+            </div>
+        </div>
+
+        <div class="p-4 space-y-4">
+            <!-- Settings Row -->
+            <div class="flex flex-wrap gap-4 items-end border-b border-slate-100 pb-4">
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Algorithm</label>
+                    <div class="segmented-control flex p-1 bg-slate-100 rounded-lg w-32">
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="version" value="3" class="peer hidden" id="radio-v3">
+                            <div
+                                class="text-center text-xs font-bold py-1 rounded-md text-slate-500 transition-all peer-checked:text-slate-900 peer-checked:bg-white peer-checked:shadow-sm">
+                                v3</div>
+                        </label>
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="version" value="5" class="peer hidden" id="radio-v5" checked>
+                            <div
+                                class="text-center text-xs font-bold py-1 rounded-md text-slate-500 transition-all peer-checked:text-slate-900 peer-checked:bg-white peer-checked:shadow-sm">
+                                v5</div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Mode</label>
+                    <div class="segmented-control flex p-1 bg-slate-100 rounded-lg w-40">
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="impl" value="library" class="peer hidden" id="impl-lib" checked>
+                            <div
+                                class="text-center text-xs font-bold py-1 rounded-md text-slate-500 transition-all peer-checked:text-slate-900 peer-checked:bg-white peer-checked:shadow-sm">
+                                Library</div>
+                        </label>
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="impl" value="native" class="peer hidden" id="impl-nat">
+                            <div
+                                class="text-center text-xs font-bold py-1 rounded-md text-slate-500 transition-all peer-checked:text-slate-900 peer-checked:bg-white peer-checked:shadow-sm">
+                                Native</div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex-1 min-w-[200px] space-y-1.5">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Namespace</label>
+                    <select id="ns-preset"
+                        class="w-full p-1.5 bg-slate-50 border border-slate-200 rounded-lg outline-none text-xs uuid-font">
+                        <option value="6ba7b810-9dad-11d1-80b4-00c04fd430c8">DNS (6ba7b810...)</option>
+                        <option value="6ba7b811-9dad-11d1-80b4-00c04fd430c8">URL (6ba7b811...)</option>
+                        <option value="6ba7b812-9dad-11d1-80b4-00c04fd430c8">OID (6ba7b812...)</option>
+                        <option value="6ba7b814-9dad-11d1-80b4-00c04fd430c8">X.500 (6ba7b814...)</option>
+                        <option value="custom">-- CUSTOM --</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Inputs -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div id="custom-ns-container" class="hidden">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Custom Namespace UUID</label>
+                    <input type="text" id="ns-custom" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                        class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg uuid-font text-xs mt-1">
+                </div>
+                <div class="md:col-span-full">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Name String</label>
+                    <div class="flex gap-2 mt-1">
+                        <input type="text" id="name-input" placeholder="e.g., www.example.com"
+                            class="flex-1 p-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-1 focus:ring-slate-400 outline-none text-sm">
+                        <button id="gen-btn"
+                            class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-6 py-2 rounded-lg text-sm transition-all flex items-center gap-2">
+                            <i class="fas fa-play text-[10px]" id="gen-icon"></i> RUN
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compact Results -->
+            <div id="result-area" class="hidden animate-in fade-in duration-300 space-y-3 pt-2">
+                <div id="match-status"
+                    class="px-3 py-1.5 rounded-lg border flex items-center justify-between text-[11px] font-bold">
+                    <span id="match-text">READY</span>
+                    <i id="match-icon" class="fas"></i>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <!-- Hex Result -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+                        <div class="px-3 py-1 bg-slate-100 border-b border-slate-200 flex justify-between items-center">
+                            <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Hex
+                                String</span>
+                            <button onclick="copyToClipboard('result-text')"
+                                class="text-slate-400 hover:text-slate-600 p-1"><i
+                                    class="fas fa-copy text-xs"></i></button>
+                        </div>
+                        <div id="result-text"
+                            class="p-3 text-sm font-bold uuid-font tracking-tight break-all text-slate-800 text-center">
+                        </div>
+                    </div>
+                    <!-- Base64 Result -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+                        <div class="px-3 py-1 bg-slate-100 border-b border-slate-200 flex justify-between items-center">
+                            <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Base64 (Network
+                                Order)</span>
+                            <button onclick="copyToClipboard('result-base64')"
+                                class="text-slate-400 hover:text-slate-600 p-1"><i
+                                    class="fas fa-copy text-xs"></i></button>
+                        </div>
+                        <div id="result-base64"
+                            class="p-3 text-sm font-bold uuid-font tracking-tight break-all text-slate-800 text-center">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="p-2 border border-slate-100 rounded-lg bg-white shadow-sm">
+                        <div class="text-[9px] font-bold text-slate-400 uppercase mb-1">Inspector</div>
+                        <div id="inspector-ui"
+                            class="uuid-font text-[11px] leading-none break-all p-2 bg-slate-50 rounded"></div>
+                        <div class="flex gap-4 mt-2 text-[9px]">
+                            <span class="flex items-center gap-1"><span
+                                    class="w-2 h-2 bg-red-500 rounded-full"></span>Ver: <span id="info-ver"
+                                    class="font-bold text-red-600"></span></span>
+                            <span class="flex items-center gap-1"><span
+                                    class="w-2 h-2 bg-blue-500 rounded-full"></span>Var: <span id="info-var"
+                                    class="font-bold text-blue-600"></span></span>
+                        </div>
+                    </div>
+                    <div
+                        class="p-2 border border-slate-100 rounded-lg bg-white shadow-sm flex flex-col justify-center gap-1 text-[10px]">
+                        <div class="flex justify-between border-b border-slate-50 pb-1">
+                            <span class="text-slate-400">uuid.js:</span>
+                            <span id="val-lib" class="uuid-font font-bold truncate max-w-[150px]"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Native:</span>
+                            <span id="val-nat" class="uuid-font font-bold truncate max-w-[150px]"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"
+        class="fixed bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-slate-800 text-white text-xs rounded-full opacity-0 transition-opacity pointer-events-none z-50">
+        Copied!</div>
+
+    <script type="module">
+        import { v3 as libV3, v5 as libV5, parse, stringify } from 'https://jspm.dev/uuid';
+
+        function md5_bytes(data) {
+            const rotateLeft = (lValue, iShiftBits) => (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits));
+            const addUnsigned = (lX, lY) => {
+                const lX8 = lX & 0x80000000; const lY8 = lY & 0x80000000;
+                const lX4 = lX & 0x40000000; const lY4 = lY & 0x40000000;
+                const lResult = (lX & 0x3FFFFFFF) + (lY & 0x3FFFFFFF);
+                if (lX4 & lY4) return lResult ^ 0x80000000 ^ lX8 ^ lY8;
+                if (lX4 | lY4) {
+                    if (lResult & 0x40000000) return lResult ^ 0xC0000000 ^ lX8 ^ lY8;
+                    return lResult ^ 0x40000000 ^ lX8 ^ lY8;
+                }
+                return lResult ^ lX8 ^ lY8;
+            };
+            const F = (x, y, z) => (x & y) | (~x & z);
+            const G = (x, y, z) => (x & z) | (y & ~z);
+            const H = (x, y, z) => x ^ y ^ z;
+            const I = (x, y, z) => y ^ (x | ~z);
+            const FF = (a, b, c, d, x, s, ac) => { a = addUnsigned(a, addUnsigned(addUnsigned(F(b, c, d), x), ac)); return addUnsigned(rotateLeft(a, s), b); };
+            const GG = (a, b, c, d, x, s, ac) => { a = addUnsigned(a, addUnsigned(addUnsigned(G(b, c, d), x), ac)); return addUnsigned(rotateLeft(a, s), b); };
+            const HH = (a, b, c, d, x, s, ac) => { a = addUnsigned(a, addUnsigned(addUnsigned(H(b, c, d), x), ac)); return addUnsigned(rotateLeft(a, s), b); };
+            const II = (a, b, c, d, x, s, ac) => { a = addUnsigned(a, addUnsigned(addUnsigned(I(b, c, d), x), ac)); return addUnsigned(rotateLeft(a, s), b); };
+            const convertToWords = (bytes) => {
+                const wordCount = ((bytes.length + 8) >> 6) + 1;
+                const words = new Int32Array(wordCount * 16);
+                for (let i = 0; i < bytes.length; i++) { words[i >> 2] |= bytes[i] << ((i % 4) * 8); }
+                words[bytes.length >> 2] |= 0x80 << ((bytes.length % 4) * 8);
+                words[(words.length - 2)] = bytes.length * 8;
+                return words;
+            };
+            const x = convertToWords(data);
+            let a = 0x67452301, b = 0xEFCDAB89, c = 0x98BADCFE, d = 0x10325476;
+            for (let k = 0; k < x.length; k += 16) {
+                let aa = a, bb = b, cc = c, dd = d;
+                a = FF(a, b, c, d, x[k + 0], 7, 0xD76AA478); d = FF(d, a, b, c, x[k + 1], 12, 0xE8C7B756); c = FF(c, d, a, b, x[k + 2], 17, 0x242070DB); b = FF(b, c, d, a, x[k + 3], 22, 0xC1BDCEEE);
+                a = FF(a, b, c, d, x[k + 4], 7, 0xF57C0FAF); d = FF(d, a, b, c, x[k + 5], 12, 0x4787C62A); c = FF(c, d, a, b, x[k + 6], 17, 0xA8304613); b = FF(b, c, d, a, x[k + 7], 22, 0xFD469501);
+                a = FF(a, b, c, d, x[k + 8], 7, 0x698098D8); d = FF(d, a, b, c, x[k + 9], 12, 0x8B44F7AF); c = FF(c, d, a, b, x[k + 10], 17, 0xFFFF5BB1); b = FF(b, c, d, a, x[k + 11], 22, 0x895CD7BE);
+                a = FF(a, b, c, d, x[k + 12], 7, 0x6B901122); d = FF(d, a, b, c, x[k + 13], 12, 0xFD987193); c = FF(c, d, a, b, x[k + 14], 17, 0xA679438E); b = FF(b, c, d, a, x[k + 15], 22, 0x49B40821);
+                a = GG(a, b, c, d, x[k + 1], 5, 0xF61E2562); d = GG(d, a, b, c, x[k + 6], 9, 0xC040B340); c = GG(c, d, a, b, x[k + 11], 14, 0x265E5A51); b = GG(b, c, d, a, x[k + 0], 20, 0xE9B6C7AA);
+                a = GG(a, b, c, d, x[k + 5], 5, 0xD62F105D); d = GG(d, a, b, c, x[k + 10], 9, 0x02441453); c = GG(c, d, a, b, x[k + 15], 14, 0xD8A1E681); b = GG(b, c, d, a, x[k + 4], 20, 0xE7D3FBC8);
+                a = GG(a, b, c, d, x[k + 9], 5, 0x21E1CDE6); d = GG(d, a, b, c, x[k + 14], 9, 0xC33707D6); c = GG(c, d, a, b, x[k + 3], 14, 0xF4D50D87); b = GG(b, c, d, a, x[k + 8], 20, 0x455A14ED);
+                a = GG(a, b, c, d, x[k + 13], 5, 0xA9E3E905); d = GG(d, a, b, c, x[k + 2], 9, 0xFCEFA3F8); c = GG(c, d, a, b, x[k + 7], 14, 0x676F02D9); b = GG(b, c, d, a, x[k + 12], 20, 0x8D2A4C8A);
+                a = HH(a, b, c, d, x[k + 5], 4, 0xFFFA3942); d = HH(d, a, b, c, x[k + 8], 11, 0x8771F681); c = HH(c, d, a, b, x[k + 11], 16, 0x6D9D6122); b = HH(b, c, d, a, x[k + 14], 23, 0xFDE5380C);
+                a = HH(a, b, c, d, x[k + 1], 4, 0xA4BEEA44); d = HH(d, a, b, c, x[k + 4], 11, 0x4BDECFA9); c = HH(c, d, a, b, x[k + 7], 16, 0xF6BB4B60); b = HH(b, c, d, a, x[k + 10], 23, 0xBEBFBC70);
+                a = HH(a, b, c, d, x[k + 13], 4, 0x289B7EC6); d = HH(d, a, b, c, x[k + 0], 11, 0xEAA127FA); c = HH(c, d, a, b, x[k + 3], 16, 0xD4EF3085); b = HH(b, c, d, a, x[k + 6], 23, 0x04881D05);
+                a = HH(a, b, c, d, x[k + 9], 4, 0xD9D4D039); d = HH(d, a, b, c, x[k + 12], 11, 0xE6DB99E5); c = HH(c, d, a, b, x[k + 15], 16, 0x1FA27CF8); b = HH(b, c, d, a, x[k + 2], 23, 0xC4AC5665);
+                a = II(a, b, c, d, x[k + 0], 6, 0xF4292244); d = II(d, a, b, c, x[k + 7], 10, 0x432AFF97); c = II(c, d, a, b, x[k + 14], 15, 0xAB9423A7); b = II(b, c, d, a, x[k + 5], 21, 0xFC93A039);
+                a = II(a, b, c, d, x[k + 12], 6, 0x655B59C3); d = II(d, a, b, c, x[k + 3], 10, 0x8F0CCC92); c = II(c, d, a, b, x[k + 10], 15, 0xFFEFF47D); b = II(b, c, d, a, x[k + 1], 21, 0x85845DD1);
+                a = II(a, b, c, d, x[k + 8], 6, 0x6FA87E4F); d = II(d, a, b, c, x[k + 15], 10, 0xFE2CE6E0); c = II(c, d, a, b, x[k + 6], 15, 0xA3014314); b = II(b, c, d, a, x[k + 13], 21, 0x4E0811A1);
+                a = II(a, b, c, d, x[k + 4], 6, 0xF7537E82); d = II(d, a, b, c, x[k + 11], 10, 0xBD3AF235); c = II(c, d, a, b, x[k + 2], 15, 0x2AD7D2BB); b = II(b, c, d, a, x[k + 9], 21, 0xEB86D391);
+                a = addUnsigned(a, aa); b = addUnsigned(b, bb); c = addUnsigned(c, cc); d = addUnsigned(d, dd);
+            }
+            const res = new Uint8Array(16);
+            for (let i = 0; i < 4; i++) {
+                const val = [a, b, c, d][i];
+                res[i * 4] = val & 0xFF; res[i * 4 + 1] = (val >>> 8) & 0xFF; res[i * 4 + 2] = (val >>> 16) & 0xFF; res[i * 4 + 3] = (val >>> 24) & 0xFF;
+            }
+            return res;
+        }
+
+        function bytesToBase64(bytes) {
+            let binary = '';
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary);
+        }
+
+        async function nativeUUIDBytes(version, nsBytes, name) {
+            const nameBytes = new TextEncoder().encode(name);
+            const data = new Uint8Array(nsBytes.length + nameBytes.length);
+            data.set(nsBytes); data.set(nameBytes, nsBytes.length);
+            let hash;
+            if (version === '5') {
+                const buffer = await crypto.subtle.digest('SHA-1', data);
+                hash = new Uint8Array(buffer).slice(0, 16);
+            } else { hash = md5_bytes(data); }
+            hash[6] = (hash[6] & 0x0f) | (parseInt(version) << 4);
+            hash[8] = (hash[8] & 0x3f) | 0x80;
+            return hash;
+        }
+
+        window.copyToClipboard = function (elementId) {
+            const text = document.getElementById(elementId).textContent;
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            textArea.style.top = "0";
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                if (document.execCommand('copy')) {
+                    const toast = document.getElementById('toast');
+                    toast.classList.replace('opacity-0', 'opacity-100');
+                    setTimeout(() => toast.classList.replace('opacity-100', 'opacity-0'), 2000);
+                }
+            } catch (err) { }
+            document.body.removeChild(textArea);
+        };
+
+        const RFC_VECTORS = {
+            v3: { name: 'www.example.com', ns: '6ba7b810-9dad-11d1-80b4-00c04fd430c8', expected: '5df41881-3aed-3515-88a7-2f4a814cf09e' },
+            v5: { name: 'www.example.com', ns: '6ba7b810-9dad-11d1-80b4-00c04fd430c8', expected: '2ed6657d-e927-568b-95e1-2665a8aea6a2' }
+        };
+
+        const dom = {
+            btn: document.getElementById('gen-btn'),
+            genIcon: document.getElementById('gen-icon'),
+            testBtn: document.getElementById('test-vector-btn'),
+            nsPreset: document.getElementById('ns-preset'),
+            nsCustom: document.getElementById('ns-custom'),
+            nsContainer: document.getElementById('custom-ns-container'),
+            nameInput: document.getElementById('name-input'),
+            resultArea: document.getElementById('result-area'),
+            resultText: document.getElementById('result-text'),
+            resultBase64: document.getElementById('result-base64'),
+            inspector: document.getElementById('inspector-ui'),
+            infoVer: document.getElementById('info-ver'),
+            infoVar: document.getElementById('info-var'),
+            matchStatus: document.getElementById('match-status'),
+            matchText: document.getElementById('match-text'),
+            matchIcon: document.getElementById('match-icon'),
+            valLib: document.getElementById('val-lib'),
+            valNat: document.getElementById('val-nat'),
+            implLabel: document.getElementById('impl-label')
+        };
+
+        dom.nsPreset.addEventListener('change', () => dom.nsContainer.classList.toggle('hidden', dom.nsPreset.value !== 'custom'));
+        dom.testBtn.addEventListener('click', () => {
+            const version = document.querySelector('input[name="version"]:checked').value;
+            const vector = RFC_VECTORS[`v${version}`];
+            dom.nsPreset.value = vector.ns;
+            dom.nsContainer.classList.add('hidden');
+            dom.nameInput.value = vector.name;
+            generate();
+        });
+        dom.btn.addEventListener('click', generate);
+
+        async function generate() {
+            const version = document.querySelector('input[name="version"]:checked').value;
+            const implMode = document.querySelector('input[name="impl"]:checked').value;
+            const nsStr = dom.nsPreset.value === 'custom' ? dom.nsCustom.value.trim() : dom.nsPreset.value;
+            const name = dom.nameInput.value;
+            if (!name || !nsStr) return alert("Input missing.");
+
+            dom.genIcon.classList.add('animate-spin-slow');
+
+            setTimeout(async () => {
+                try {
+                    const nsBytes = parse(nsStr);
+                    // Library calculation
+                    const resLib = version === '3' ? libV3(name, nsBytes) : libV5(name, nsBytes);
+                    // Native calculation (returns bytes)
+                    const resNatBytes = await nativeUUIDBytes(version, nsBytes, name);
+                    const resNat = stringify(resNatBytes);
+
+                    dom.resultArea.classList.remove('hidden');
+
+                    // Selected active results
+                    const activeBytes = implMode === 'library' ? parse(resLib) : resNatBytes;
+                    const activeHex = implMode === 'library' ? resLib : resNat;
+
+                    dom.resultText.textContent = activeHex;
+                    dom.resultBase64.textContent = bytesToBase64(activeBytes);
+                    dom.implLabel.textContent = implMode.toUpperCase();
+
+                    dom.valLib.textContent = resLib;
+                    dom.valNat.textContent = resNat;
+
+                    const isMatch = resLib.toLowerCase() === resNat.toLowerCase();
+                    const vector = RFC_VECTORS[`v${version}`];
+                    const matchesRfc = nsStr.toLowerCase() === vector.ns.toLowerCase() && name === vector.name && activeHex.toLowerCase() === vector.expected.toLowerCase();
+
+                    if (isMatch) {
+                        dom.matchStatus.className = "px-3 py-1.5 rounded-lg border flex items-center justify-between text-[11px] font-bold bg-green-50 border-green-100 text-green-700 shadow-sm";
+                        dom.matchText.textContent = matchesRfc ? `RFC v${version} OK & MATCH` : "IMPLEMENTATIONS MATCH";
+                        dom.matchIcon.className = "fas fa-check-circle";
+                    } else {
+                        dom.matchStatus.className = "px-3 py-1.5 rounded-lg border flex items-center justify-between text-[11px] font-bold bg-amber-50 border-amber-100 text-amber-700 shadow-sm";
+                        dom.matchText.textContent = "MISMATCH DETECTED";
+                        dom.matchIcon.className = "fas fa-exclamation-triangle";
+                    }
+
+                    const parts = activeHex.split('');
+                    let html = '';
+                    parts.forEach((char, i) => {
+                        if (i === 14) { html += `<span class="highlight-v">${char}</span>`; dom.infoVer.textContent = char; }
+                        else if (i === 19) { html += `<span class="highlight-var">${char}</span>`; dom.infoVar.textContent = char.toUpperCase(); }
+                        else { html += `<span class="text-slate-700">${char}</span>`; }
+                    });
+                    dom.inspector.innerHTML = html;
+                } catch (err) { alert("Invalid Namespace."); }
+                dom.genIcon.classList.remove('animate-spin-slow');
+            }, 50);
+        }
+    </script>
+</body>
+
+</html>

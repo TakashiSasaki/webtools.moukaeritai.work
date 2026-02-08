@@ -1,4 +1,4 @@
 [submodule "moukaeritai-pictgram"]
-	path = moukaeritai-pictgram
+	path = assets/images
 	url = https://github.com/TakashiSasaki/world
 	branch = moukaeritai-pictgram

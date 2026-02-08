@@ -13,85 +13,85 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://webtools.moukaeritai.work/loopback-addresses/</loc>
+    <loc>https://webtools.moukaeritai.work/tools/loopback-addresses/</loc>
     <lastmod>2025-12-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://webtools.moukaeritai.work/private-ports/</loc>
+    <loc>https://webtools.moukaeritai.work/tools/private-ports/</loc>
     <lastmod>2026-01-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://webtools.moukaeritai.work/drop-event-tester/</loc>
+    <loc>https://webtools.moukaeritai.work/tools/drop-event-tester/</loc>
     <lastmod>2026-02-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://webtools.moukaeritai.work/drop-event-tester/readme.html</loc>
+    <loc>https://webtools.moukaeritai.work/tools/drop-event-tester/readme.html</loc>
     <lastmod>2026-02-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://webtools.moukaeritai.work/clipboard/</loc>
+    <loc>https://webtools.moukaeritai.work/tools/clipboard/</loc>
     <lastmod>2025-12-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://webtools.moukaeritai.work/android-app-link/</loc>
+    <loc>https://webtools.moukaeritai.work/tools/android-app-link/</loc>
     <lastmod>2026-02-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://webtools.moukaeritai.work/uuid-v3-v5-generator/</loc>
+    <loc>https://webtools.moukaeritai.work/tools/uuid-v3-v5-generator/</loc>
     <lastmod>2026-02-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://webtools.moukaeritai.work/uuid-v3-v5-generator/readme.html</loc>
+    <loc>https://webtools.moukaeritai.work/tools/uuid-v3-v5-generator/readme.html</loc>
     <lastmod>2026-02-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://webtools.moukaeritai.work/uuid-v4-generator/</loc>
+    <loc>https://webtools.moukaeritai.work/tools/uuid-v4-generator/</loc>
     <lastmod>2026-02-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://webtools.moukaeritai.work/uuid-v4-generator/readme.html</loc>
+    <loc>https://webtools.moukaeritai.work/tools/uuid-v4-generator/readme.html</loc>
     <lastmod>2026-02-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://webtools.moukaeritai.work/micropython/</loc>
+    <loc>https://webtools.moukaeritai.work/tools/micropython/</loc>
     <lastmod>2026-02-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://webtools.moukaeritai.work/pyodide/</loc>
+    <loc>https://webtools.moukaeritai.work/tools/pyodide/</loc>
     <lastmod>2026-02-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://webtools.moukaeritai.work/web-nfc-tester/</loc>
+    <loc>https://webtools.moukaeritai.work/tools/web-nfc-tester/</loc>
     <lastmod>2026-02-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://webtools.moukaeritai.work/web-nfc-tester/readme.html</loc>
+    <loc>https://webtools.moukaeritai.work/tools/web-nfc-tester/readme.html</loc>
     <lastmod>2026-02-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

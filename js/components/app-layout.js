@@ -3,16 +3,16 @@ class AppLayout extends HTMLElement {
         super();
         this.menuItems = [
             { name: 'Home', path: '/', icon: 'fa-home' },
-            { name: 'Loopback Addr', path: '/loopback-addresses/', icon: 'fa-network-wired' },
-            { name: 'Private Ports', path: '/private-ports/', icon: 'fa-server' },
-            { name: 'UUID v4', path: '/uuid-v4-generator/', icon: 'fa-random' },
-            { name: 'UUID v3/v5', path: '/uuid-v3-v5-generator/', icon: 'fa-fingerprint' },
-            { name: 'Drop Tester', path: '/drop-event-tester/', icon: 'fa-box-open' },
-            { name: 'Clipboard API', path: '/clipboard/', icon: 'fa-clipboard' },
-            { name: 'App Link', path: '/android-app-link/', icon: 'fa-link' },
-            { name: 'Web NFC', path: '/web-nfc-tester/', icon: 'fa-rss' },
-            { name: 'MicroPython', path: '/micropython/', icon: 'fa-python' },
-            { name: 'Pyodide', path: '/pyodide/', icon: 'fa-cubes' }
+            { name: 'Loopback Addr', path: '/tools/loopback-addresses/', icon: 'fa-network-wired' },
+            { name: 'Private Ports', path: '/tools/private-ports/', icon: 'fa-server' },
+            { name: 'UUID v4', path: '/tools/uuid-v4-generator/', icon: 'fa-random' },
+            { name: 'UUID v3/v5', path: '/tools/uuid-v3-v5-generator/', icon: 'fa-fingerprint' },
+            { name: 'Drop Tester', path: '/tools/drop-event-tester/', icon: 'fa-box-open' },
+            { name: 'Clipboard API', path: '/tools/clipboard/', icon: 'fa-clipboard' },
+            { name: 'App Link', path: '/tools/android-app-link/', icon: 'fa-link' },
+            { name: 'Web NFC', path: '/tools/web-nfc-tester/', icon: 'fa-rss' },
+            { name: 'MicroPython', path: '/tools/micropython/', icon: 'fa-python' },
+            { name: 'Pyodide', path: '/tools/pyodide/', icon: 'fa-cubes' }
         ];
     }
 

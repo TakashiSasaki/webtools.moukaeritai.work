@@ -107,6 +107,31 @@
                 <li>その他: バイナリデータとしてサイズを表示</li>
             </ul>
 
+            <h2>API で取得可能な情報</h2>
+            <p>
+                Web NFC API の <code>onreading</code> イベントで取得できる情報は以下に限定されます。
+            </p>
+            <ul>
+                <li><strong>serialNumber:</strong> タグの固有識別子 (UID)。コロン区切りの16進数文字列</li>
+                <li><strong>message.records:</strong> NDEF レコードの配列（recordType, data, encoding, lang, mediaType, id）</li>
+            </ul>
+
+            <h2>API の制限事項</h2>
+            <blockquote style="border-left-color: #f59e0b; background-color: #fffbeb; color: #92400e;">
+                <strong>⚠️ 重要:</strong> Web NFC API はセキュリティとプライバシーのために高レベル抽象化されており、以下の情報は<strong>取得できません</strong>。
+            </blockquote>
+            <ul>
+                <li><strong>NFC技術タイプ:</strong> NFC-A (MIFARE)、NFC-F (FeliCa)、NFC-B、NFC-V の区別は不可</li>
+                <li><strong>タグの種類:</strong> MIFARE Classic、MIFARE Ultralight、FeliCa Lite 等の識別は不可</li>
+                <li><strong>ATQA/SAK:</strong> NFC-A のアンチコリジョン応答は取得不可</li>
+                <li><strong>IDm/PMm:</strong> FeliCa 固有の識別情報は取得不可</li>
+                <li><strong>メモリ容量:</strong> タグの総容量は取得不可</li>
+                <li><strong>低レベルコマンド:</strong> APDU コマンドの送信は不可（NDEF形式のみサポート）</li>
+            </ul>
+            <p>
+                NFC 技術タイプの識別やカード固有の詳細情報が必要な場合は、Android や iOS のネイティブアプリ開発が必要です。
+            </p>
+
             <div class="mt-12 pt-8 border-t border-slate-100 flex justify-between items-center text-sm text-slate-400">
                 <span>最終更新: 2026年2月</span>
                 <a href="index.html" class="text-emerald-600 font-bold hover:underline flex items-center gap-2">

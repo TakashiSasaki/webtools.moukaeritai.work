@@ -29,99 +29,81 @@
 
 <body class="bg-slate-50">
     <app-layout>
-        <div class="max-w-4xl mx-auto space-y-6">
+        <div class="max-w-4xl mx-auto space-y-4">
             <!-- Header -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                <div class="flex items-center gap-4 mb-4">
-                    <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600">
-                        <i class="fas fa-nfc-symbol fa-2xl"></i>
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600">
+                        <i class="fas fa-nfc-symbol fa-xl"></i>
                     </div>
-                    <div>
-                        <h1 class="text-2xl font-bold text-slate-900">Web NFC Tester</h1>
-                        <p class="text-slate-500">モバイル端末でのNFC読み取りテストツール</p>
+                    <div class="flex-1">
+                        <h1 class="text-xl font-bold text-slate-900">Web NFC Tester</h1>
+                        <p class="text-slate-500 text-sm">モバイル端末でのNFC読み取りテストツール</p>
                     </div>
-                    <div class="ml-auto">
-                        <a href="readme.html" class="text-slate-400 hover:text-emerald-500 transition-colors">
-                            <i class="fas fa-circle-info fa-xl"></i>
-                        </a>
-                    </div>
+                    <a href="readme.html" class="text-slate-400 hover:text-emerald-500 transition-colors">
+                        <i class="fas fa-circle-info fa-lg"></i>
+                    </a>
                 </div>
 
                 <!-- API Support Notice -->
-                <div id="support-notice" class="hidden p-4 rounded-xl mb-4">
-                    <div class="flex items-center gap-3">
+                <div id="support-notice" class="hidden p-3 rounded-xl mb-3 text-sm">
+                    <div class="flex items-center gap-2">
                         <i id="support-icon" class="fas fa-circle-exclamation"></i>
                         <span id="support-text" class="font-medium"></span>
                     </div>
                 </div>
 
-                <div class="flex flex-wrap gap-3">
+                <!-- Scan Buttons -->
+                <div class="flex gap-2">
                     <button id="start-scan"
-                        class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-200 disabled:opacity-50 disabled:shadow-none flex items-center gap-2">
+                        class="flex-1 px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-200 disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2">
                         <i class="fas fa-rss"></i>
                         スキャン開始
                     </button>
                     <button id="stop-scan"
-                        class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-red-200 hidden flex items-center gap-2">
+                        class="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-red-200 hidden items-center justify-center gap-2 nfc-animation">
                         <i class="fas fa-stop-circle"></i>
-                        停止
-                    </button>
-                    <button id="clear-logs"
-                        class="px-6 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition-all flex items-center gap-2">
-                        <i class="fas fa-trash-can"></i>
-                        ログ消去
+                        スキャン中... タップで停止
                     </button>
                 </div>
             </div>
 
-            <!-- Main Control & Logs -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Status Panel -->
-                <div class="md:col-span-1 space-y-6">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <h2 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">現在のステータス</h2>
-                        <div class="flex flex-col items-center justify-center py-8">
-                            <div id="status-indicator"
-                                class="w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center mb-4 transition-colors duration-500">
-                                <i id="status-icon" class="fas fa-mobile-screen fa-3xl text-slate-300"></i>
-                            </div>
-                            <div id="status-label" class="text-lg font-bold text-slate-700 text-center">待機中</div>
-                            <div id="status-desc" class="text-sm text-slate-400 text-center mt-1">「スキャン開始」を押してください</div>
-                        </div>
+            <!-- Device Info (Collapsed) -->
+            <details class="bg-white rounded-xl shadow-sm border border-slate-200">
+                <summary class="p-3 cursor-pointer text-sm font-bold text-slate-500 hover:text-slate-700">
+                    <i class="fas fa-info-circle mr-1"></i> デバイス情報
+                </summary>
+                <div class="px-4 pb-3 space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Web NFC API</span>
+                        <span id="info-api" class="font-mono font-bold">Checking...</span>
                     </div>
-
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <h2 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">デバイス情報</h2>
-                        <div class="space-y-3">
-                            <div class="flex justify-between text-sm">
-                                <span class="text-slate-500">Web NFC API</span>
-                                <span id="info-api" class="font-mono font-bold">Checking...</span>
-                            </div>
-                            <div class="flex justify-between text-sm">
-                                <span class="text-slate-500">User Agent</span>
-                                <span id="info-ua" class="font-mono text-[10px] text-right break-all ml-4"></span>
-                            </div>
-                        </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">User Agent</span>
+                        <span id="info-ua" class="font-mono text-[10px] text-right break-all ml-4"></span>
                     </div>
                 </div>
+            </details>
 
-                <!-- Log Panel -->
-                <div class="md:col-span-2">
-                    <div
-                        class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col min-h-[500px]">
-                        <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                            <h2 class="text-lg font-bold text-slate-800">読み取り記録</h2>
-                            <span id="log-count"
-                                class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-bold">0件</span>
-                        </div>
-                        <div id="logs" class="flex-1 p-4 space-y-4 overflow-y-auto max-h-[600px] bg-slate-50/50">
-                            <!-- Placeholder -->
-                            <div id="log-placeholder"
-                                class="h-full flex flex-col items-center justify-center text-slate-300 py-20">
-                                <i class="fas fa-list-ul fa-3xl mb-4"></i>
-                                <p>タグを読み取るとここに表示されます</p>
-                            </div>
-                        </div>
+            <!-- Log Panel -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-base font-bold text-slate-800">読み取り記録</h2>
+                        <span id="log-count"
+                            class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full text-xs font-bold">0件</span>
+                    </div>
+                    <button id="clear-logs"
+                        class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm font-medium rounded-lg transition-all flex items-center gap-1">
+                        <i class="fas fa-trash-can text-xs"></i>
+                        消去
+                    </button>
+                </div>
+                <div id="logs" class="p-3 space-y-3 overflow-y-auto max-h-[60vh] bg-slate-50/50">
+                    <!-- Placeholder -->
+                    <div id="log-placeholder" class="flex flex-col items-center justify-center text-slate-300 py-12">
+                        <i class="fas fa-tags fa-2xl mb-3"></i>
+                        <p class="text-sm">タグを読み取るとここに表示されます</p>
                     </div>
                 </div>
             </div>
@@ -135,10 +117,6 @@
         const logsContainer = document.getElementById('logs');
         const logPlaceholder = document.getElementById('log-placeholder');
         const logCountLabel = document.getElementById('log-count');
-        const statusIndicator = document.getElementById('status-indicator');
-        const statusIcon = document.getElementById('status-icon');
-        const statusLabel = document.getElementById('status-label');
-        const statusDesc = document.getElementById('status-desc');
         const infoApi = document.getElementById('info-api');
         const infoUa = document.getElementById('info-ua');
         const supportNotice = document.getElementById('support-notice');
@@ -177,8 +155,9 @@
 
                 await ndef.scan({ signal: ctrl.signal });
 
-                ndef.onreadingerror = () => {
-                    addLog('Error', 'タグの読み取りに失敗しました。', 'error');
+                ndef.onreadingerror = (event) => {
+                    console.log('Reading error event:', event);
+                    addLog('Error', 'タグの読み取りに失敗しました（NDEF非対応の可能性）', 'error');
                 };
 
                 ndef.onreading = ({ message, serialNumber }) => {
@@ -209,27 +188,16 @@
         function updateStatus(state, msg = '') {
             switch (state) {
                 case 'scanning':
-                    statusIndicator.className = 'w-24 h-24 rounded-full bg-emerald-500 flex items-center justify-center mb-4 nfc-animation shadow-lg shadow-emerald-200';
-                    statusIcon.className = 'fas fa-broadcast-tower fa-3xl text-white';
-                    statusLabel.textContent = 'スキャン中...';
-                    statusDesc.textContent = '端末をNFCタグにかざしてください';
                     startBtn.classList.add('hidden');
                     stopBtn.classList.remove('hidden');
+                    stopBtn.classList.add('flex');
                     break;
                 case 'error':
-                    statusIndicator.className = 'w-24 h-24 rounded-full bg-red-100 flex items-center justify-center mb-4';
-                    statusIcon.className = 'fas fa-triangle-exclamation fa-3xl text-red-500';
-                    statusLabel.textContent = 'エラー発生';
-                    statusDesc.textContent = msg || '権限がないかブロックされました';
                     startBtn.classList.remove('hidden');
                     stopBtn.classList.add('hidden');
                     startBtn.disabled = false;
                     break;
                 case 'idle':
-                    statusIndicator.className = 'w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center mb-4';
-                    statusIcon.className = 'fas fa-mobile-screen fa-3xl text-slate-300';
-                    statusLabel.textContent = '待機中';
-                    statusDesc.textContent = '「スキャン開始」を押してください';
                     startBtn.classList.remove('hidden');
                     stopBtn.classList.add('hidden');
                     startBtn.disabled = false;
@@ -240,9 +208,8 @@
         function processMessage(message, serialNumber) {
             const timestamp = new Date().toLocaleTimeString();
 
-            // Create Log Element
             const logEntry = document.createElement('div');
-            logEntry.className = 'bg-white p-5 rounded-xl border border-slate-200 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300';
+            logEntry.className = 'bg-white p-4 rounded-xl border border-slate-200 shadow-sm';
 
             let recordsHtml = '';
             for (const record of message.records) {
@@ -264,23 +231,21 @@
                 }
 
                 recordsHtml += `
-                    <div class="mt-3 pt-3 border-t border-slate-100">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="text-[10px] font-bold uppercase py-0.5 px-2 rounded bg-slate-100 text-slate-500">${type}</span>
-                        </div>
-                        <div class="text-sm font-mono break-all text-slate-700 font-bold">${content}</div>
+                    <div class="mt-2 pt-2 border-t border-slate-100">
+                        <span class="text-[10px] font-bold uppercase py-0.5 px-1.5 rounded bg-slate-100 text-slate-500">${type}</span>
+                        <div class="text-sm font-mono break-all text-slate-700 mt-1">${content}</div>
                     </div>
                 `;
             }
 
             logEntry.innerHTML = `
-                <div class="flex justify-between items-start mb-2">
+                <div class="flex justify-between items-start mb-1">
                     <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
                             <i class="fas fa-tag text-xs"></i>
                         </div>
                         <div>
-                            <div class="text-xs font-bold text-slate-400 uppercase">Serial Number</div>
+                            <div class="text-[10px] font-bold text-slate-400 uppercase">Serial</div>
                             <div class="text-sm font-mono font-bold text-slate-800">${serialNumber || 'Unknown'}</div>
                         </div>
                     </div>
@@ -297,18 +262,22 @@
         }
 
         function addLog(title, message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
             const logEntry = document.createElement('div');
             const colorClass = type === 'error' ? 'bg-red-50 border-red-100' : 'bg-blue-50 border-blue-100';
             const iconClass = type === 'error' ? 'fa-circle-xmark text-red-500' : 'fa-circle-info text-blue-500';
             const textColor = type === 'error' ? 'text-red-700' : 'text-blue-700';
 
-            logEntry.className = `${colorClass} p-4 rounded-xl border text-sm flex items-start gap-3`;
+            logEntry.className = `${colorClass} p-3 rounded-xl border text-sm`;
             logEntry.innerHTML = `
-                <i class="fas ${iconClass} mt-0.5"></i>
-                <div>
-                    <div class="font-bold ${textColor}">${title}</div>
-                    <div class="text-slate-600 mt-0.5">${message}</div>
+                <div class="flex justify-between items-start mb-1">
+                    <div class="flex items-center gap-2">
+                        <i class="fas ${iconClass}"></i>
+                        <span class="font-bold ${textColor}">${title}</span>
+                    </div>
+                    <span class="text-[10px] text-slate-400 font-mono">${timestamp}</span>
                 </div>
+                <div class="text-slate-600 text-xs pl-6">${message}</div>
             `;
 
             if (logPlaceholder && logPlaceholder.parentNode) logPlaceholder.remove();

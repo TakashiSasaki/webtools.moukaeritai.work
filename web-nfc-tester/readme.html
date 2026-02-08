@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web NFC Tester について - WebTools</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../js/components/app-layout.js"></script>
+    <style>
+        .prose h1 {
+            color: #0f172a;
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .prose h2 {
+            color: #1e293b;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .prose p {
+            color: #475569;
+            margin-bottom: 1rem;
+            line-height: 1.625;
+        }
+
+        .prose ul {
+            list-style-type: disc;
+            list-style-position: inside;
+            margin-bottom: 1rem;
+            color: #475569;
+        }
+
+        .prose ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .prose code {
+            background-color: #f1f5f9;
+            color: #4f46e5;
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+
+        .prose blockquote {
+            border-left: 4px solid #10b981;
+            background-color: #ecfdf5;
+            padding: 1rem;
+            font-style: italic;
+            color: #065f46;
+            margin-bottom: 1rem;
+            border-top-right-radius: 0.25rem;
+            border-bottom-right-radius: 0.25rem;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50">
+    <app-layout>
+        <div class="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-slate-200 prose">
+            <h1>Web NFC Tester について</h1>
+
+            <p>
+                Web NFC Tester は、ブラウザ標準の <code>Web NFC API</code> を使用して、物理的な NFC タグ（ICタグ）の内容を読み取り、その情報を技術的に解析するためのツールです。
+                開発者が、自身の端末で Web NFC がどのように動作するかを確認するためのテスト環境として設計されています。
+            </p>
+
+            <blockquote>
+                <strong>注意:</strong> このツールは執筆時点（2026年）でも、主に Android 版の Google Chrome などの一部のブラウザでのみ動作します。
+                iOS (iPhone/iPad) やデスクトップブラウザではサポートされていません。
+            </blockquote>
+
+            <h2>主な機能</h2>
+            <ul>
+                <li><strong>NFC読み取り (Scan):</strong> 近傍にある NFC タグを検出し、情報の取得を開始します。</li>
+                <li><strong>シリアル番号の取得:</strong> タグ固有の識別子 (UID) を表示します。</li>
+                <li><strong>NDEF レコード解析:</strong> タグに書き込まれている Text 形式や URL 形式のデータを抽出・表示します。</li>
+                <li><strong>ログ機能:</strong> 読み取った履歴をリスト形式で保持し、複数のタグを連続してテストできます。</li>
+            </ul>
+
+            <h2>動作要件</h2>
+            <ul>
+                <li><strong>対応端末/ブラウザ:</strong> Android (Chrome 89+ / Edge / Samsung Browser 等)</li>
+                <li><strong>ハードウェア:</strong> NFC 機能を搭載したデバイスであること</li>
+                <li><strong>設定:</strong> 端末の NFC 設定が「オン」になっていること</li>
+                <li><strong>セキュリティ:</strong> HTTPS 環境でのアクセス、およびユーザーの明示的な操作（ボタンクリック）による許可が必要です。</li>
+            </ul>
+
+            <h2>技術的な詳細</h2>
+            <p>
+                このツールは <code>NDEFReader</code> インターフェースを使用しています。
+                NFC タグには NDEF (NFC Data Exchange Format) という標準化されたデータ形式で情報が格納されており、本ツールは以下のレコードタイプを優先的にデコードします。
+            </p>
+            <ul>
+                <li><code>text</code>: プレーンテキストデータ</li>
+                <li><code>url</code>: WebサイトのURLなどのリンク</li>
+                <li>その他: バイナリデータとしてサイズを表示</li>
+            </ul>
+
+            <div class="mt-12 pt-8 border-t border-slate-100 flex justify-between items-center text-sm text-slate-400">
+                <span>最終更新: 2026年2月</span>
+                <a href="index.html" class="text-emerald-600 font-bold hover:underline flex items-center gap-2">
+                    <i class="fas fa-arrow-left"></i>
+                    ツールに戻る
+                </a>
+            </div>
+        </div>
+    </app-layout>
+</body>
+
+</html>

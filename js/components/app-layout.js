@@ -10,6 +10,7 @@ class AppLayout extends HTMLElement {
             { name: 'Drop Tester', path: '/drop-event-tester/', icon: 'fa-box-open' },
             { name: 'Clipboard API', path: '/clipboard/', icon: 'fa-clipboard' },
             { name: 'App Link', path: '/android-app-link/', icon: 'fa-link' },
+            { name: 'Web NFC', path: '/web-nfc-tester/', icon: 'fa-rss' },
             { name: 'MicroPython', path: '/micropython/', icon: 'fa-python' },
             { name: 'Pyodide', path: '/pyodide/', icon: 'fa-cubes' }
         ];

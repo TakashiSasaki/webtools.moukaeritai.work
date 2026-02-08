@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clipboard API Experiment Tool - README</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="../js/components/app-layout.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 leading-relaxed">
+    <app-layout>
+        <div class="max-w-4xl mx-auto px-4 py-8">
+            <header class="mb-12 text-center">
+                <h1 class="text-5xl font-extrabold mb-4 gradient-text">Clipboard API Experiment Tool</h1>
+                <p class="text-xl text-slate-600">Web Clipboard API のマルチプラットフォーム互換性ベンチマークツール</p>
+                <div class="mt-8">
+                    <a href="index.html"
+                        class="inline-flex items-center text-slate-600 hover:text-indigo-600 font-semibold bg-white px-4 py-2 rounded-xl transition-all shadow-sm border border-slate-200">
+                        <i class="fas fa-arrow-left mr-2"></i> ツール本体に戻る
+                    </a>
+                </div>
+            </header>
+
+            <section class="mb-12 bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-info-circle mr-3 text-indigo-500"></i>概要
+                </h2>
+                <p class="mb-4">
+                    このツールは、ブラウザの <code>Clipboard API</code> が生成するデータの挙動を、OS、ブラウザ、および貼り付け先アプリケーション（Word, Excel, Slack,
+                    Notion 等）の組み合わせによってどのように変化するかを詳細に検証・観測するための実験用ページです。
+                </p>
+                <p>
+                    特に、画像データを「Blobとしてコピーする」場合と「HTMLとしてコピーする」場合の違いや、複数アイテムの同時コピーに対する各種アプリケーションの反応をベンチマークすることを目的としています。
+                </p>
+            </section>
+
+            <section class="mb-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-magic mr-3 text-purple-500"></i>主な機能 (A)
+                    </h3>
+                    <h4 class="font-semibold text-indigo-600 mb-2 font-mono">Data URL 実験</h4>
+                    <ul class="space-y-2 text-slate-600 list-disc list-inside text-sm">
+                        <li>Canvas から動的に生成した PNG 画像の検証</li>
+                        <li>複数 <code>ClipboardItem</code> の同時書き込み</li>
+                        <li><code>text/html</code> 形式での data URL 画像展開</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-file-image mr-3 text-blue-500"></i>主な機能 (B)
+                    </h3>
+                    <h4 class="font-semibold text-indigo-600 mb-2 font-mono">ファイル画像実験</h4>
+                    <ul class="space-y-2 text-slate-600 list-disc list-inside text-sm">
+                        <li>多彩な形式の対応 (PNG, JPG, WebP, GIF, BMP, ICO, AVIF)</li>
+                        <li>外部ファイル参照の HTML コピー</li>
+                        <li>コピー直前のオンザフライ Data URL 変換</li>
+                        <li>Canvas 経由での PNG 再エンコード検証</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="mb-12 bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-vial mr-3 text-emerald-500"></i>使用方法
+                </h2>
+                <ol class="space-y-4">
+                    <li class="flex items-start">
+                        <span
+                            class="bg-emerald-100 text-emerald-700 rounded-full w-6 h-6 flex items-center justify-center font-bold mr-3 mt-1 text-xs">1</span>
+                        <div>
+                            <p class="font-semibold">ローカルサーバーの起動</p>
+                            <p class="text-slate-600 text-sm">安全性のため <code>file://</code> プロトコルでは Clipboard API
+                                が制限されます。<code>localhost</code> 等で配信してブラウザで開いてください。</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <span
+                            class="bg-emerald-100 text-emerald-700 rounded-full w-6 h-6 flex items-center justify-center font-bold mr-3 mt-1 text-xs">2</span>
+                        <div>
+                            <p class="font-semibold">コピー操作の実行</p>
+                            <p class="text-slate-600 text-sm">
+                                ページ内の各ボタンをクリックして、クリップボードにデータを書き込みます。下部の「ログ」エリアに詳細なバイト数や結果が表示されます。</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <span
+                            class="bg-emerald-100 text-emerald-700 rounded-full w-6 h-6 flex items-center justify-center font-bold mr-3 mt-1 text-xs">3</span>
+                        <div>
+                            <p class="font-semibold">貼り付け先での観測</p>
+                            <p class="text-slate-600 text-sm">Word, Google Docs, Notion, Slack 等に <code>Ctrl+V</code>
+                                し、画像が表示されるか、リンク切れにならないか等を確認します。</p>
+                        </div>
+                    </li>
+                </ol>
+            </section>
+
+            <footer class="text-center text-slate-400 text-xs">
+                <p>&copy; 2026 Takashi Sasaki - webtools.moukaeritai.work</p>
+            </footer>
+        </div>
+    </app-layout>
+</body>
+
+</html>

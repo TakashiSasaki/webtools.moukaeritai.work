@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UUID v4 Generator - Technical Readme</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        code {
+            font-family: 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', monospace;
+            background: #f1f5f9;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-slate-800 leading-relaxed">
+    <div class="max-w-4xl mx-auto my-10 bg-white shadow-lg rounded-2xl overflow-hidden border border-slate-200">
+        <!-- Header -->
+        <div class="bg-slate-900 p-8 text-white">
+            <div class="flex items-center gap-4 mb-4">
+                <i class="fas fa-book-open text-emerald-400 text-3xl"></i>
+                <h1 class="text-3xl font-bold">UUID v4 Generator 解説書</h1>
+            </div>
+            <p class="text-slate-400">RFC 9562 (旧 RFC 4122) 準拠の完全ランダムな識別子生成の技術詳解</p>
+        </div>
+
+        <nav class="p-6 bg-slate-100 border-b border-slate-200">
+            <h2 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">目次</h2>
+            <ul class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-indigo-600 font-medium">
+                <li><a href="#overview" class="hover:underline">1. UUID v4 とは</a></li>
+                <li><a href="#structure" class="hover:underline">2. ビット構造とフォーマット</a></li>
+                <li><a href="#entropy" class="hover:underline">3. エントロピーと衝突の確率</a></li>
+                <li><a href="#back-to-tool" class="hover:underline font-bold text-slate-900">→ ツール本体へ移動</a></li>
+            </ul>
+        </nav>
+
+        <div class="p-8 space-y-12">
+            <section id="overview">
+                <h2 class="text-2xl font-bold border-l-4 border-emerald-500 pl-4 mb-6">1. UUID v4 とは</h2>
+                <p>
+                    UUID Version 4 は、完全にランダムな値に基づいて生成される 128 ビットの識別子です。
+                    タイムスタンプや MAC アドレスを使用する Version 1 や、特定の名前空間と名前に基づく Version 3/5 とは異なり、
+                    入力値に依存せず、生成されるたびに異なる値を持つことが期待されます。
+                </p>
+                <div class="mt-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100 text-sm text-emerald-800">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    RFC 9562 において、Version 4 は「Randomly Generated UUIDs」として定義されています。
+                </div>
+            </section>
+
+            <section id="structure">
+                <h2 class="text-2xl font-bold border-l-4 border-emerald-500 pl-4 mb-6">2. ビット構造とフォーマット</h2>
+                <p>
+                    128 ビットのうち、特定のビットはバージョンとバリアントを示すために予約されています。
+                </p>
+                <div class="mt-6 overflow-x-auto text-sm">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200">
+                                <th class="p-3">位置 (Hex)</th>
+                                <th class="p-3">目的</th>
+                                <th class="p-3">値の条件</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="p-3 font-mono">13番目</td>
+                                <td class="p-3">Version</td>
+                                <td class="p-3 text-red-600 font-bold">4</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-mono">17番目</td>
+                                <td class="p-3">Variant</td>
+                                <td class="p-3 text-blue-600 font-bold">8, 9, A, B のいずれか</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="mt-6">
+                    バリアントビットの上位 2 ビットは常に <code>10</code> に固定されます（RFC 9562 バリアント）。
+                    そのため、16進数表記では 8 (1000), 9 (1001), A (1010), B (1011) のいずれかで始まります。
+                </p>
+            </section>
+
+            <section id="entropy">
+                <h2 class="text-2xl font-bold border-l-4 border-emerald-500 pl-4 mb-6">3. エントロピーと衝突の確率</h2>
+                <p>
+                    UUID v4 では、128 ビットのうち 122 ビットがランダムに使用可能です。
+                </p>
+                <div class="mt-4 p-6 bg-slate-900 rounded-2xl text-slate-300 font-mono text-xs leading-relaxed">
+                    Total possible IDs: 2^122 ≈ 5.3 × 10^36
+                </div>
+                <p class="mt-4 text-sm">
+                    この膨大な数により、意図的に衝突を発生させることは天文学的に困難であり、分散システムにおいて中央集権的な ID 発行局なしに一意な ID を生成するために広く利用されています。
+                </p>
+            </section>
+
+            <div id="back-to-tool" class="pt-10 flex justify-center border-t border-slate-100">
+                <a href="index.html"
+                    class="bg-slate-900 text-white px-8 py-4 rounded-xl font-bold shadow-xl hover:bg-slate-800 transition-all flex items-center gap-3">
+                    <i class="fas fa-arrow-left"></i> ツール本体へ戻る
+                </a>
+            </div>
+        </div>
+
+        <footer class="p-6 bg-slate-50 border-t border-slate-200 text-center text-xs text-slate-400">
+            &copy; 2024-2025 WebTools hosted on webtools.moukaeritai.work
+        </footer>
+    </div>
+</body>
+
+</html>

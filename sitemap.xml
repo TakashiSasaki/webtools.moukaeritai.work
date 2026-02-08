@@ -2,27 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://webtools.moukaeritai.work/</loc>
-    <lastmod>2025-12-20</lastmod>
+    <lastmod>2026-02-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://webtools.moukaeritai.work/index.html</loc>
-    <lastmod>2025-12-20</lastmod>
+    <lastmod>2026-02-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://webtools.moukaeritai.work/127.html</loc>
-    <lastmod>2025-12-19</lastmod>
+    <loc>https://webtools.moukaeritai.work/loopback-addresses/</loc>
+    <lastmod>2025-12-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://webtools.moukaeritai.work/drop.html</loc>
-    <lastmod>2025-12-19</lastmod>
+    <loc>https://webtools.moukaeritai.work/private-ports/</loc>
+    <lastmod>2026-01-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://webtools.moukaeritai.work/drop-event-tester/</loc>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://webtools.moukaeritai.work/drop-event-tester/readme.html</loc>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://webtools.moukaeritai.work/clipboard/</loc>
@@ -31,9 +43,45 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://webtools.moukaeritai.work/android/</loc>
-    <lastmod>2025-12-20</lastmod>
+    <loc>https://webtools.moukaeritai.work/android-app-link/</loc>
+    <lastmod>2026-02-05</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://webtools.moukaeritai.work/uuid-v3-v5-generator/</loc>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://webtools.moukaeritai.work/uuid-v3-v5-generator/readme.html</loc>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://webtools.moukaeritai.work/uuid-v4-generator/</loc>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://webtools.moukaeritai.work/uuid-v4-generator/readme.html</loc>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://webtools.moukaeritai.work/micropython/</loc>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://webtools.moukaeritai.work/pyodide/</loc>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 </urlset>

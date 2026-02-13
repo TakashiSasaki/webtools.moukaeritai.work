@@ -1,10 +1,10 @@
-const CACHE_NAME = 'webtools-v1.0.11';
+const CACHE_NAME = 'webtools-v1.0.12';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
-    '/manifest.json',
-    '/icons/icon-64x64.png',
-    '/icons/icon-512x512.png'
+    '/manifest.json'
+    // '/icons/icon-64x64.png',
+    // '/icons/icon-512x512.png'
 ];
 
 // Install Event

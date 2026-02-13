@@ -31,10 +31,8 @@ const clearImageBtn = document.getElementById('clear-image-btn');
 const availableModels = [
     { value: "gemini-robotics-er-1.5", text: "Gemini Robotics-ER 1.5", group: "others" },
     { value: "gemini-robotics-er-1.5-preview", text: "Gemini Robotics-ER 1.5 (Preview)", group: "others" },
-    { value: "gemini-2.0-flash-thinking-preview-01-21", text: "Gemini 2.0 Flash Thinking", group: "v20" }, // Classified as v20/others depending on logic
+    { value: "gemini-2.0-flash-thinking-exp", text: "Gemini 2.0 Flash Thinking", group: "v20" }, // Classified as v20/others depending on logic
     { value: "gemini-2.0-flash-exp-image-generation", text: "Gemini 2.0 Flash Image Gen", group: "v20" },
-    { value: "gemini-2.5-flash-preview-tts", text: "Gemini 2.5 Flash TTS", group: "v25" },
-    { value: "gemini-2.5-pro-preview-tts", text: "Gemini 2.5 Pro TTS", group: "v25" },
     { value: "deep-research-pro-preview-12-2025", text: "Deep Research Pro", group: "others" },
     { value: "gemini-3-pro-preview", text: "Gemini 3 Pro (Preview)", group: "v3" },
     { value: "gemini-3-flash-preview", text: "Gemini 3 Flash (Preview)", group: "v3" },
@@ -297,7 +295,10 @@ function appendMessage(role, text, modelId, imageData = null, save = true) {
 async function fetchAIResponse(prompt, retryCount = 0, imageData = null) {
     const maxRetries = 5;
     const backoffTimes = [1000, 2000, 4000, 8000, 16000];
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${config.model}:generateContent?key=${config.apiKey}`;
+
+    // Use v1alpha for experimental/thinking models, v1beta for others
+    const apiVersion = config.model.includes('thinking') ? 'v1alpha' : 'v1beta';
+    const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${config.model}:generateContent?key=${config.apiKey}`;
 
     const parts = [{ text: prompt }];
     if (imageData) {
@@ -503,6 +504,21 @@ document.getElementById('copy-models-btn').onclick = () => {
     navigator.clipboard.writeText(ids).then(() => {
         showToast("IDs Copied to Clipboard", "📋");
     });
+};
+
+document.getElementById('paste-send-btn').onclick = async () => {
+    try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+            userInput.value = text;
+            handleSubmission();
+        } else {
+            showToast("Clipboard is empty", "⚠️");
+        }
+    } catch (err) {
+        console.error('Failed to read clipboard:', err);
+        showToast("Clipboard access denied", "❌");
+    }
 };
 
 sendBtn.onclick = handleSubmission;

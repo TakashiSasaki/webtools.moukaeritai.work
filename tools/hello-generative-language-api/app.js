@@ -5,12 +5,13 @@ let config = {
 
 let currentSidebarTab = 'v25';
 const modelStats = JSON.parse(localStorage.getItem('playground_v6_stats') || "{}");
-let messageHistory = JSON.parse(localStorage.getItem('playground_v6_history') || "[]");
+let messageHistory = JSON.parse(localStorage.getItem('playground_v6_history') || "{}");
+if (Array.isArray(messageHistory)) messageHistory = {};
 
 const chatWindow = document.getElementById('chat-window');
 const userInput = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
-const modelSelect = document.getElementById('model-select');
+// const modelSelect = document.getElementById('model-select'); // Removed
 const modelListContainer = document.getElementById('model-list');
 const loadingIndicator = document.getElementById('loading-indicator');
 const statusBadge = document.getElementById('status-badge');
@@ -26,12 +27,46 @@ const imagePreviewContainer = document.getElementById('image-preview-container')
 const imagePreview = document.getElementById('image-preview');
 const clearImageBtn = document.getElementById('clear-image-btn');
 
+// Defined models manually since we removed the select element
+const availableModels = [
+    { value: "gemini-robotics-er-1.5", text: "Gemini Robotics-ER 1.5", group: "others" },
+    { value: "gemini-robotics-er-1.5-preview", text: "Gemini Robotics-ER 1.5 (Preview)", group: "others" },
+    { value: "gemini-2.0-flash-thinking-preview-01-21", text: "Gemini 2.0 Flash Thinking", group: "v20" }, // Classified as v20/others depending on logic
+    { value: "gemini-2.0-flash-exp-image-generation", text: "Gemini 2.0 Flash Image Gen", group: "v20" },
+    { value: "gemini-2.5-flash-preview-tts", text: "Gemini 2.5 Flash TTS", group: "v25" },
+    { value: "gemini-2.5-pro-preview-tts", text: "Gemini 2.5 Pro TTS", group: "v25" },
+    { value: "deep-research-pro-preview-12-2025", text: "Deep Research Pro", group: "others" },
+    { value: "gemini-3-pro-preview", text: "Gemini 3 Pro (Preview)", group: "v3" },
+    { value: "gemini-3-flash-preview", text: "Gemini 3 Flash (Preview)", group: "v3" },
+    { value: "gemini-3-pro-image-preview", text: "Gemini 3 Pro Image (Preview)", group: "v3" },
+    { value: "nano-banana-pro-preview", text: "Nano Banana Pro (Preview)", group: "v3" },
+    { value: "gemini-2.5-pro", text: "Gemini 2.5 Pro", group: "v25" },
+    { value: "gemini-2.5-flash", text: "Gemini 2.5 Flash", group: "v25" },
+    { value: "gemini-2.5-flash-preview-09-2025", text: "Gemini 2.5 Flash (09-2025)", group: "v25" },
+    { value: "gemini-2.0-flash", text: "Gemini 2.0 Flash", group: "v20" },
+    { value: "gemini-2.0-flash-001", text: "Gemini 2.0 Flash (001)", group: "v20" },
+    { value: "gemini-2.0-flash-lite", text: "Gemini 2.0 Flash-Lite", group: "v20" },
+    { value: "gemini-2.0-flash-lite-001", text: "Gemini 2.0 Flash-Lite (001)", group: "v20" },
+    { value: "gemini-2.5-flash-lite", text: "Gemini 2.5 Flash-Lite", group: "v25" },
+    { value: "gemini-2.5-flash-lite-preview-09-2025", text: "Gemini 2.5 Flash-Lite (09-2025)", group: "v25" },
+    { value: "gemini-2.5-flash-image", text: "Gemini 2.5 Flash Image", group: "v25" },
+    { value: "gemini-exp-1206", text: "Gemini Exp 1206", group: "others" },
+    { value: "gemma-3-27b-it", text: "Gemma 3 27B", group: "gemma" },
+    { value: "gemma-3-12b-it", text: "Gemma 3 12B", group: "gemma" },
+    { value: "gemma-3-4b-it", text: "Gemma 3 4B", group: "gemma" },
+    { value: "gemma-3-1b-it", text: "Gemma 3 1B", group: "gemma" },
+    { value: "gemma-3-27b-n-it", text: "Gemma 3N 27B", group: "gemma" },
+    { value: "gemma-3n-e4b-it", text: "Gemma 3N E4B", group: "gemma" },
+    { value: "gemma-3n-e2b-it", text: "Gemma 3N E2B", group: "gemma" }
+];
+
 // --- UI Logic ---
 
 function setSidebarTab(tab) {
     currentSidebarTab = tab;
     initSidebar();
     refreshSidebar();
+    restoreHistory();
 }
 
 function refreshSidebarTabsUI() {
@@ -51,8 +86,7 @@ function initSidebar() {
     refreshSidebarTabsUI();
     modelListContainer.innerHTML = '';
 
-    const allOptions = Array.from(modelSelect.querySelectorAll('option'));
-    const filtered = allOptions.filter(opt => {
+    const filtered = availableModels.filter(opt => {
         const val = opt.value.toLowerCase();
         if (currentSidebarTab === 'v3') return val.includes('gemini-3') || val.includes('nano-banana');
         if (currentSidebarTab === 'v25') return val.includes('gemini-2.5');
@@ -77,9 +111,10 @@ function initSidebar() {
         item.className = `sidebar-item p-3 rounded-xl cursor-pointer hover:bg-slate-100 border border-transparent mb-1 ${config.model === opt.value ? 'active' : ''}`;
         item.onclick = () => {
             config.model = opt.value;
-            modelSelect.value = opt.value;
+            // modelSelect.value = opt.value; // Removed
             localStorage.setItem('playground_v6_model', opt.value);
             refreshSidebar();
+            restoreHistory();
             showToast(`Model: ${opt.value}`, "⚙️");
         };
 
@@ -160,28 +195,24 @@ function refreshUIState() {
         sendBtn.disabled = false;
     }
     apiKeyInput.value = config.apiKey;
-    modelSelect.value = config.model;
+    // modelSelect.value = config.model; // Removed
     refreshSidebar();
 }
+
+
+
 
 
 
 function restoreHistory() {
     chatWindow.innerHTML = '';
 
-    if (messageHistory.length === 0) {
-        chatWindow.innerHTML = `
-            <div id="setup-notice" class="${config.apiKey ? 'hidden' : ''} bg-amber-50 border border-amber-100 rounded-2xl p-6 text-center">
-                <p class="text-amber-900 font-bold mb-2 text-sm">System Integration</p>
-                <p class="text-amber-700 text-[11px] mb-4 leading-relaxed">
-                    Gemini Robotics-ER 1.5 などの特殊モデルを含むマルチモデル環境です。<br>APIキーを設定して開始してください。
-                </p>
-            </div>
-        `;
-        return;
-    }
+    // Reload history from storage to ensure we have the latest
+    const rawHistory = JSON.parse(localStorage.getItem('playground_v6_history') || "{}");
+    messageHistory = Array.isArray(rawHistory) ? {} : rawHistory;
+    const currentModelHistory = messageHistory[config.model] || [];
 
-    // Always keep the setup notice present (though hidden) for logic consistency
+    // Always restore the setup notice (hidden if API key is set)
     const setupNotice = document.createElement('div');
     setupNotice.id = 'setup-notice';
     setupNotice.className = `${config.apiKey ? 'hidden' : ''} bg-amber-50 border border-amber-100 rounded-2xl p-6 text-center mb-6`;
@@ -193,14 +224,16 @@ function restoreHistory() {
     `;
     chatWindow.appendChild(setupNotice);
 
-    messageHistory.forEach(msg => {
-        appendMessage(msg.role, msg.text, msg.modelId, msg.imageData, false);
-    });
+    if (currentModelHistory.length > 0) {
+        currentModelHistory.forEach(msg => {
+            appendMessage(msg.role, msg.text, msg.modelId, msg.imageData, false);
+        });
 
-    // Scroll to bottom after restore
-    setTimeout(() => {
-        chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'auto' });
-    }, 100);
+        // Scroll to bottom after restore
+        setTimeout(() => {
+            chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'auto' });
+        }, 100);
+    }
 }
 
 function appendMessage(role, text, modelId, imageData = null, save = true) {
@@ -235,15 +268,25 @@ function appendMessage(role, text, modelId, imageData = null, save = true) {
     chatWindow.appendChild(container);
 
     if (save) {
-        messageHistory.push({ role, text, modelId, imageData });
+        // Ensure we are working with the latest history state
+        let historySnapshot = JSON.parse(localStorage.getItem('playground_v6_history') || "{}");
+        if (Array.isArray(historySnapshot)) historySnapshot = {};
+        if (!historySnapshot[config.model]) {
+            historySnapshot[config.model] = [];
+        }
+        historySnapshot[config.model].push({ role, text, modelId, imageData });
+
         try {
-            localStorage.setItem('playground_v6_history', JSON.stringify(messageHistory));
-        } catch (e) {
-            // Handle quota exceeded if history gets too big
-            if (messageHistory.length > 50) {
-                messageHistory = messageHistory.slice(-50); // Keep last 50
-                localStorage.setItem('playground_v6_history', JSON.stringify(messageHistory));
+            // Check total size rough estimate or limit per model
+            if (historySnapshot[config.model].length > 50) {
+                historySnapshot[config.model] = historySnapshot[config.model].slice(-50);
             }
+            localStorage.setItem('playground_v6_history', JSON.stringify(historySnapshot));
+            // Update local variable
+            messageHistory = historySnapshot;
+        } catch (e) {
+            console.error("Storage limit exceeded", e);
+            // Emergency trimming could go here
         }
     }
 
@@ -345,11 +388,7 @@ function clearImage() {
 
 // --- Listeners ---
 
-modelSelect.onchange = (e) => {
-    config.model = e.target.value;
-    localStorage.setItem('playground_v6_model', config.model);
-    showToast(`Model: ${config.model}`, "⚙️");
-};
+// modelSelect.onchange = ... // Removed
 
 document.getElementById('settings-btn').onclick = () => settingsModal.classList.remove('hidden');
 document.getElementById('close-settings').onclick = () => settingsModal.classList.add('hidden');
@@ -380,7 +419,7 @@ document.getElementById('clear-key-btn').onclick = () => {
 
 document.getElementById('clear-history-btn').onclick = () => {
     if (confirm("Clear chat history?")) {
-        messageHistory = [];
+        messageHistory = {};
         localStorage.removeItem('playground_v6_history');
         restoreHistory();
         showToast("History Cleared", "🧹");
@@ -461,7 +500,7 @@ document.getElementById('close-models').onclick = () => {
 };
 
 document.getElementById('copy-models-btn').onclick = () => {
-    const ids = Array.from(modelSelect.querySelectorAll('option')).map(opt => opt.value).join('\n');
+    const ids = availableModels.map(opt => opt.value).join('\n');
     navigator.clipboard.writeText(ids).then(() => {
         showToast("IDs Copied to Clipboard", "📋");
     });

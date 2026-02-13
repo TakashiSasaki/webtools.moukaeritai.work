@@ -3,7 +3,7 @@ let config = {
     model: localStorage.getItem('playground_v6_model') || "gemini-2.5-flash-preview-09-2025"
 };
 
-let currentSidebarTab = 'gemini';
+let currentSidebarTab = 'v25';
 const modelStats = JSON.parse(localStorage.getItem('playground_v6_stats') || "{}");
 
 const chatWindow = document.getElementById('chat-window');
@@ -18,6 +18,7 @@ const settingsModal = document.getElementById('settings-modal');
 const apiKeyInput = document.getElementById('api-key-input');
 const toast = document.getElementById('toast');
 const toastText = document.getElementById('toast-text');
+const copyChatModelsBtn = document.getElementById('copy-chat-models-btn');
 
 // --- UI Logic ---
 
@@ -28,14 +29,14 @@ function setSidebarTab(tab) {
 }
 
 function refreshSidebarTabsUI() {
-    const tabs = ['gemini', 'gemma', 'others'];
+    const tabs = ['v3', 'v25', 'v20', 'gemma', 'others'];
     tabs.forEach(t => {
         const btn = document.getElementById(`tab-${t}`);
         if (!btn) return;
         if (t === currentSidebarTab) {
-            btn.className = "flex-1 py-1.5 text-[10px] font-bold rounded-lg bg-amber-600 text-white shadow-sm";
+            btn.className = "py-1.5 text-[9px] font-bold rounded-lg bg-amber-600 text-white shadow-sm";
         } else {
-            btn.className = "flex-1 py-1.5 text-[10px] font-bold rounded-lg bg-slate-100 text-slate-500 hover:bg-slate-200";
+            btn.className = "py-1.5 text-[9px] font-bold rounded-lg bg-slate-100 text-slate-500 hover:bg-slate-200";
         }
     });
 }
@@ -47,10 +48,15 @@ function initSidebar() {
     const allOptions = Array.from(modelSelect.querySelectorAll('option'));
     const filtered = allOptions.filter(opt => {
         const val = opt.value.toLowerCase();
-        const text = opt.text.toLowerCase();
-        if (currentSidebarTab === 'gemini') return val.includes('gemini');
+        if (currentSidebarTab === 'v3') return val.includes('gemini-3') || val.includes('nano-banana');
+        if (currentSidebarTab === 'v25') return val.includes('gemini-2.5');
+        if (currentSidebarTab === 'v20') return val.includes('gemini-2.0');
         if (currentSidebarTab === 'gemma') return val.includes('gemma');
-        if (currentSidebarTab === 'others') return !val.includes('gemini') && !val.includes('gemma');
+        if (currentSidebarTab === 'others') {
+            return !val.includes('gemini-3') && !val.includes('nano-banana') &&
+                !val.includes('gemini-2.5') && !val.includes('gemini-2.0') &&
+                !val.includes('gemma');
+        }
         return false;
     });
 
@@ -77,7 +83,7 @@ function initSidebar() {
 
         item.innerHTML = `
             <div class="flex items-center gap-2 mb-1">
-                <div class="w-1.5 h-1.5 rounded-full ${statusColor}"></div>
+                <div class="status-dot w-1.5 h-1.5 rounded-full ${statusColor}"></div>
                 <span class="text-[11px] font-bold text-slate-700 truncate">${opt.text}</span>
             </div>
             <p class="text-[10px] text-slate-400 last-output-preview italic leading-tight">
@@ -99,9 +105,9 @@ function refreshSidebar() {
     for (const [mId, stat] of Object.entries(modelStats)) {
         const item = document.getElementById(`sidebar-item-${mId}`);
         if (item) {
-            const dot = item.querySelector('.w-1.5');
+            const dot = item.querySelector('.status-dot');
             const preview = item.querySelector('.last-output-preview');
-            dot.className = `w-1.5 h-1.5 rounded-full ${stat.error ? 'bg-rose-500' : 'bg-emerald-500'}`;
+            dot.className = `status-dot w-1.5 h-1.5 rounded-full ${stat.error ? 'bg-rose-500' : 'bg-emerald-500'}`;
             preview.innerText = stat.text;
             if (stat.error) {
                 preview.classList.add('text-rose-400');
@@ -285,6 +291,21 @@ document.getElementById('list-models-btn').onclick = async () => {
         const data = await response.json();
 
         if (data.models) {
+            const chatModelIds = data.models
+                .filter(m => m.supportedGenerationMethods.includes('generateContent'))
+                .map(m => m.name.replace('models/', ''));
+
+            if (chatModelIds.length > 0) {
+                copyChatModelsBtn.classList.remove('hidden');
+                copyChatModelsBtn.onclick = () => {
+                    navigator.clipboard.writeText(chatModelIds.join('\n')).then(() => {
+                        showToast("Chat IDs Copied", "📋");
+                    });
+                };
+            } else {
+                copyChatModelsBtn.classList.add('hidden');
+            }
+
             data.models.forEach(model => {
                 const isInteractive = model.supportedGenerationMethods.includes('generateContent');
                 const card = document.createElement('div');
@@ -297,9 +318,9 @@ document.getElementById('list-models-btn').onclick = async () => {
                         <span class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter bg-white px-1.5 py-0.5 rounded border border-slate-100">${model.version || 'v?'}</span>
                     </div>
                     <h4 class="text-sm font-bold text-slate-800 leading-tight">${model.displayName}</h4>
-                    <p class="text-[11px] text-slate-500 leading-relaxed mt-1">${model.description}</p>
+                    <p class="text-[11px] text-slate-500 leading-relaxed mt-1">${model.description || 'No description available.'}</p>
                     <div class="flex flex-wrap gap-2 mt-2">
-                        ${model.supportedGenerationMethods.map(m => {
+                        ${(model.supportedGenerationMethods || []).map(m => {
                     const isTarget = m === 'generateContent';
                     return `<span class="text-[9px] font-bold ${isTarget ? 'bg-amber-600 text-white' : 'bg-slate-200 text-slate-600'} px-1.5 py-0.5 rounded">${m}</span>`;
                 }).join('')}

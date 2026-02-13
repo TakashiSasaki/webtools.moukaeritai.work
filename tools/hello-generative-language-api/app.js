@@ -55,7 +55,6 @@ const availableModels = [
     { value: "gemma-3-12b-it", text: "Gemma 3 12B", group: "gemma" },
     { value: "gemma-3-4b-it", text: "Gemma 3 4B", group: "gemma" },
     { value: "gemma-3-1b-it", text: "Gemma 3 1B", group: "gemma" },
-    { value: "gemma-3-27b-n-it", text: "Gemma 3N 27B", group: "gemma" },
     { value: "gemma-3n-e4b-it", text: "Gemma 3N E4B", group: "gemma" },
     { value: "gemma-3n-e2b-it", text: "Gemma 3N E2B", group: "gemma" }
 ];

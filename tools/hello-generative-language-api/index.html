@@ -16,6 +16,24 @@
             word-wrap: break-word;
         }
 
+        .sidebar-item {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-item.active {
+            background-color: #fff7ed;
+            border-left: 4px solid #d97706;
+        }
+
+        .last-output-preview {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         @keyframes pulse-dot {
 
             0%,
@@ -113,40 +131,57 @@
         </div>
     </header>
 
-    <!-- Chat Area -->
-    <main id="chat-window" class="chat-container flex-grow overflow-y-auto p-4 space-y-6">
-        <div id="setup-notice" class="hidden bg-amber-50 border border-amber-100 rounded-2xl p-6 text-center">
-            <p class="text-amber-900 font-bold mb-2 text-sm">System Integration</p>
-            <p class="text-amber-700 text-[11px] mb-4 leading-relaxed">
-                Gemini Robotics-ER 1.5 などの特殊モデルを含むマルチモデル環境です。<br>APIキーを設定して開始してください。
-            </p>
-        </div>
-    </main>
-
-    <!-- Input Area -->
-    <footer class="bg-white border-t p-4 pb-8 md:pb-4 shadow-inner">
-        <div class="max-w-4xl mx-auto flex gap-3 items-end">
-            <div class="relative flex-grow">
-                <textarea id="user-input" rows="1" placeholder="物理エージェントへの指示を入力..."
-                    class="w-full bg-slate-100 border-none rounded-2xl px-4 py-3.5 pr-12 resize-none focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all text-sm shadow-sm"
-                    oninput="this.style.height = ''; this.style.height = Math.min(this.scrollHeight, 200) + 'px'"></textarea>
-
-                <div id="loading-indicator" class="hidden absolute right-3 bottom-4 flex gap-1">
-                    <div class="w-1.5 h-1.5 bg-amber-500 rounded-full loading-dot"></div>
-                    <div class="w-1.5 h-1.5 bg-amber-500 rounded-full loading-dot" style="animation-delay: 0.2s"></div>
-                    <div class="w-1.5 h-1.5 bg-amber-500 rounded-full loading-dot" style="animation-delay: 0.4s"></div>
-                </div>
+    <div class="flex flex-grow overflow-hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar"
+            class="hidden lg:flex w-72 flex-col bg-white border-r border-slate-200 overflow-y-auto shrink-0 shadow-sm">
+            <div class="px-4 py-3 border-b bg-slate-50/50">
+                <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Model States</h2>
             </div>
-            <button id="send-btn"
-                class="bg-amber-600 hover:bg-amber-700 text-white p-3.5 rounded-2xl transition-all shadow-lg active:scale-95 disabled:opacity-50 disabled:grayscale">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                </svg>
-            </button>
+            <div id="model-list" class="flex-grow p-2 space-y-1">
+                <!-- Dynamically populated -->
+            </div>
+        </aside>
+
+        <div class="flex flex-col flex-grow relative min-w-0">
+            <!-- Chat Area -->
+            <main id="chat-window" class="chat-container flex-grow overflow-y-auto p-4 space-y-6">
+                <div id="setup-notice" class="hidden bg-amber-50 border border-amber-100 rounded-2xl p-6 text-center">
+                    <p class="text-amber-900 font-bold mb-2 text-sm">System Integration</p>
+                    <p class="text-amber-700 text-[11px] mb-4 leading-relaxed">
+                        Gemini Robotics-ER 1.5 などの特殊モデルを含むマルチモデル環境です。<br>APIキーを設定して開始してください。
+                    </p>
+                </div>
+            </main>
+
+            <!-- Input Area -->
+            <footer class="bg-white border-t p-4 pb-8 md:pb-4 shadow-inner">
+                <div class="max-w-4xl mx-auto flex gap-3 items-end">
+                    <div class="relative flex-grow">
+                        <textarea id="user-input" rows="1" placeholder="物理エージェントへの指示を入力..."
+                            class="w-full bg-slate-100 border-none rounded-2xl px-4 py-3.5 pr-12 resize-none focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all text-sm shadow-sm"
+                            oninput="this.style.height = ''; this.style.height = Math.min(this.scrollHeight, 200) + 'px'"></textarea>
+
+                        <div id="loading-indicator" class="hidden absolute right-3 bottom-4 flex gap-1">
+                            <div class="w-1.5 h-1.5 bg-amber-500 rounded-full loading-dot"></div>
+                            <div class="w-1.5 h-1.5 bg-amber-500 rounded-full loading-dot"
+                                style="animation-delay: 0.2s"></div>
+                            <div class="w-1.5 h-1.5 bg-amber-500 rounded-full loading-dot"
+                                style="animation-delay: 0.4s"></div>
+                        </div>
+                    </div>
+                    <button id="send-btn"
+                        class="bg-amber-600 hover:bg-amber-700 text-white p-3.5 rounded-2xl transition-all shadow-lg active:scale-95 disabled:opacity-50 disabled:grayscale">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                    </button>
+                </div>
+            </footer>
         </div>
-    </footer>
+    </div>
 
     <!-- Settings Modal -->
     <div id="settings-modal"
@@ -199,10 +234,13 @@
             model: localStorage.getItem('playground_v6_model') || "gemini-2.5-flash-preview-09-2025"
         };
 
+        const modelStats = JSON.parse(localStorage.getItem('playground_v6_stats') || "{}");
+
         const chatWindow = document.getElementById('chat-window');
         const userInput = document.getElementById('user-input');
         const sendBtn = document.getElementById('send-btn');
         const modelSelect = document.getElementById('model-select');
+        const modelListContainer = document.getElementById('model-list');
         const loadingIndicator = document.getElementById('loading-indicator');
         const statusBadge = document.getElementById('status-badge');
         const setupNotice = document.getElementById('setup-notice');
@@ -212,6 +250,70 @@
         const toastText = document.getElementById('toast-text');
 
         // --- UI Logic ---
+
+        function initSidebar() {
+            modelListContainer.innerHTML = '';
+            const groups = modelSelect.querySelectorAll('optgroup');
+            groups.forEach(group => {
+                const groupTitle = document.createElement('div');
+                groupTitle.className = "text-[9px] font-bold text-slate-400 uppercase px-3 py-2 mt-2";
+                groupTitle.innerText = group.label;
+                modelListContainer.appendChild(groupTitle);
+
+                const options = group.querySelectorAll('option');
+                options.forEach(opt => {
+                    const item = document.createElement('div');
+                    item.id = `sidebar-item-${opt.value}`;
+                    item.className = `sidebar-item p-3 rounded-xl cursor-pointer hover:bg-slate-100 border border-transparent mb-1 ${config.model === opt.value ? 'active' : ''}`;
+                    item.onclick = () => {
+                        config.model = opt.value;
+                        modelSelect.value = opt.value;
+                        localStorage.setItem('playground_v6_model', opt.value);
+                        refreshSidebar();
+                        showToast(`Model: ${opt.value}`, "⚙️");
+                    };
+
+                    const lastResponse = modelStats[opt.value];
+                    const statusColor = lastResponse ? (lastResponse.error ? 'bg-rose-500' : 'bg-emerald-500') : 'bg-slate-300';
+                    const previewText = lastResponse ? lastResponse.text : "No interactions yet.";
+
+                    item.innerHTML = `
+                        <div class="flex items-center gap-2 mb-1">
+                            <div class="w-1.5 h-1.5 rounded-full ${statusColor}"></div>
+                            <span class="text-[11px] font-bold text-slate-700 truncate">${opt.text}</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 last-output-preview italic leading-tight">
+                            ${previewText}
+                        </p>
+                    `;
+                    modelListContainer.appendChild(item);
+                });
+            });
+        }
+
+        function refreshSidebar() {
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+            const activeItem = document.getElementById(`sidebar-item-${config.model}`);
+            if (activeItem) {
+                activeItem.classList.add('active');
+            }
+
+            // Update previews
+            for (const [mId, stat] of Object.entries(modelStats)) {
+                const item = document.getElementById(`sidebar-item-${mId}`);
+                if (item) {
+                    const dot = item.querySelector('.w-1.5');
+                    const preview = item.querySelector('.last-output-preview');
+                    dot.className = `w-1.5 h-1.5 rounded-full ${stat.error ? 'bg-rose-500' : 'bg-emerald-500'}`;
+                    preview.innerText = stat.text;
+                    if (stat.error) {
+                        preview.classList.add('text-rose-400');
+                    } else {
+                        preview.classList.remove('text-rose-400');
+                    }
+                }
+            }
+        }
 
         function showToast(msg, icon = "🤖") {
             toastText.innerText = msg;
@@ -234,6 +336,7 @@
             }
             apiKeyInput.value = config.apiKey;
             modelSelect.value = config.model;
+            refreshSidebar();
         }
 
         function appendMessage(role, text, modelId) {
@@ -314,8 +417,15 @@
             try {
                 const responseText = await fetchAIResponse(text);
                 appendMessage('ai', responseText, usedModel);
+                modelStats[usedModel] = { text: responseText, error: false };
+                localStorage.setItem('playground_v6_stats', JSON.stringify(modelStats));
+                refreshSidebar();
             } catch (err) {
-                appendMessage('ai', `❌ Integration Error: ${err.message}`, usedModel);
+                const errMsg = `❌ Integration Error: ${err.message}`;
+                appendMessage('ai', errMsg, usedModel);
+                modelStats[usedModel] = { text: errMsg, error: true };
+                localStorage.setItem('playground_v6_stats', JSON.stringify(modelStats));
+                refreshSidebar();
             } finally {
                 sendBtn.disabled = false;
                 loadingIndicator.classList.add('hidden');
@@ -364,7 +474,10 @@
             }
         };
 
-        window.onload = refreshUIState;
+        window.onload = () => {
+            initSidebar();
+            refreshUIState();
+        };
     </script>
 </body>
 

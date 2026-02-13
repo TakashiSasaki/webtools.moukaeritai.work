@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Playground v6 について - WebTools</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../../js/components/app-layout.js"></script>
+    <style>
+        .prose h1 {
+            color: #0f172a;
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .prose h2 {
+            color: #1e293b;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .prose p {
+            color: #475569;
+            margin-bottom: 1rem;
+            line-height: 1.625;
+        }
+
+        .prose ul {
+            list-style-type: disc;
+            list-style-position: inside;
+            margin-bottom: 1rem;
+            color: #475569;
+        }
+
+        .prose ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .prose code {
+            background-color: #f1f5f9;
+            color: #d97706;
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+
+        .prose blockquote {
+            border-left: 4px solid #f59e0b;
+            background-color: #fffbeb;
+            padding: 1rem;
+            font-style: italic;
+            color: #92400e;
+            margin-bottom: 1rem;
+            border-top-right-radius: 0.25rem;
+            border-bottom-right-radius: 0.25rem;
+        }
+
+        .prose ol {
+            color: #475569;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50">
+    <app-layout>
+        <div class="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-slate-200 prose">
+            <h1>AI Playground v6 について</h1>
+
+            <p>
+                <strong>AI Playground v6</strong> は、Google が提供する <code>Generative Language API</code> (Gemini / Gemma)
+                を直接ブラウザから呼び出し、最新の AI モデルと直感的に対話するためのプレイグラウンドです。
+                開発者、リサーチャー、そして AI の可能性を探索したいすべての人のために設計されています。
+            </p>
+
+            <h2>主な特徴</h2>
+            <ul>
+                <li><strong>最新モデルへのアクセス:</strong> Gemini 2.5 Flash や推論特化型の Flash Thinking、最新のオープンウェイトモデル Gemma 3
+                    など、Google の最新 AI を選択可能です。</li>
+                <li><strong>思考プロセスの活用:</strong> 推論モデル (Thinking) を使用することで、AI がどのようプロセスを経て回答を導き出したかを確認する体験が可能です。</li>
+                <li><strong>セキュアな設計:</strong> API キーはブラウザの <code>localStorage</code> にのみ保存され、外部サーバーへ送られることなく、直接 Google
+                    API と通信します。</li>
+                <li><strong>堅牢な通信:</strong> 指数関数バックオフアルゴリズムによる自動リトライ機能を備えており、通信不安定時やレートリミット発生時でも安定して動作します。</li>
+            </ul>
+
+            <h2>対応モデル</h2>
+            <p>
+                本ツールでは以下のカテゴリのモデルを選択できます。
+            </p>
+            <ul>
+                <li><strong>Specialized Models:</strong> 推論能力を高めた <code>Gemini 2.0 Flash Thinking</code> や Robotics
+                    向け調整モデルなど。</li>
+                <li><strong>Gemini Series:</strong> 高速かつ高性能な <code>Gemini 2.5 Flash</code>、軽量な <code>Flash-Lite</code>
+                    など。</li>
+                <li><strong>Gemma 3:</strong> 1B から 27B まで、デバイス上での動作やサーバーサイドでの高度な推論に適した多様なサイズを選択可能です。</li>
+            </ul>
+
+            <h2>使い方</h2>
+            <ol class="list-decimal list-inside space-y-4">
+                <li><a href="https://aistudio.google.com/app/apikey" target="_blank"
+                        class="text-amber-600 hover:underline">Google AI Studio</a> で API キーを取得します。</li>
+                <li>画面右上の<strong>設定ボタン（ギアアイコン）</strong>をクリックします。</li>
+                <li>取得した API キーを入力し、<strong>Save Key</strong> をクリックして保存します。</li>
+                <li>画面上部のドロップダウンから対話したい<strong>モデルを選択</strong>します。</li>
+                <li>入力欄から指示や質問を送信し、対話を開始します。</li>
+            </ol>
+
+            <blockquote class="not-italic">
+                <strong>ヒント:</strong> 「思考プロセス」を重視したい場合は、モデル選択で <code>Thinking</code> と記載されたモデルを選択することをお勧めします。
+            </blockquote>
+
+            <h2>技術仕様</h2>
+            <ul>
+                <li><strong>インターフェース:</strong> Tailwind CSS を使用したモダンでレスポンシブなデザイン。</li>
+                <li><strong>状態管理:</strong> 選択されたモデルや API キーはブラウザを閉じても保持されます。</li>
+                <li><strong>エラーハンドリング:</strong> API のエラーメッセージを詳細に表示し、トラブルシューティングを容易にします。</li>
+            </ul>
+
+            <div class="mt-12 pt-8 border-t border-slate-100 flex justify-between items-center text-sm text-slate-400">
+                <span>最終更新: 2026年2月</span>
+                <a href="index.html" class="text-amber-600 font-bold hover:underline flex items-center gap-2">
+                    <i class="fas fa-arrow-left"></i>
+                    ツールに戻る
+                </a>
+            </div>
+        </div>
+    </app-layout>
+</body>
+
+</html>

@@ -82,14 +82,30 @@ function initSidebar() {
         const previewText = lastResponse ? lastResponse.text : "No interactions yet.";
 
         item.innerHTML = `
-            <div class="flex items-center gap-2 mb-1">
-                <div class="status-dot w-1.5 h-1.5 rounded-full ${statusColor}"></div>
-                <span class="text-[11px] font-bold text-slate-700 truncate">${opt.text}</span>
+            <div class="flex items-center justify-between gap-2 mb-1">
+                <div class="flex items-center gap-2 overflow-hidden">
+                    <div class="status-dot w-1.5 h-1.5 rounded-full ${statusColor}"></div>
+                    <span class="text-[11px] font-bold text-slate-700 truncate">${opt.text}</span>
+                </div>
+                <button class="copy-id-btn p-1 text-slate-400 hover:text-amber-600 rounded-md hover:bg-white/50 transition-colors" title="Copy Model ID">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                    </svg>
+                </button>
             </div>
             <p class="text-[10px] text-slate-400 last-output-preview italic leading-tight">
                 ${previewText}
             </p>
         `;
+
+        const copyBtn = item.querySelector('.copy-id-btn');
+        copyBtn.onclick = (e) => {
+            e.stopPropagation();
+            navigator.clipboard.writeText(opt.value).then(() => {
+                showToast(`ID Copied: ${opt.value}`, "📋");
+            });
+        };
+
         modelListContainer.appendChild(item);
     });
 }

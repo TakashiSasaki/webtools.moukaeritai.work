@@ -105,6 +105,14 @@
             <!-- Input Area -->
             <footer class="bg-white border-t p-4 pb-8 md:pb-4 shadow-inner">
                 <div class="max-w-4xl mx-auto flex gap-3 items-end">
+                    <button id="paste-send-btn" title="Paste and Send"
+                        class="bg-slate-200 hover:bg-slate-300 text-slate-600 p-3.5 rounded-2xl transition-all shadow-md active:scale-95 disabled:opacity-50">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                        </svg>
+                    </button>
                     <div class="relative flex-grow">
                         <div id="image-preview-container" class="hidden mb-2 relative inline-block">
                             <img id="image-preview" src=""
@@ -124,24 +132,14 @@
                                 style="animation-delay: 0.4s"></div>
                         </div>
                     </div>
-                    <div class="flex-shrink-0 flex flex-col gap-2">
-                        <button id="paste-send-btn" title="Paste and Send"
-                            class="bg-slate-200 hover:bg-slate-300 text-slate-600 p-3.5 rounded-2xl transition-all shadow-md active:scale-95 disabled:opacity-50">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                            </svg>
-                        </button>
-                        <button id="send-btn"
-                            class="bg-amber-600 hover:bg-amber-700 text-white p-3.5 rounded-2xl transition-all shadow-lg active:scale-95 disabled:opacity-50 disabled:grayscale">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                            </svg>
-                        </button>
-                    </div>
+                    <button id="send-btn"
+                        class="bg-amber-600 hover:bg-amber-700 text-white p-3.5 rounded-2xl transition-all shadow-lg active:scale-95 disabled:opacity-50 disabled:grayscale">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                    </button>
                 </div>
             </footer>
         </div>

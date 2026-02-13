@@ -63,3 +63,18 @@
 
 ### PWA と CORS
 - **Service Worker (`sw.js`)**: 外部 CDN (Tailwind, Font Awesome) の読み込みを妨げないよう、Service Worker はクロスオリジンリクエストを無視するように設定されています。新しい外部リソースを追加する際は、`sw.js` のキャッシュ戦略に注意してください。
+
+## 6. バージョン管理と自動化
+
+プロジェクト全体のバージョンを一括管理し、ブラウザのキャッシュを確実に更新するための仕組みです。
+
+- **バージョンの所在**:
+  - `manifest.json`: `"version": "x.y.z"` 形式で定義。
+  - `sw.js`: `const CACHE_NAME = 'webtools-vx.y.z';` 形式で定義。
+- **自動インクリメント**:
+  - コミットのたびにパッチバージョン（zの部分）を自動で 1 増やす Git フックが用意されています。
+  - **設定方法**: 他の環境でクローンした際は、以下のコマンドを実行してフックを有効化してください。
+    ```bash
+    git config core.hooksPath .githooks
+    ```
+  - **動作内容**: `.githooks/pre-commit` スクリプトが走り、`manifest.json` と `sw.js` のバージョンを同期してインクリメントし、自動的に `git add` します。

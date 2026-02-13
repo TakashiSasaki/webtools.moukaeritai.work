@@ -536,6 +536,11 @@ userInput.onpaste = (e) => {
 clearImageBtn.onclick = clearImage;
 
 window.onload = () => {
+    // Determine correct sidebar tab based on current model
+    const currentModelEntry = availableModels.find(m => m.value === config.model);
+    if (currentModelEntry) {
+        currentSidebarTab = currentModelEntry.group;
+    }
     initSidebar();
     restoreHistory();
     refreshUIState();

@@ -88,9 +88,12 @@ class AppLayout extends HTMLElement {
                 </nav>
 
                 <!-- Footer -->
-                <div class="p-4 border-t border-slate-800 text-xs text-slate-500 text-center">
-                    <div>&copy; 2026 moukaeritai.work</div>
-                    <div class="mt-1 text-[10px]">v1.0.2</div>
+                <div class="p-4 border-t border-slate-800 text-[10px] text-slate-500 text-center">
+                    <div>Created by <a href="https://moukaeritai.work" class="hover:text-white underline decoration-slate-700" target="_blank" rel="noopener">Takashi Sasaki</a></div>
+                    <div class="mt-1">
+                        <a href="https://x.com/TakashiSasaki" class="hover:text-white transition-colors" target="_blank" rel="noopener">@TakashiSasaki</a>
+                    </div>
+                    <div class="mt-2 opacity-40">&copy; 2026 WebTools</div>
                 </div>
             </aside>
 

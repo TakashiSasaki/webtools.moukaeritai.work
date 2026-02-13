@@ -11,6 +11,23 @@
     <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "WebTools - moukaeritai.work",
+      "url": "https://webtools.moukaeritai.work/",
+      "author": {
+        "@type": "Person",
+        "name": "Takashi Sasaki",
+        "url": "https://moukaeritai.work/",
+        "sameAs": [
+          "https://x.com/TakashiSasaki"
+        ]
+      },
+      "description": "ウェブブラウザで動作する、ニッチな用途のツール集"
+    }
+    </script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -290,9 +307,14 @@
             </div>
 
             <footer class="mt-12 pt-6 border-t border-gray-200 text-center text-gray-500">
-                <p>&copy; 2025 WebTools hosted on webtools.moukaeritai.work</p>
-                <p class="mt-2">Created by <a href="https://x.com/TakashiSasaki" class="text-indigo-600 hover:underline"
-                        target="_blank" rel="noopener noreferrer">Takashi SASAKI</a></p>
+                <p>&copy; 2026 WebTools hosted on <a href="https://moukaeritai.work"
+                        class="hover:underline">webtools.moukaeritai.work</a></p>
+                <p class="mt-2 text-sm">
+                    Created by <a href="https://x.com/TakashiSasaki" class="text-indigo-600 hover:underline font-bold"
+                        target="_blank" rel="noopener noreferrer">Takashi SASAKI</a>
+                    (<a href="https://moukaeritai.work" class="text-indigo-600 hover:underline" target="_blank"
+                        rel="noopener">moukaeritai.work</a>)
+                </p>
                 <div class="mt-4 flex justify-center gap-4">
                     <a href="https://github.com/TakashiSasaki/webtools.moukaeritai.work" target="_blank"
                         rel="noopener noreferrer">

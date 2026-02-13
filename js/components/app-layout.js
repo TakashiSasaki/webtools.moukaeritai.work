@@ -12,7 +12,8 @@ class AppLayout extends HTMLElement {
             { name: 'App Link', path: '/tools/android-app-link/', icon: 'fa-link' },
             { name: 'Web NFC', path: '/tools/web-nfc-tester/', icon: 'fa-rss' },
             { name: 'MicroPython', path: '/tools/micropython/', icon: 'fa-python' },
-            { name: 'Pyodide', path: '/tools/pyodide/', icon: 'fa-cubes' }
+            { name: 'Pyodide', path: '/tools/pyodide/', icon: 'fa-cubes' },
+            { name: 'Gemini API', path: '/tools/hello-generative-language-api/', icon: 'fa-wand-magic-sparkles' }
         ];
     }
 

@@ -1,7 +1,7 @@
 {
   "name": "WebTools - moukaeritai.work",
   "short_name": "WebTools",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "ブラウザ単体で動作する便利なツール集",
   "start_url": "/index.html",
   "display": "standalone",

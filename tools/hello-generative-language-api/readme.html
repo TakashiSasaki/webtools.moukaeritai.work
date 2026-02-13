@@ -83,43 +83,46 @@
 
             <h2>主な特徴</h2>
             <ul>
-                <li><strong>最新モデルへのアクセス:</strong> Gemini 2.5 Flash や推論特化型の Flash Thinking、最新のオープンウェイトモデル Gemma 3
-                    など、Google の最新 AI を選択可能です。</li>
+                <li><strong>最新モデルへのアクセス:</strong> Gemini 2.5 Flash や最新の次世代モデル Gemini 3 (Preview) シリーズ、3N (Neural/Linear)
+                    を含む Gemma 3 など、Google の最新 AI を即座に試用可能です。</li>
+                <li><strong>マルチモーダル対応:</strong> テキストだけでなく、画像のペーストによる画像解析が可能です。画像のみを送信して内容を説明させることもできます。</li>
+                <li><strong>詳細なモデル管理:</strong> API から直接取得した全モデルリストの表示、および対話型モデル ID の一括コピー、個別 ID のコピー機能を備えています。</li>
                 <li><strong>思考プロセスの活用:</strong> 推論モデル (Thinking) を使用することで、AI がどのようプロセスを経て回答を導き出したかを確認する体験が可能です。</li>
-                <li><strong>セキュアな設計:</strong> API キーはブラウザの <code>localStorage</code> にのみ保存され、外部サーバーへ送られることなく、直接 Google
-                    API と通信します。</li>
-                <li><strong>堅牢な通信:</strong> 指数関数バックオフアルゴリズムによる自動リトライ機能を備えており、通信不安定時やレートリミット発生時でも安定して動作します。</li>
+                <li><strong>セキュアな設計:</strong> API キーはブラウザの <code>localStorage</code> にのみ保存され、外部サーバーを経由せず直接 Google API
+                    と通信します。</li>
             </ul>
 
             <h2>対応モデル</h2>
             <p>
-                本ツールでは以下のカテゴリのモデルを選択できます。
+                サイドバーのタブ切り替えにより、膨大なモデル群を世代ごとに素早く管理・選択できます。
             </p>
             <ul>
-                <li><strong>Specialized Models:</strong> 推論能力を高めた <code>Gemini 2.0 Flash Thinking</code> や Robotics
-                    向け調整モデルなど。</li>
-                <li><strong>Gemini Series:</strong> 高速かつ高性能な <code>Gemini 2.5 Flash</code>、軽量な <code>Flash-Lite</code>
-                    など。</li>
-                <li><strong>Gemma 3:</strong> 1B から 27B まで、デバイス上での動作やサーバーサイドでの高度な推論に適した多様なサイズを選択可能です。</li>
+                <li><strong>G 3.x (Gemini 3 シリーズ):</strong> 次世代の Preview モデルや、ナノスケールの軽量モデルなど。</li>
+                <li><strong>G 2.5 (Gemini 2.5 シリーズ):</strong> 現在の主力となる高性能・低遅延モデル。</li>
+                <li><strong>G 2.0 (Gemini 2.0 シリーズ):</strong> 実績のある安定した第2世代モデル。</li>
+                <li><strong>Gemma 3:</strong> IT (Instruction Tuned) から Neural、Edge 向けまで多様なバリエーション。</li>
+                <li><strong>Misc:</strong> 1.5 世代や Deep Research、Robotics 特化型、Experimental（実験的）モデルなど。</li>
             </ul>
 
             <h2>使い方</h2>
             <ol class="list-decimal list-inside space-y-4">
                 <li><a href="https://aistudio.google.com/app/apikey" target="_blank"
                         class="text-amber-600 hover:underline">Google AI Studio</a> で API キーを取得します。</li>
-                <li>画面右上の<strong>設定ボタン（ギアアイコン）</strong>をクリックします。</li>
-                <li>取得した API キーを入力し、<strong>Save Key</strong> をクリックして保存します。</li>
-                <li>画面上部のドロップダウンから対話したい<strong>モデルを選択</strong>します。</li>
-                <li>入力欄から指示や質問を送信し、対話を開始します。</li>
+                <li>画面右上の<strong>設定ボタン（ギアアイコン）</strong>をクリックして API キーを保存します。</li>
+                <li>画面上部のドロップダウン、または左側サイドバーのリストから<strong>モデルを選択</strong>します。</li>
+                <li>入力欄に指示を入力するか、<strong>画像をペースト</strong>して対話を開始します。</li>
+                <li>左側のリストボタン（三本線アイコン）から <strong>Available Models</strong> を開き、API で利用可能な全モデルを掘り下げることも可能です。</li>
             </ol>
 
             <blockquote class="not-italic">
-                <strong>ヒント:</strong> 「思考プロセス」を重視したい場合は、モデル選択で <code>Thinking</code> と記載されたモデルを選択することをお勧めします。
+                <strong>ヒント:</strong> 特定のモデル ID をコピーして他のプロジェクトで使いたい場合は、サイドバーのモデル名横のアイコン、または Available Models
+                ダイアログのコピー機能が便利です。
             </blockquote>
 
             <h2>技術仕様</h2>
             <ul>
-                <li><strong>インターフェース:</strong> Tailwind CSS を使用したモダンでレスポンシブなデザイン。</li>
+                <li><strong>インターフェース:</strong> Tailwind CSS を使用したレスポンシブデザイン。</li>
+                <li><strong>モジュール設計:</strong> ロジック (JS) とスタイル (CSS) を外部ファイルに分離し、保守性とキャッシュ効率を向上。</li>
                 <li><strong>状態管理:</strong> 選択されたモデルや API キーはブラウザを閉じても保持されます。</li>
                 <li><strong>エラーハンドリング:</strong> API のエラーメッセージを詳細に表示し、トラブルシューティングを容易にします。</li>
             </ul>

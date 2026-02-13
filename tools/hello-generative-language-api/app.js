@@ -5,6 +5,7 @@ let config = {
 
 let currentSidebarTab = 'v25';
 const modelStats = JSON.parse(localStorage.getItem('playground_v6_stats') || "{}");
+let messageHistory = JSON.parse(localStorage.getItem('playground_v6_history') || "[]");
 
 const chatWindow = document.getElementById('chat-window');
 const userInput = document.getElementById('user-input');
@@ -163,7 +164,46 @@ function refreshUIState() {
     refreshSidebar();
 }
 
-function appendMessage(role, text, modelId, imageData = null) {
+
+
+function restoreHistory() {
+    chatWindow.innerHTML = '';
+
+    if (messageHistory.length === 0) {
+        chatWindow.innerHTML = `
+            <div id="setup-notice" class="${config.apiKey ? 'hidden' : ''} bg-amber-50 border border-amber-100 rounded-2xl p-6 text-center">
+                <p class="text-amber-900 font-bold mb-2 text-sm">System Integration</p>
+                <p class="text-amber-700 text-[11px] mb-4 leading-relaxed">
+                    Gemini Robotics-ER 1.5 などの特殊モデルを含むマルチモデル環境です。<br>APIキーを設定して開始してください。
+                </p>
+            </div>
+        `;
+        return;
+    }
+
+    // Always keep the setup notice present (though hidden) for logic consistency
+    const setupNotice = document.createElement('div');
+    setupNotice.id = 'setup-notice';
+    setupNotice.className = `${config.apiKey ? 'hidden' : ''} bg-amber-50 border border-amber-100 rounded-2xl p-6 text-center mb-6`;
+    setupNotice.innerHTML = `
+        <p class="text-amber-900 font-bold mb-2 text-sm">System Integration</p>
+        <p class="text-amber-700 text-[11px] mb-4 leading-relaxed">
+            Gemini Robotics-ER 1.5 などの特殊モデルを含むマルチモデル環境です。<br>APIキーを設定して開始してください。
+        </p>
+    `;
+    chatWindow.appendChild(setupNotice);
+
+    messageHistory.forEach(msg => {
+        appendMessage(msg.role, msg.text, msg.modelId, msg.imageData, false);
+    });
+
+    // Scroll to bottom after restore
+    setTimeout(() => {
+        chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'auto' });
+    }, 100);
+}
+
+function appendMessage(role, text, modelId, imageData = null, save = true) {
     const container = document.createElement('div');
     container.className = `flex flex-col ${role === 'user' ? 'items-end' : 'items-start'} space-y-1`;
 
@@ -193,6 +233,20 @@ function appendMessage(role, text, modelId, imageData = null) {
 
     container.appendChild(bubble);
     chatWindow.appendChild(container);
+
+    if (save) {
+        messageHistory.push({ role, text, modelId, imageData });
+        try {
+            localStorage.setItem('playground_v6_history', JSON.stringify(messageHistory));
+        } catch (e) {
+            // Handle quota exceeded if history gets too big
+            if (messageHistory.length > 50) {
+                messageHistory = messageHistory.slice(-50); // Keep last 50
+                localStorage.setItem('playground_v6_history', JSON.stringify(messageHistory));
+            }
+        }
+    }
+
     chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
 }
 
@@ -315,9 +369,21 @@ document.getElementById('clear-key-btn').onclick = () => {
     if (confirm("Clear integration data?")) {
         config.apiKey = "";
         localStorage.removeItem('playground_v6_api_key');
+        localStorage.removeItem('playground_v6_history');
+        messageHistory = [];
+        restoreHistory();
         apiKeyInput.value = "";
         showToast("Cleared", "🗑️");
         refreshUIState();
+    }
+};
+
+document.getElementById('clear-history-btn').onclick = () => {
+    if (confirm("Clear chat history?")) {
+        messageHistory = [];
+        localStorage.removeItem('playground_v6_history');
+        restoreHistory();
+        showToast("History Cleared", "🧹");
     }
 };
 
@@ -433,5 +499,6 @@ clearImageBtn.onclick = clearImage;
 
 window.onload = () => {
     initSidebar();
+    restoreHistory();
     refreshUIState();
 };

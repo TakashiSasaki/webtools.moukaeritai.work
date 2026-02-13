@@ -151,7 +151,13 @@
             <footer class="bg-white border-t p-4 pb-8 md:pb-4 shadow-inner">
                 <div class="max-w-4xl mx-auto flex gap-3 items-end">
                     <div class="relative flex-grow">
-                        <textarea id="user-input" rows="1" placeholder="物理エージェントへの指示を入力..."
+                        <div id="image-preview-container" class="hidden mb-2 relative inline-block">
+                            <img id="image-preview" src=""
+                                class="h-20 w-auto rounded-lg border border-slate-200 shadow-sm object-cover">
+                            <button id="clear-image-btn"
+                                class="absolute -top-2 -right-2 bg-rose-500 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs shadow-md hover:bg-rose-600 transition-colors">&times;</button>
+                        </div>
+                        <textarea id="user-input" rows="1" placeholder="メッセージを入力、または画像をペースト..."
                             class="w-full bg-slate-100 border-none rounded-2xl px-4 py-3.5 pr-12 resize-none focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all text-sm shadow-sm"
                             oninput="this.style.height = ''; this.style.height = Math.min(this.scrollHeight, 200) + 'px'"></textarea>
 

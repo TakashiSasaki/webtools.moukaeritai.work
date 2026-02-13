@@ -20,6 +20,11 @@ const toast = document.getElementById('toast');
 const toastText = document.getElementById('toast-text');
 const copyChatModelsBtn = document.getElementById('copy-chat-models-btn');
 
+let currentImageData = null; // Stores { mimeType: string, data: string (base64) }
+const imagePreviewContainer = document.getElementById('image-preview-container');
+const imagePreview = document.getElementById('image-preview');
+const clearImageBtn = document.getElementById('clear-image-btn');
+
 // --- UI Logic ---
 
 function setSidebarTab(tab) {
@@ -158,7 +163,7 @@ function refreshUIState() {
     refreshSidebar();
 }
 
-function appendMessage(role, text, modelId) {
+function appendMessage(role, text, modelId, imageData = null) {
     const container = document.createElement('div');
     container.className = `flex flex-col ${role === 'user' ? 'items-end' : 'items-start'} space-y-1`;
 
@@ -174,7 +179,17 @@ function appendMessage(role, text, modelId) {
         ? 'bg-amber-600 text-white rounded-2xl rounded-tr-none'
         : 'bg-white border border-slate-200 rounded-2xl rounded-tl-none text-slate-700'
         }`;
-    bubble.innerText = text;
+
+    if (imageData) {
+        const img = document.createElement('img');
+        img.src = `data:${imageData.mimeType};base64,${imageData.data}`;
+        img.className = "message-image";
+        bubble.appendChild(img);
+    }
+
+    const textSpan = document.createElement('span');
+    textSpan.innerText = text;
+    bubble.appendChild(textSpan);
 
     container.appendChild(bubble);
     chatWindow.appendChild(container);
@@ -183,17 +198,27 @@ function appendMessage(role, text, modelId) {
 
 // --- API & Engine ---
 
-async function fetchAIResponse(prompt, retryCount = 0) {
+async function fetchAIResponse(prompt, retryCount = 0, imageData = null) {
     const maxRetries = 5;
     const backoffTimes = [1000, 2000, 4000, 8000, 16000];
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${config.model}:generateContent?key=${config.apiKey}`;
+
+    const parts = [{ text: prompt }];
+    if (imageData) {
+        parts.push({
+            inline_data: {
+                mime_type: imageData.mimeType,
+                data: imageData.data
+            }
+        });
+    }
 
     try {
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }]
+                contents: [{ parts }]
             })
         });
 
@@ -221,20 +246,25 @@ async function fetchAIResponse(prompt, retryCount = 0) {
 
 async function handleSubmission() {
     const text = userInput.value.trim();
-    if (!text || sendBtn.disabled || !config.apiKey) return;
+    if ((!text && !currentImageData) || sendBtn.disabled || !config.apiKey) return;
 
     const usedModel = config.model;
+    const usedImageData = currentImageData;
 
-    appendMessage('user', text);
+    appendMessage('user', text, null, usedImageData);
+
+    // Reset inputs
     userInput.value = '';
     userInput.style.height = 'auto';
+    clearImage();
+
     sendBtn.disabled = true;
     loadingIndicator.classList.remove('hidden');
-    statusBadge.innerText = "Embodying...";
+    statusBadge.innerText = "Processing...";
     statusBadge.className = "hidden sm:block text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 border border-amber-200";
 
     try {
-        const responseText = await fetchAIResponse(text);
+        const responseText = await fetchAIResponse(text || "Describe this image.", 0, usedImageData);
         appendMessage('ai', responseText, usedModel);
         modelStats[usedModel] = { text: responseText, error: false };
         localStorage.setItem('playground_v6_stats', JSON.stringify(modelStats));
@@ -251,6 +281,12 @@ async function handleSubmission() {
         statusBadge.innerText = "Ready";
         statusBadge.className = "hidden sm:block text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200";
     }
+}
+
+function clearImage() {
+    currentImageData = null;
+    imagePreviewContainer.classList.add('hidden');
+    imagePreview.src = '';
 }
 
 // --- Listeners ---
@@ -372,6 +408,28 @@ userInput.onkeydown = (e) => {
         handleSubmission();
     }
 };
+
+userInput.onpaste = (e) => {
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+            const blob = items[i].getAsFile();
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const base64 = event.target.result.split(',')[1];
+                currentImageData = {
+                    mimeType: blob.type,
+                    data: base64
+                };
+                imagePreview.src = event.target.result;
+                imagePreviewContainer.classList.remove('hidden');
+            };
+            reader.readAsDataURL(blob);
+        }
+    }
+};
+
+clearImageBtn.onclick = clearImage;
 
 window.onload = () => {
     initSidebar();

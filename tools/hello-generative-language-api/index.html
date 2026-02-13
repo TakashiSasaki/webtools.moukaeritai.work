@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Playground v6 - Robotics ER</title>
+    <title>AI Playground</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .chat-container {
@@ -156,6 +156,14 @@
                     </button>
                 </div>
             </div>
+            <div id="model-tabs" class="flex p-2 gap-1 border-b bg-white">
+                <button id="tab-gemini" onclick="setSidebarTab('gemini')"
+                    class="flex-1 py-1.5 text-[10px] font-bold rounded-lg transition-all">Gemini</button>
+                <button id="tab-gemma" onclick="setSidebarTab('gemma')"
+                    class="flex-1 py-1.5 text-[10px] font-bold rounded-lg transition-all">Gemma</button>
+                <button id="tab-others" onclick="setSidebarTab('others')"
+                    class="flex-1 py-1.5 text-[10px] font-bold rounded-lg transition-all">Others</button>
+            </div>
             <div id="model-list" class="flex-grow p-2 space-y-1">
                 <!-- Dynamically populated -->
             </div>
@@ -273,12 +281,12 @@
     </div>
 
     <script>
-        // --- App Config & State ---
         let config = {
             apiKey: localStorage.getItem('playground_v6_api_key') || "",
             model: localStorage.getItem('playground_v6_model') || "gemini-2.5-flash-preview-09-2025"
         };
 
+        let currentSidebarTab = 'gemini';
         const modelStats = JSON.parse(localStorage.getItem('playground_v6_stats') || "{}");
 
         const chatWindow = document.getElementById('chat-window');
@@ -296,43 +304,70 @@
 
         // --- UI Logic ---
 
+        function setSidebarTab(tab) {
+            currentSidebarTab = tab;
+            initSidebar();
+            refreshSidebar();
+        }
+
+        function refreshSidebarTabsUI() {
+            const tabs = ['gemini', 'gemma', 'others'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (!btn) return;
+                if (t === currentSidebarTab) {
+                    btn.className = "flex-1 py-1.5 text-[10px] font-bold rounded-lg bg-amber-600 text-white shadow-sm";
+                } else {
+                    btn.className = "flex-1 py-1.5 text-[10px] font-bold rounded-lg bg-slate-100 text-slate-500 hover:bg-slate-200";
+                }
+            });
+        }
+
         function initSidebar() {
+            refreshSidebarTabsUI();
             modelListContainer.innerHTML = '';
-            const groups = modelSelect.querySelectorAll('optgroup');
-            groups.forEach(group => {
-                const groupTitle = document.createElement('div');
-                groupTitle.className = "text-[9px] font-bold text-slate-400 uppercase px-3 py-2 mt-2";
-                groupTitle.innerText = group.label;
-                modelListContainer.appendChild(groupTitle);
 
-                const options = group.querySelectorAll('option');
-                options.forEach(opt => {
-                    const item = document.createElement('div');
-                    item.id = `sidebar-item-${opt.value}`;
-                    item.className = `sidebar-item p-3 rounded-xl cursor-pointer hover:bg-slate-100 border border-transparent mb-1 ${config.model === opt.value ? 'active' : ''}`;
-                    item.onclick = () => {
-                        config.model = opt.value;
-                        modelSelect.value = opt.value;
-                        localStorage.setItem('playground_v6_model', opt.value);
-                        refreshSidebar();
-                        showToast(`Model: ${opt.value}`, "⚙️");
-                    };
+            const allOptions = Array.from(modelSelect.querySelectorAll('option'));
+            const filtered = allOptions.filter(opt => {
+                const val = opt.value.toLowerCase();
+                const text = opt.text.toLowerCase();
+                if (currentSidebarTab === 'gemini') return val.includes('gemini');
+                if (currentSidebarTab === 'gemma') return val.includes('gemma');
+                if (currentSidebarTab === 'others') return !val.includes('gemini') && !val.includes('gemma');
+                return false;
+            });
 
-                    const lastResponse = modelStats[opt.value];
-                    const statusColor = lastResponse ? (lastResponse.error ? 'bg-rose-500' : 'bg-emerald-500') : 'bg-slate-300';
-                    const previewText = lastResponse ? lastResponse.text : "No interactions yet.";
+            if (filtered.length === 0) {
+                modelListContainer.innerHTML = '<div class="text-[10px] text-slate-400 text-center py-12">No models found</div>';
+                return;
+            }
 
-                    item.innerHTML = `
-                        <div class="flex items-center gap-2 mb-1">
-                            <div class="w-1.5 h-1.5 rounded-full ${statusColor}"></div>
-                            <span class="text-[11px] font-bold text-slate-700 truncate">${opt.text}</span>
-                        </div>
-                        <p class="text-[10px] text-slate-400 last-output-preview italic leading-tight">
-                            ${previewText}
-                        </p>
-                    `;
-                    modelListContainer.appendChild(item);
-                });
+            filtered.forEach(opt => {
+                const item = document.createElement('div');
+                item.id = `sidebar-item-${opt.value}`;
+                item.className = `sidebar-item p-3 rounded-xl cursor-pointer hover:bg-slate-100 border border-transparent mb-1 ${config.model === opt.value ? 'active' : ''}`;
+                item.onclick = () => {
+                    config.model = opt.value;
+                    modelSelect.value = opt.value;
+                    localStorage.setItem('playground_v6_model', opt.value);
+                    refreshSidebar();
+                    showToast(`Model: ${opt.value}`, "⚙️");
+                };
+
+                const lastResponse = modelStats[opt.value];
+                const statusColor = lastResponse ? (lastResponse.error ? 'bg-rose-500' : 'bg-emerald-500') : 'bg-slate-300';
+                const previewText = lastResponse ? lastResponse.text : "No interactions yet.";
+
+                item.innerHTML = `
+                    <div class="flex items-center gap-2 mb-1">
+                        <div class="w-1.5 h-1.5 rounded-full ${statusColor}"></div>
+                        <span class="text-[11px] font-bold text-slate-700 truncate">${opt.text}</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400 last-output-preview italic leading-tight">
+                        ${previewText}
+                    </p>
+                `;
+                modelListContainer.appendChild(item);
             });
         }
 

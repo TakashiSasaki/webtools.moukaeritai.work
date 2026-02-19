@@ -73,6 +73,18 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://webtools.moukaeritai.work/tools/gag-uuid-v8/</loc>
+    <lastmod>2026-02-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://webtools.moukaeritai.work/tools/gag-uuid-v8/readme.html</loc>
+    <lastmod>2026-02-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://webtools.moukaeritai.work/tools/micropython/</loc>
     <lastmod>2026-02-05</lastmod>
     <changefreq>monthly</changefreq>

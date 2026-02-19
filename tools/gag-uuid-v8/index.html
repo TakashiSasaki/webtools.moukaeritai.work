@@ -6,95 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UUIDv8 Step-by-Step Builder</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
-
-        .font-mono {
-            font-family: 'JetBrains+Mono', monospace;
-        }
-
-        .part-1 {
-            color: #818cf8;
-        }
-
-        /* Indigo 400 */
-        .part-2 {
-            color: #34d399;
-        }
-
-        /* Emerald 400 */
-        .part-3 {
-            color: #fbbf24;
-        }
-
-        /* Amber 400 */
-        .part-4 {
-            color: #e879f9;
-        }
-
-        /* Fuchsia 400 */
-        .part-5 {
-            color: #fb7185;
-        }
-
-        /* Rose 400 */
-
-        .bit-highlight-v {
-            font-weight: 800;
-            text-decoration: underline;
-            text-underline-offset: 2px;
-            filter: brightness(1.5);
-            color: #fbbf24;
-        }
-
-        .bit-highlight-var {
-            font-weight: 800;
-            text-decoration: underline;
-            text-underline-offset: 2px;
-            filter: brightness(1.5);
-            color: #e879f9;
-        }
-
-        .ref-grid {
-            display: grid;
-            grid-template-columns: 80px 1fr;
-            gap: 4px;
-            font-size: 0.7rem;
-        }
-
-        .connector-path {
-            stroke-dasharray: 5;
-            stroke-dashoffset: 10;
-            animation: dash 5s linear infinite;
-        }
-
-        @keyframes dash {
-            to {
-                stroke-dashoffset: 0;
-            }
-        }
-
-        .bit-btn {
-            width: 24px;
-            height: 32px;
-            font-size: 10px;
-            font-family: 'JetBrains Mono';
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-
-        .bit-btn.active {
-            background-color: #4f46e5;
-            color: white;
-            border-color: #4338ca;
-        }
-
-        .bit-btn.inactive {
-            background-color: #f1f5f9;
-            color: #94a3b8;
-            border: 1px solid #e2e8f0;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body class="bg-slate-100 min-h-screen py-10 px-4 text-slate-900">
@@ -149,25 +61,20 @@
                         <h2 class="text-lg font-bold text-indigo-900 font-mono">Step 1: Part 1 & 2 Initialization</h2>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <button id="mode-v4-btn"
                             class="flex flex-col p-4 bg-white border-2 border-transparent hover:border-indigo-300 rounded-xl transition-all text-left shadow-sm group">
                             <span class="text-sm font-bold text-slate-800 group-hover:text-indigo-600">v4 Style</span>
-                            <span class="text-xs text-slate-500">48-bit Random</span>
+                            <span class="text-xs text-slate-500">Generate 48-bit Random</span>
                         </button>
                         <button id="mode-v7-btn"
                             class="flex flex-col p-4 bg-white border-2 border-transparent hover:border-emerald-300 rounded-xl transition-all text-left shadow-sm group">
                             <span class="text-sm font-bold text-slate-800 group-hover:text-emerald-600">v7 Style</span>
-                            <span class="text-xs text-slate-500">Unix Epoch (ms)</span>
-                        </button>
-                        <button id="mode-custom-btn"
-                            class="flex flex-col p-4 bg-white border-2 border-transparent hover:border-slate-400 rounded-xl transition-all text-left shadow-sm group">
-                            <span class="text-sm font-bold text-slate-800 group-hover:text-slate-600">Custom</span>
-                            <span class="text-xs text-slate-500">Manual Hex Input</span>
+                            <span class="text-xs text-slate-500">Generate Unix Epoch (ms)</span>
                         </button>
                     </div>
 
-                    <div id="custom-input-container" class="mb-4 hidden">
+                    <div id="custom-input-container" class="mb-4">
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Enter UUID or 12 Hex
                             Characters (48 bits)</label>
                         <div class="relative">
@@ -177,12 +84,26 @@
                         </div>
                         <div id="custom-hex-preview" class="mt-2 font-mono text-xs h-6 flex items-center gap-2"></div>
                         <p class="text-[10px] text-slate-400 mt-1">First 48 bits (highlighted) will be used for Part 1 &
-                            2. Part 5 (Node) will be auto-filled if available.</p>
+                            2. Part 5 (Node) is NOT affected.</p>
                     </div>
 
-                    <button id="apply-step1-btn" disabled
-                        class="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 text-white font-bold py-2 rounded-xl transition-all font-mono">APPLY
-                        INITIALIZATION</button>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                        <button id="apply-p1p2-btn" disabled
+                            class="bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 text-white font-bold py-2 px-4 rounded-xl transition-all font-mono text-xs">
+                            APPLY Part 1 & 2
+                            <span class="block text-[8px] font-normal opacity-75">Timestamp Only</span>
+                        </button>
+                        <button id="apply-all-btn" disabled
+                            class="bg-fuchsia-600 hover:bg-fuchsia-700 disabled:bg-slate-300 text-white font-bold py-2 px-4 rounded-xl transition-all font-mono text-xs">
+                            APPLY ALL
+                            <span class="block text-[8px] font-normal opacity-75">Part 1, 2 & 5 (Full)</span>
+                        </button>
+                        <button id="apply-p5-btn" disabled
+                            class="bg-rose-500 hover:bg-rose-600 disabled:bg-slate-300 text-white font-bold py-2 px-4 rounded-xl transition-all font-mono text-xs">
+                            APPLY Part 5 Only
+                            <span class="block text-[8px] font-normal opacity-75">Node (Mac) Only</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- STEP 2 -->
@@ -382,352 +303,7 @@
         </div>
     </div>
 
-    <script>
-        const STORAGE_KEY = 'uuidv8_builder_state';
-
-        let currentBytes = new Uint8Array(16);
-        let selectedMode = null;
-        let step2P3Bits = [0, 0, 0, 0];
-        let step2P4Bits = [0, 0, 0, 0, 0, 0];
-        let step4Hex = "";
-
-        const uuidContainer = document.getElementById('uuid-html-container');
-        const binaryDisplay = document.getElementById('binary-display');
-        const modeV4Btn = document.getElementById('mode-v4-btn');
-        const modeV7Btn = document.getElementById('mode-v7-btn');
-        const modeCustomBtn = document.getElementById('mode-custom-btn');
-        const customInputContainer = document.getElementById('custom-input-container');
-        const customHexInput = document.getElementById('custom-hex-input');
-        const customHexPreview = document.getElementById('custom-hex-preview');
-        const applyStep1Btn = document.getElementById('apply-step1-btn');
-        const resetBtn = document.getElementById('reset-btn');
-        const p3BitsContainer = document.getElementById('p3-bits-container');
-        const p4BitsContainer = document.getElementById('p4-bits-container');
-
-        const p3Mode = document.getElementById('p3-mode');
-        const p3Val = document.getElementById('p3-val');
-        const p4Mode = document.getElementById('p4-mode');
-        const p4Val = document.getElementById('p4-val');
-
-        const p5Val = document.getElementById('p5-val');
-
-        function initV8FixedBits(bytes) {
-            bytes[6] = (bytes[6] & 0x0f) | 0x80; // Version 8
-            bytes[8] = (bytes[8] & 0x3f) | 0x80; // Variant 10
-        }
-
-        // --- Persistence Logic ---
-        function saveState() {
-            const state = {
-                currentBytes: Array.from(currentBytes),
-                selectedMode,
-                customHexVal: customHexInput.value,
-                step2P3Bits,
-                step2P4Bits,
-                p3Mode: p3Mode.value,
-                p3Val: p3Val.value,
-                p4Mode: p4Mode.value,
-                p4Val: p4Val.value,
-                step4Hex: p5Val.value
-            };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        }
-
-        function loadState() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (!saved) return;
-            try {
-                const state = JSON.parse(saved);
-                currentBytes = new Uint8Array(state.currentBytes);
-                selectedMode = state.selectedMode;
-                customHexInput.value = state.customHexVal || '';
-                step2P3Bits = state.step2P3Bits || [0, 0, 0, 0];
-                step2P4Bits = state.step2P4Bits || [0, 0, 0, 0, 0, 0];
-                p3Mode.value = state.p3Mode || 'hex';
-                p3Val.value = state.p3Val || '';
-                p4Mode.value = state.p4Mode || 'hex';
-                p4Val.value = state.p4Val || '';
-                p5Val.value = state.step4Hex || '';
-
-                updateModeSelectionUI();
-                if (selectedMode === 'custom') validateCustomInput();
-            } catch (e) {
-                console.error("Failed to load state", e);
-            }
-        }
-
-        function updateModeSelectionUI() {
-            // Reset all buttons
-            const baseClass = "flex flex-col p-4 bg-white border-2 border-transparent rounded-xl transition-all text-left shadow-sm group";
-            modeV4Btn.className = baseClass + " hover:border-indigo-300";
-            modeV7Btn.className = baseClass + " hover:border-emerald-300";
-            modeCustomBtn.className = baseClass + " hover:border-slate-400";
-
-            customInputContainer.classList.add('hidden');
-            applyStep1Btn.disabled = true;
-
-            if (selectedMode === 'v4') {
-                modeV4Btn.className = "flex flex-col p-4 bg-white border-2 border-indigo-500 bg-indigo-50 ring-2 ring-indigo-200 rounded-xl transition-all text-left shadow-sm group";
-                applyStep1Btn.disabled = false;
-            } else if (selectedMode === 'v7') {
-                modeV7Btn.className = "flex flex-col p-4 bg-white border-2 border-emerald-500 bg-emerald-50 ring-2 ring-emerald-200 rounded-xl transition-all text-left shadow-sm group";
-                applyStep1Btn.disabled = false;
-            } else if (selectedMode === 'custom') {
-                modeCustomBtn.className = "flex flex-col p-4 bg-white border-2 border-slate-500 bg-slate-50 ring-2 ring-slate-200 rounded-xl transition-all text-left shadow-sm group";
-                customInputContainer.classList.remove('hidden');
-                validateCustomInput(); // Check if existing input is valid to enable button
-            }
-        }
-
-        function validateCustomInput() {
-            if (selectedMode !== 'custom') return;
-            const rawVal = customHexInput.value;
-            const hexOnly = rawVal.replace(/[^0-9a-fA-F]/g, '');
-
-            // Build visualization
-            let previewHtml = "";
-
-            // Find where the first 12 valid hex digits end in the raw string
-            let hexCount = 0;
-            let splitIdx = 0;
-            for (let i = 0; i < rawVal.length; i++) {
-                if (/[0-9a-fA-F]/.test(rawVal[i])) {
-                    hexCount++;
-                }
-                if (hexCount === 12) {
-                    splitIdx = i + 1;
-                    break;
-                }
-            }
-
-            if (hexOnly.length >= 12) {
-                const part1 = rawVal.substring(0, splitIdx);
-                const remainder = rawVal.substring(splitIdx);
-                previewHtml = `<span class="text-indigo-600 font-bold bg-indigo-50 px-1 rounded border border-indigo-200">${part1}</span><span class="text-slate-400 opacity-50 ml-1">${remainder}</span>`;
-
-                applyStep1Btn.disabled = false;
-                customHexInput.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-200');
-                customHexInput.classList.add('border-indigo-300', 'focus:border-indigo-500', 'focus:ring-indigo-200');
-            } else {
-                previewHtml = `<span class="text-slate-400">${rawVal}</span>`;
-                if (hexOnly.length > 0) {
-                    previewHtml += ` <span class="text-red-500 text-[10px] font-bold ml-2">Need ${12 - hexOnly.length} more hex digits</span>`;
-                }
-                applyStep1Btn.disabled = true;
-                if (rawVal.length > 0) {
-                    customHexInput.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-200');
-                    customHexInput.classList.remove('border-indigo-300', 'focus:border-indigo-500', 'focus:ring-indigo-200');
-                } else {
-                    customHexInput.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-200');
-                    customHexInput.classList.add('border-slate-300', 'focus:border-slate-500', 'focus:ring-slate-200');
-                }
-            }
-            customHexPreview.innerHTML = previewHtml;
-        }
-
-        function syncStep2() {
-            let byte6Val = (currentBytes[6] & 0xf0) | (step2P3Bits[0] << 3) | (step2P3Bits[1] << 2) | (step2P3Bits[2] << 1) | step2P3Bits[3];
-            currentBytes[6] = byte6Val;
-            let byte8Val = (currentBytes[8] & 0xc0) | (step2P4Bits[0] << 5) | (step2P4Bits[1] << 4) | (step2P4Bits[2] << 3) | (step2P4Bits[3] << 2) | (step2P4Bits[4] << 1) | step2P4Bits[5];
-            currentBytes[8] = byte8Val;
-            updateDisplay();
-            saveState();
-        }
-
-        function syncStep3() {
-            currentBytes[7] = parseByteInput(p3Mode.value, p3Val.value);
-            currentBytes[9] = parseByteInput(p4Mode.value, p4Val.value);
-            updateDisplay();
-            saveState();
-        }
-
-        function syncStep4() {
-            const val = p5Val.value.replace(/[^0-9a-fA-F]/g, '');
-            if (val.length === 12) {
-                const hexVal = val.padEnd(12, '0');
-                for (let i = 0; i < 6; i++) {
-                    const byteHex = hexVal.substring(i * 2, i * 2 + 2);
-                    currentBytes[10 + i] = parseInt(byteHex, 16) || 0;
-                }
-                p5Val.classList.remove('border-slate-300', 'focus:border-fuchsia-500');
-                p5Val.classList.add('border-fuchsia-500', 'bg-fuchsia-50');
-            } else {
-                p5Val.classList.add('border-slate-300', 'focus:border-fuchsia-500');
-                p5Val.classList.remove('border-fuchsia-500', 'bg-fuchsia-50');
-            }
-            updateDisplay();
-            saveState();
-        }
-
-        function parseByteInput(mode, val) {
-            if (!val) return 0;
-            if (mode === 'hex') return parseInt(val, 16) || 0;
-            return val.charCodeAt(0) || 0;
-        }
-
-        function renderBitButtons() {
-            p3BitsContainer.innerHTML = '';
-            step2P3Bits.forEach((bit, i) => {
-                const btn = document.createElement('button');
-                btn.className = `bit-btn ${bit ? 'active' : 'inactive'}`;
-                btn.textContent = bit;
-                btn.onclick = () => { step2P3Bits[i] = bit ? 0 : 1; renderBitButtons(); syncStep2(); };
-                p3BitsContainer.appendChild(btn);
-            });
-            p4BitsContainer.innerHTML = '';
-            step2P4Bits.forEach((bit, i) => {
-                const btn = document.createElement('button');
-                btn.className = `bit-btn ${bit ? 'active' : 'inactive'}`;
-                btn.textContent = bit;
-                btn.onclick = () => { step2P4Bits[i] = bit ? 0 : 1; renderBitButtons(); syncStep2(); };
-                p4BitsContainer.appendChild(btn);
-            });
-        }
-
-        function updateDisplay() {
-            const hex = Array.from(currentBytes).map(b => b.toString(16).padStart(2, '0')).join('');
-            const parts = [
-                { text: hex.substring(0, 8), cls: 'part-1', len: 8 },
-                { text: hex.substring(8, 12), cls: 'part-2', len: 4 },
-                { text: hex.substring(12, 16), cls: 'part-3', len: 4 },
-                { text: hex.substring(16, 20), cls: 'part-4', len: 4 },
-                { text: hex.substring(20, 32), cls: 'part-5', len: 12 }
-            ];
-            uuidContainer.innerHTML = parts.map((p, idx) => {
-                const isPartZero = (idx === 0 || idx === 1 || idx === 4) && p.text === '0'.repeat(p.len);
-                if (isPartZero) return `<span class="text-slate-700 opacity-40">${p.text}</span>`;
-                return `<span class="${p.cls}">${p.text}</span>`;
-            }).join('<span class="text-slate-800">-</span>');
-
-            let binaryStr = Array.from(currentBytes).map(b => b.toString(2).padStart(8, '0')).join('');
-            const segments = [32, 16, 16, 16, 48];
-            const colors = ['part-1', 'part-2', 'part-3', 'part-4', 'part-5'];
-            let offset = 0;
-            let binHtml = "";
-
-            segments.forEach((len, idx) => {
-                let segmentBits = binaryStr.substring(offset, offset + len);
-                let formatted = `<span class="${colors[idx]}">`;
-                for (let i = 0; i < segmentBits.length; i++) {
-                    const globalPos = offset + i;
-                    const isVersion = (globalPos >= 48 && globalPos <= 51);
-                    const isVariant = (globalPos >= 64 && globalPos <= 65);
-                    const isBitZero = segmentBits[i] === '0';
-                    let bitHtml = segmentBits[i];
-                    if (isVersion) bitHtml = `<span class="bit-highlight-v">${bitHtml}</span>`;
-                    else if (isVariant) bitHtml = `<span class="bit-highlight-var">${bitHtml}</span>`;
-                    else if (isBitZero) bitHtml = `<span class="opacity-20">${bitHtml}</span>`;
-                    formatted += bitHtml;
-                    if ((i + 1) % 8 === 0 && (i + 1) < segmentBits.length) formatted += " ";
-                }
-                formatted += `</span>`;
-                binHtml += formatted + (idx < segments.length - 1 ? "\n" : "");
-                offset += len;
-            });
-            binaryDisplay.innerHTML = binHtml;
-        }
-
-        // --- Handlers ---
-        modeV4Btn.onclick = () => { selectedMode = 'v4'; updateModeSelectionUI(); saveState(); };
-        modeV7Btn.onclick = () => { selectedMode = 'v7'; updateModeSelectionUI(); saveState(); };
-        modeCustomBtn.onclick = () => { selectedMode = 'custom'; updateModeSelectionUI(); saveState(); };
-
-        customHexInput.oninput = (e) => {
-            validateCustomInput();
-            saveState();
-        };
-
-        p5Val.oninput = (e) => {
-            let v = p5Val.value.replace(/[^0-9a-fA-F]/g, '');
-            if (v.length > 12) v = v.substring(0, 12);
-            p5Val.value = v.toUpperCase();
-            syncStep4();
-        }
-
-        applyStep1Btn.onclick = () => {
-            if (selectedMode === 'v4') {
-                const rnd = new Uint8Array(6);
-                crypto.getRandomValues(rnd);
-                currentBytes.set(rnd, 0);
-            }
-            else if (selectedMode === 'v7') {
-                const now = Date.now();
-                const ts = new Uint8Array(8);
-                new DataView(ts.buffer).setBigUint64(0, BigInt(now));
-                currentBytes.set(ts.subarray(2, 8), 0);
-            }
-            else if (selectedMode === 'custom') {
-                const hexOnly = customHexInput.value.replace(/[^0-9a-fA-F]/g, '');
-                const part1Hex = hexOnly.substring(0, 12).padEnd(12, '0');
-
-                // Set Part 1 & 2
-                for (let i = 0; i < 6; i++) {
-                    const byteHex = part1Hex.substring(i * 2, i * 2 + 2);
-                    currentBytes[i] = parseInt(byteHex, 16) || 0;
-                }
-
-                // If full UUID provided (enough for Node), extract Part 5
-                // Standard UUID has 32 hex digits. Part 5 is last 12.
-                if (hexOnly.length >= 32) {
-                    const part5Hex = hexOnly.substring(hexOnly.length - 12);
-                    p5Val.value = part5Hex.toUpperCase();
-                    syncStep4();
-                }
-            }
-            initV8FixedBits(currentBytes);
-            syncStep2();
-            syncStep3();
-            saveState();
-        };
-
-        resetBtn.onclick = () => {
-            currentBytes.fill(0);
-            initV8FixedBits(currentBytes);
-            selectedMode = null;
-            applyStep1Btn.disabled = true;
-            step2P3Bits = [0, 0, 0, 0];
-            step2P4Bits = [0, 0, 0, 0, 0, 0];
-            p3Val.value = '';
-            p4Val.value = '';
-            customHexInput.value = '';
-            customHexPreview.innerHTML = '';
-            p5Val.value = '';
-            p5Val.classList.remove('border-fuchsia-500', 'bg-fuchsia-50');
-
-            localStorage.removeItem(STORAGE_KEY);
-            updateModeSelectionUI();
-            renderBitButtons();
-            updateDisplay();
-        };
-
-        function updateModeUI(modeEl, valEl) {
-            const isHex = modeEl.value === 'hex';
-            valEl.maxLength = isHex ? 2 : 1;
-            if (isHex) {
-                valEl.classList.add('uppercase');
-                valEl.placeholder = 'HEX';
-            } else {
-                valEl.classList.remove('uppercase');
-                valEl.placeholder = 'Char';
-            }
-            if (valEl.value.length > valEl.maxLength) {
-                valEl.value = valEl.value.substring(0, valEl.maxLength);
-            }
-        }
-
-        p3Mode.onchange = () => { updateModeUI(p3Mode, p3Val); syncStep3(); };
-        p4Mode.onchange = () => { updateModeUI(p4Mode, p4Val); syncStep3(); };
-        [p3Val, p4Val].forEach(el => el.oninput = syncStep3);
-
-        // --- Init ---
-        initV8FixedBits(currentBytes);
-        loadState();
-        updateModeUI(p3Mode, p3Val);
-        updateModeUI(p4Mode, p4Val);
-        renderBitButtons();
-        updateDisplay();
-        syncStep4(); // Load Part 5
-    </script>
+    <script src="script.js"></script>
 </body>
 
 </html>

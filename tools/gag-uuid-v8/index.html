@@ -148,20 +148,38 @@
                             class="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">1</span>
                         <h2 class="text-lg font-bold text-indigo-900 font-mono">Step 1: Part 1 & 2 Initialization</h2>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <button id="mode-v4-btn"
                             class="flex flex-col p-4 bg-white border-2 border-transparent hover:border-indigo-300 rounded-xl transition-all text-left shadow-sm group">
-                            <span class="text-sm font-bold text-slate-800 group-hover:text-indigo-600">v4 Style
-                                (Random)</span>
-                            <span class="text-xs text-slate-500">48ビット乱数を使用して初期化</span>
+                            <span class="text-sm font-bold text-slate-800 group-hover:text-indigo-600">v4 Style</span>
+                            <span class="text-xs text-slate-500">48-bit Random</span>
                         </button>
                         <button id="mode-v7-btn"
                             class="flex flex-col p-4 bg-white border-2 border-transparent hover:border-emerald-300 rounded-xl transition-all text-left shadow-sm group">
-                            <span class="text-sm font-bold text-slate-800 group-hover:text-emerald-600">v7 Style
-                                (Timestamp)</span>
-                            <span class="text-xs text-slate-500">Unix Epoch (ms) をセット</span>
+                            <span class="text-sm font-bold text-slate-800 group-hover:text-emerald-600">v7 Style</span>
+                            <span class="text-xs text-slate-500">Unix Epoch (ms)</span>
+                        </button>
+                        <button id="mode-custom-btn"
+                            class="flex flex-col p-4 bg-white border-2 border-transparent hover:border-slate-400 rounded-xl transition-all text-left shadow-sm group">
+                            <span class="text-sm font-bold text-slate-800 group-hover:text-slate-600">Custom</span>
+                            <span class="text-xs text-slate-500">Manual Hex Input</span>
                         </button>
                     </div>
+
+                    <div id="custom-input-container" class="mb-4 hidden">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Enter 12 Hex Characters (48
+                            bits)</label>
+                        <div class="relative">
+                            <input type="text" id="custom-hex-input" placeholder="000000000000" maxlength="12"
+                                class="w-full font-mono text-lg border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-slate-200 focus:border-slate-500 outline-none transition-all uppercase tracking-widest text-slate-700">
+                            <div class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-mono">
+                                HEX
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-1">First 48 bits of the UUID (Time_Low + Time_Mid)</p>
+                    </div>
+
                     <button id="apply-step1-btn" disabled
                         class="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 text-white font-bold py-2 rounded-xl transition-all font-mono">APPLY
                         INITIALIZATION</button>
@@ -356,6 +374,9 @@
         const binaryDisplay = document.getElementById('binary-display');
         const modeV4Btn = document.getElementById('mode-v4-btn');
         const modeV7Btn = document.getElementById('mode-v7-btn');
+        const modeCustomBtn = document.getElementById('mode-custom-btn');
+        const customInputContainer = document.getElementById('custom-input-container');
+        const customHexInput = document.getElementById('custom-hex-input');
         const applyStep1Btn = document.getElementById('apply-step1-btn');
         const resetBtn = document.getElementById('reset-btn');
         const p3BitsContainer = document.getElementById('p3-bits-container');
@@ -376,6 +397,7 @@
             const state = {
                 currentBytes: Array.from(currentBytes),
                 selectedMode,
+                customHexVal: customHexInput.value,
                 step2P3Bits,
                 step2P4Bits,
                 p3Mode: p3Mode.value,
@@ -393,6 +415,7 @@
                 const state = JSON.parse(saved);
                 currentBytes = new Uint8Array(state.currentBytes);
                 selectedMode = state.selectedMode;
+                customHexInput.value = state.customHexVal || '';
                 step2P3Bits = state.step2P3Bits || [0, 0, 0, 0];
                 step2P4Bits = state.step2P4Bits || [0, 0, 0, 0, 0, 0];
                 p3Mode.value = state.p3Mode || 'hex';
@@ -400,15 +423,49 @@
                 p4Mode.value = state.p4Mode || 'hex';
                 p4Val.value = state.p4Val || '';
 
-                if (selectedMode === 'v4') {
-                    modeV4Btn.classList.add('border-indigo-500', 'bg-indigo-50', 'ring-2', 'ring-indigo-200');
-                    applyStep1Btn.disabled = false;
-                } else if (selectedMode === 'v7') {
-                    modeV7Btn.classList.add('border-emerald-500', 'bg-emerald-50', 'ring-2', 'ring-emerald-200');
-                    applyStep1Btn.disabled = false;
-                }
+                updateModeSelectionUI();
             } catch (e) {
                 console.error("Failed to load state", e);
+            }
+        }
+
+        function updateModeSelectionUI() {
+            // Reset all buttons
+            const baseClass = "flex flex-col p-4 bg-white border-2 border-transparent rounded-xl transition-all text-left shadow-sm group";
+            modeV4Btn.className = baseClass + " hover:border-indigo-300";
+            modeV7Btn.className = baseClass + " hover:border-emerald-300";
+            modeCustomBtn.className = baseClass + " hover:border-slate-400";
+
+            customInputContainer.classList.add('hidden');
+            applyStep1Btn.disabled = true;
+
+            if (selectedMode === 'v4') {
+                modeV4Btn.className = "flex flex-col p-4 bg-white border-2 border-indigo-500 bg-indigo-50 ring-2 ring-indigo-200 rounded-xl transition-all text-left shadow-sm group";
+                applyStep1Btn.disabled = false;
+            } else if (selectedMode === 'v7') {
+                modeV7Btn.className = "flex flex-col p-4 bg-white border-2 border-emerald-500 bg-emerald-50 ring-2 ring-emerald-200 rounded-xl transition-all text-left shadow-sm group";
+                applyStep1Btn.disabled = false;
+            } else if (selectedMode === 'custom') {
+                modeCustomBtn.className = "flex flex-col p-4 bg-white border-2 border-slate-500 bg-slate-50 ring-2 ring-slate-200 rounded-xl transition-all text-left shadow-sm group";
+                customInputContainer.classList.remove('hidden');
+                validateCustomInput(); // Check if existing input is valid to enable button
+            }
+        }
+
+        function validateCustomInput() {
+            if (selectedMode !== 'custom') return;
+            // Allow 12 hex chars
+            const val = customHexInput.value.replace(/[^0-9a-fA-F]/g, '');
+            if (val.length === 12) {
+                applyStep1Btn.disabled = false;
+                customHexInput.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-200');
+                customHexInput.classList.add('border-slate-300', 'focus:border-slate-500', 'focus:ring-slate-200');
+            } else {
+                applyStep1Btn.disabled = true;
+                if (customHexInput.value.length > 0) {
+                    customHexInput.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-200');
+                    customHexInput.classList.remove('border-slate-300', 'focus:border-slate-500', 'focus:ring-slate-200');
+                }
             }
         }
 
@@ -497,18 +554,18 @@
         }
 
         // --- Handlers ---
-        modeV4Btn.onclick = () => {
-            selectedMode = 'v4';
-            modeV4Btn.className = "flex flex-col p-4 bg-white border-2 border-indigo-500 bg-indigo-50 ring-2 ring-indigo-200 rounded-xl transition-all text-left shadow-sm group";
-            modeV7Btn.className = "flex flex-col p-4 bg-white border-2 border-transparent hover:border-emerald-300 rounded-xl transition-all text-left shadow-sm group";
-            applyStep1Btn.disabled = false;
-            saveState();
-        };
-        modeV7Btn.onclick = () => {
-            selectedMode = 'v7';
-            modeV7Btn.className = "flex flex-col p-4 bg-white border-2 border-emerald-500 bg-emerald-50 ring-2 ring-emerald-200 rounded-xl transition-all text-left shadow-sm group";
-            modeV4Btn.className = "flex flex-col p-4 bg-white border-2 border-transparent hover:border-indigo-300 rounded-xl transition-all text-left shadow-sm group";
-            applyStep1Btn.disabled = false;
+        modeV4Btn.onclick = () => { selectedMode = 'v4'; updateModeSelectionUI(); saveState(); };
+        modeV7Btn.onclick = () => { selectedMode = 'v7'; updateModeSelectionUI(); saveState(); };
+        modeCustomBtn.onclick = () => { selectedMode = 'custom'; updateModeSelectionUI(); saveState(); };
+
+        customHexInput.oninput = (e) => {
+            // Filter non-hex
+            const start = customHexInput.selectionStart;
+            let v = customHexInput.value.replace(/[^0-9a-fA-F]/g, '');
+            if (v.length > 12) v = v.substring(0, 12);
+            customHexInput.value = v.toUpperCase();
+            customHexInput.selectionStart = customHexInput.selectionEnd = start;
+            validateCustomInput();
             saveState();
         };
 
@@ -523,6 +580,13 @@
                 const ts = new Uint8Array(8);
                 new DataView(ts.buffer).setBigUint64(0, BigInt(now));
                 currentBytes.set(ts.subarray(2, 8), 0);
+            }
+            else if (selectedMode === 'custom') {
+                const hexVal = customHexInput.value.padEnd(12, '0');
+                for (let i = 0; i < 6; i++) {
+                    const byteHex = hexVal.substring(i * 2, i * 2 + 2);
+                    currentBytes[i] = parseInt(byteHex, 16) || 0;
+                }
             }
             initV8FixedBits(currentBytes);
             syncStep2();
@@ -539,8 +603,10 @@
             step2P4Bits = [0, 0, 0, 0, 0, 0];
             p3Val.value = '';
             p4Val.value = '';
-            modeV4Btn.className = modeV7Btn.className = "flex flex-col p-4 bg-white border-2 border-transparent hover:border-indigo-300 rounded-xl transition-all text-left shadow-sm group";
+            customHexInput.value = '';
+
             localStorage.removeItem(STORAGE_KEY);
+            updateModeSelectionUI();
             renderBitButtons();
             updateDisplay();
         };

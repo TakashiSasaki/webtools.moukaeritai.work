@@ -78,3 +78,10 @@
     git config core.hooksPath .githooks
     ```
   - **動作内容**: `.githooks/pre-commit` スクリプトが走り、`manifest.json` と `sw.js` のバージョンを同期してインクリメントし、自動的に `git add` します。
+
+## 7. Python 実行環境
+
+- **Python の起動**:
+  - `python` コマンドが直接使用できない環境では、`uv` がインストールされている場合、`uv run` を使用してスクリプトを実行してください。
+  - 例: `uv run python script.py` または `uv run script.py`
+

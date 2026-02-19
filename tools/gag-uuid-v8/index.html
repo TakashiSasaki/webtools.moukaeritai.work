@@ -207,7 +207,7 @@
                                     <option value="ascii">ASCII (1ch)</option>
                                 </select>
                                 <input type="text" id="p3-val" maxlength="2"
-                                    class="flex-1 font-mono border rounded px-2 text-sm uppercase" placeholder="Value">
+                                    class="flex-1 font-mono border rounded px-2 text-sm" placeholder="Value">
                             </div>
                         </div>
                         <div class="space-y-3">
@@ -219,7 +219,7 @@
                                     <option value="ascii">ASCII (1ch)</option>
                                 </select>
                                 <input type="text" id="p4-val" maxlength="2"
-                                    class="flex-1 font-mono border rounded px-2 text-sm uppercase" placeholder="Value">
+                                    class="flex-1 font-mono border rounded px-2 text-sm" placeholder="Value">
                             </div>
                         </div>
                     </div>
@@ -545,11 +545,30 @@
             updateDisplay();
         };
 
-        [p3Val, p4Val, p3Mode, p4Mode].forEach(el => el.oninput = syncStep3);
+        function updateModeUI(modeEl, valEl) {
+            const isHex = modeEl.value === 'hex';
+            valEl.maxLength = isHex ? 2 : 1;
+            if (isHex) {
+                valEl.classList.add('uppercase');
+                valEl.placeholder = 'HEX';
+            } else {
+                valEl.classList.remove('uppercase');
+                valEl.placeholder = 'Char';
+            }
+            if (valEl.value.length > valEl.maxLength) {
+                valEl.value = valEl.value.substring(0, valEl.maxLength);
+            }
+        }
+
+        p3Mode.onchange = () => { updateModeUI(p3Mode, p3Val); syncStep3(); };
+        p4Mode.onchange = () => { updateModeUI(p4Mode, p4Val); syncStep3(); };
+        [p3Val, p4Val].forEach(el => el.oninput = syncStep3);
 
         // --- Init ---
         initV8FixedBits(currentBytes);
         loadState();
+        updateModeUI(p3Mode, p3Val);
+        updateModeUI(p4Mode, p4Val);
         renderBitButtons();
         updateDisplay();
     </script>

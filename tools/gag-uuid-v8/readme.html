@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom UUIDv8 Specification Draft</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+        .font-mono {
+            font-family: 'JetBrains+Mono', monospace;
+        }
+
+        body {
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 min-h-screen py-10 px-4 text-slate-800">
+
+    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden border border-slate-200">
+
+        <!-- Header -->
+        <header class="bg-indigo-600 text-white p-8">
+            <h1 class="text-3xl font-bold mb-2">Custom UUIDv8 Specification</h1>
+            <p class="opacity-80 font-mono text-sm">Draft Version 0.1</p>
+        </header>
+
+        <div class="p-8 space-y-10">
+
+            <!-- Overview -->
+            <section>
+                <h2 class="text-xl font-bold text-slate-800 border-b-2 border-indigo-100 pb-2 mb-4">1. 概要</h2>
+                <p class="leading-relaxed text-slate-600 mb-4">
+                    本仕様書は、RFC 9562 で定義されている <strong>UUID Version 8 (Custom)</strong> を利用した独自の識別子フォーマットについて記述するものです。
+                    既存のUUID構造（8-4-4-4-12）を維持しつつ、アプリケーション固有の要件に合わせてタイムスタンプ、ランダム性、および任意のメタデータを埋め込むことを目的としています。
+                </p>
+                <div class="bg-amber-50 border-l-4 border-amber-400 p-4 text-sm text-amber-800">
+                    <strong>Note:</strong> 本仕様は開発中であり、特に Part 5 (Node) の利用方法は未定です。
+                </div>
+            </section>
+
+            <!-- Structure Diagram -->
+            <section>
+                <h2 class="text-xl font-bold text-slate-800 border-b-2 border-indigo-100 pb-2 mb-4">2. ビットレイアウト図</h2>
+                <div class="overflow-x-auto">
+                    <div class="min-w-[700px] font-mono text-xs text-center">
+                        <!-- Bit Scale -->
+                        <div class="flex text-slate-400 mb-1 px-1">
+                            <div class="w-1/4 text-left">0</div>
+                            <div class="w-1/4 text-center">32</div>
+                            <div class="w-1/4 text-center">48</div>
+                            <div class="w-1/4 text-right">64</div>
+                            <div class="w-[100px] text-right">128</div>
+                        </div>
+
+                        <!-- Visual Blocks -->
+                        <div class="flex h-12 text-white font-bold rounded-lg overflow-hidden shadow-sm">
+                            <div
+                                class="flex-[8] bg-indigo-400 flex items-center justify-center border-r border-white/20 relative group">
+                                Part 1 (32b)
+                                <span class="absolute bottom-1 right-2 text-[8px] opacity-60">High</span>
+                            </div>
+                            <div
+                                class="flex-[4] bg-emerald-400 flex items-center justify-center border-r border-white/20 relative group">
+                                Part 2 (16b)
+                                <span class="absolute bottom-1 right-2 text-[8px] opacity-60">Mid</span>
+                            </div>
+                            <div
+                                class="flex-[4] bg-amber-400 flex flex-col items-center justify-center border-r border-white/20 text-[10px] leading-tight relative">
+                                <div>Ver (4b)</div>
+                                <div class="w-full h-px bg-white/30 my-0.5"></div>
+                                <div>Custom (12b)</div>
+                            </div>
+                            <div
+                                class="flex-[4] bg-fuchsia-400 flex flex-col items-center justify-center border-r border-white/20 text-[10px] leading-tight relative">
+                                <div>Var (2b)</div>
+                                <div class="w-full h-px bg-white/30 my-0.5"></div>
+                                <div>Custom (14b)</div>
+                            </div>
+                            <div
+                                class="flex-[12] bg-rose-300 flex items-center justify-center text-slate-600 relative bg-stripes">
+                                Part 5 (48b)
+                                <span class="absolute bottom-1 right-2 text-[8px] opacity-60 font-bold">Undefined</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Detailed Specs -->
+            <section>
+                <h2 class="text-xl font-bold text-slate-800 border-b-2 border-indigo-100 pb-2 mb-6">3. フィールド詳細定義</h2>
+
+                <div class="space-y-8">
+
+                    <!-- Part 1 & 2 -->
+                    <div class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4">
+                        <div class="font-mono text-sm font-bold text-indigo-600">Part 1 & 2<br><span
+                                class="text-slate-400 font-normal">Bits 0-47</span></div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 mb-2">Payload (48 bits)</h3>
+                            <p class="text-sm text-slate-600 mb-3">
+                                以下の2つのモードから選択して初期化する。
+                            </p>
+                            <ul class="list-disc list-outside ml-5 text-sm text-slate-600 space-y-2">
+                                <li>
+                                    <span class="font-bold text-slate-700">Mode v4 (Random):</span>
+                                    暗号論的擬似乱数生成器 (CSPRNG) による48ビットのランダム値。衝突耐性を重視する場合に使用。
+                                </li>
+                                <li>
+                                    <span class="font-bold text-slate-700">Mode v7 (Timestamp):</span>
+                                    Unix Epoch (ミリ秒) の下位48ビット。時系列ソート（K-sortable）が必要な場合に使用。
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Part 3 -->
+                    <div class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 border-t border-slate-100 pt-6">
+                        <div class="font-mono text-sm font-bold text-amber-600">Part 3<br><span
+                                class="text-slate-400 font-normal">Bits 48-63</span></div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 mb-2">Version & Custom Data A (16 bits)</h3>
+                            <div class="overflow-hidden border border-slate-200 rounded-lg">
+                                <table class="min-w-full text-sm text-left">
+                                    <thead class="bg-slate-50 text-slate-500 font-mono text-xs">
+                                        <tr>
+                                            <th class="px-4 py-2 w-24">Bits</th>
+                                            <th class="px-4 py-2 w-32">Name</th>
+                                            <th class="px-4 py-2">Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        <tr>
+                                            <td class="px-4 py-2 font-mono">48-51</td>
+                                            <td class="px-4 py-2 font-bold">Version</td>
+                                            <td class="px-4 py-2">固定値 <code
+                                                    class="bg-slate-100 px-1 rounded">1000</code> (Version 8)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 font-mono">52-55</td>
+                                            <td class="px-4 py-2 font-bold">Flags A</td>
+                                            <td class="px-4 py-2">ユーザー定義の4ビットフラグ（任意設定可能）</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 font-mono">56-63</td>
+                                            <td class="px-4 py-2 font-bold">Data Byte A</td>
+                                            <td class="px-4 py-2">ユーザー定義の8ビット値（16進数またはASCII文字1字）</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Part 4 -->
+                    <div class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 border-t border-slate-100 pt-6">
+                        <div class="font-mono text-sm font-bold text-fuchsia-600">Part 4<br><span
+                                class="text-slate-400 font-normal">Bits 64-79</span></div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 mb-2">Variant & Custom Data B (16 bits)</h3>
+                            <div class="overflow-hidden border border-slate-200 rounded-lg">
+                                <table class="min-w-full text-sm text-left">
+                                    <thead class="bg-slate-50 text-slate-500 font-mono text-xs">
+                                        <tr>
+                                            <th class="px-4 py-2 w-24">Bits</th>
+                                            <th class="px-4 py-2 w-32">Name</th>
+                                            <th class="px-4 py-2">Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        <tr>
+                                            <td class="px-4 py-2 font-mono">64-65</td>
+                                            <td class="px-4 py-2 font-bold">Variant</td>
+                                            <td class="px-4 py-2">固定値 <code class="bg-slate-100 px-1 rounded">10</code>
+                                                (RFC 4122)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 font-mono">66-71</td>
+                                            <td class="px-4 py-2 font-bold">Flags B</td>
+                                            <td class="px-4 py-2">ユーザー定義の6ビットフラグ（任意設定可能）</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 font-mono">72-79</td>
+                                            <td class="px-4 py-2 font-bold">Data Byte B</td>
+                                            <td class="px-4 py-2">ユーザー定義の8ビット値（16進数またはASCII文字1字）</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Part 5 -->
+                    <div class="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 border-t border-slate-100 pt-6">
+                        <div class="font-mono text-sm font-bold text-rose-400">Part 5<br><span
+                                class="text-slate-400 font-normal">Bits 80-127</span></div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 mb-2">Node (48 bits)</h3>
+                            <div class="bg-slate-50 p-4 rounded border border-slate-200 text-sm text-slate-500 italic">
+                                <span class="not-italic font-bold text-rose-500 mr-2">[UNDEFINED]</span>
+                                現在の仕様では、この領域の使用ルールは定義されていません。実装上は初期化時のゼロ、またはランダム生成時の値がそのまま残る場合があります。将来的にはMACアドレス、乱数、あるいは追加のアプリケーションデータの格納に使用される可能性があります。
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-slate-100 p-6 text-center text-xs text-slate-500 border-t border-slate-200">
+            <p>Generated by Custom UUIDv8 Builder Tool</p>
+        </footer>
+    </div>
+
+</body>
+
+</html>

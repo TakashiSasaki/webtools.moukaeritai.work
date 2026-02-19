@@ -168,16 +168,16 @@
                     </div>
 
                     <div id="custom-input-container" class="mb-4 hidden">
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Enter 12 Hex Characters (48
-                            bits)</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Enter UUID or 12 Hex
+                            Characters (48 bits)</label>
                         <div class="relative">
-                            <input type="text" id="custom-hex-input" placeholder="000000000000" maxlength="12"
+                            <input type="text" id="custom-hex-input" placeholder="00000000-0000-0000-0000-000000000000"
+                                maxlength="36"
                                 class="w-full font-mono text-lg border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-slate-200 focus:border-slate-500 outline-none transition-all uppercase tracking-widest text-slate-700">
-                            <div class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-mono">
-                                HEX
-                            </div>
                         </div>
-                        <p class="text-[10px] text-slate-400 mt-1">First 48 bits of the UUID (Time_Low + Time_Mid)</p>
+                        <div id="custom-hex-preview" class="mt-2 font-mono text-xs h-6 flex items-center gap-2"></div>
+                        <p class="text-[10px] text-slate-400 mt-1">First 48 bits (highlighted) will be used for Part 1 &
+                            2. Part 5 (Node) will be auto-filled if available.</p>
                     </div>
 
                     <button id="apply-step1-btn" disabled
@@ -238,6 +238,26 @@
                                 </select>
                                 <input type="text" id="p4-val" maxlength="2"
                                     class="flex-1 font-mono border rounded px-2 text-sm" placeholder="Value">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 4 -->
+                <div class="bg-fuchsia-50 rounded-2xl p-6 border border-fuchsia-100">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span
+                            class="bg-fuchsia-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">4</span>
+                        <h2 class="text-lg font-bold text-fuchsia-900 font-mono">Step 4: Part 5 Customization (Node / 48
+                            bits)</h2>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-fuchsia-700 uppercase mb-2">Part 5 Hex Value (12
+                            chars)</label>
+                        <div class="relative">
+                            <input type="text" id="p5-val" placeholder="000000000000" maxlength="12"
+                                class="w-full font-mono text-sm border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-fuchsia-200 focus:border-fuchsia-500 outline-none transition-all uppercase tracking-widest text-slate-700">
+                            <div class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-mono">HEX
                             </div>
                         </div>
                     </div>
@@ -369,6 +389,7 @@
         let selectedMode = null;
         let step2P3Bits = [0, 0, 0, 0];
         let step2P4Bits = [0, 0, 0, 0, 0, 0];
+        let step4Hex = "";
 
         const uuidContainer = document.getElementById('uuid-html-container');
         const binaryDisplay = document.getElementById('binary-display');
@@ -377,6 +398,7 @@
         const modeCustomBtn = document.getElementById('mode-custom-btn');
         const customInputContainer = document.getElementById('custom-input-container');
         const customHexInput = document.getElementById('custom-hex-input');
+        const customHexPreview = document.getElementById('custom-hex-preview');
         const applyStep1Btn = document.getElementById('apply-step1-btn');
         const resetBtn = document.getElementById('reset-btn');
         const p3BitsContainer = document.getElementById('p3-bits-container');
@@ -386,6 +408,8 @@
         const p3Val = document.getElementById('p3-val');
         const p4Mode = document.getElementById('p4-mode');
         const p4Val = document.getElementById('p4-val');
+
+        const p5Val = document.getElementById('p5-val');
 
         function initV8FixedBits(bytes) {
             bytes[6] = (bytes[6] & 0x0f) | 0x80; // Version 8
@@ -403,7 +427,8 @@
                 p3Mode: p3Mode.value,
                 p3Val: p3Val.value,
                 p4Mode: p4Mode.value,
-                p4Val: p4Val.value
+                p4Val: p4Val.value,
+                step4Hex: p5Val.value
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         }
@@ -422,8 +447,10 @@
                 p3Val.value = state.p3Val || '';
                 p4Mode.value = state.p4Mode || 'hex';
                 p4Val.value = state.p4Val || '';
+                p5Val.value = state.step4Hex || '';
 
                 updateModeSelectionUI();
+                if (selectedMode === 'custom') validateCustomInput();
             } catch (e) {
                 console.error("Failed to load state", e);
             }
@@ -454,19 +481,48 @@
 
         function validateCustomInput() {
             if (selectedMode !== 'custom') return;
-            // Allow 12 hex chars
-            const val = customHexInput.value.replace(/[^0-9a-fA-F]/g, '');
-            if (val.length === 12) {
-                applyStep1Btn.disabled = false;
-                customHexInput.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-200');
-                customHexInput.classList.add('border-slate-300', 'focus:border-slate-500', 'focus:ring-slate-200');
-            } else {
-                applyStep1Btn.disabled = true;
-                if (customHexInput.value.length > 0) {
-                    customHexInput.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-200');
-                    customHexInput.classList.remove('border-slate-300', 'focus:border-slate-500', 'focus:ring-slate-200');
+            const rawVal = customHexInput.value;
+            const hexOnly = rawVal.replace(/[^0-9a-fA-F]/g, '');
+
+            // Build visualization
+            let previewHtml = "";
+
+            // Find where the first 12 valid hex digits end in the raw string
+            let hexCount = 0;
+            let splitIdx = 0;
+            for (let i = 0; i < rawVal.length; i++) {
+                if (/[0-9a-fA-F]/.test(rawVal[i])) {
+                    hexCount++;
+                }
+                if (hexCount === 12) {
+                    splitIdx = i + 1;
+                    break;
                 }
             }
+
+            if (hexOnly.length >= 12) {
+                const part1 = rawVal.substring(0, splitIdx);
+                const remainder = rawVal.substring(splitIdx);
+                previewHtml = `<span class="text-indigo-600 font-bold bg-indigo-50 px-1 rounded border border-indigo-200">${part1}</span><span class="text-slate-400 opacity-50 ml-1">${remainder}</span>`;
+
+                applyStep1Btn.disabled = false;
+                customHexInput.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-200');
+                customHexInput.classList.add('border-indigo-300', 'focus:border-indigo-500', 'focus:ring-indigo-200');
+            } else {
+                previewHtml = `<span class="text-slate-400">${rawVal}</span>`;
+                if (hexOnly.length > 0) {
+                    previewHtml += ` <span class="text-red-500 text-[10px] font-bold ml-2">Need ${12 - hexOnly.length} more hex digits</span>`;
+                }
+                applyStep1Btn.disabled = true;
+                if (rawVal.length > 0) {
+                    customHexInput.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-200');
+                    customHexInput.classList.remove('border-indigo-300', 'focus:border-indigo-500', 'focus:ring-indigo-200');
+                } else {
+                    customHexInput.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-200');
+                    customHexInput.classList.add('border-slate-300', 'focus:border-slate-500', 'focus:ring-slate-200');
+                }
+            }
+            customHexPreview.innerHTML = previewHtml;
         }
 
         function syncStep2() {
@@ -481,6 +537,24 @@
         function syncStep3() {
             currentBytes[7] = parseByteInput(p3Mode.value, p3Val.value);
             currentBytes[9] = parseByteInput(p4Mode.value, p4Val.value);
+            updateDisplay();
+            saveState();
+        }
+
+        function syncStep4() {
+            const val = p5Val.value.replace(/[^0-9a-fA-F]/g, '');
+            if (val.length === 12) {
+                const hexVal = val.padEnd(12, '0');
+                for (let i = 0; i < 6; i++) {
+                    const byteHex = hexVal.substring(i * 2, i * 2 + 2);
+                    currentBytes[10 + i] = parseInt(byteHex, 16) || 0;
+                }
+                p5Val.classList.remove('border-slate-300', 'focus:border-fuchsia-500');
+                p5Val.classList.add('border-fuchsia-500', 'bg-fuchsia-50');
+            } else {
+                p5Val.classList.add('border-slate-300', 'focus:border-fuchsia-500');
+                p5Val.classList.remove('border-fuchsia-500', 'bg-fuchsia-50');
+            }
             updateDisplay();
             saveState();
         }
@@ -559,15 +633,16 @@
         modeCustomBtn.onclick = () => { selectedMode = 'custom'; updateModeSelectionUI(); saveState(); };
 
         customHexInput.oninput = (e) => {
-            // Filter non-hex
-            const start = customHexInput.selectionStart;
-            let v = customHexInput.value.replace(/[^0-9a-fA-F]/g, '');
-            if (v.length > 12) v = v.substring(0, 12);
-            customHexInput.value = v.toUpperCase();
-            customHexInput.selectionStart = customHexInput.selectionEnd = start;
             validateCustomInput();
             saveState();
         };
+
+        p5Val.oninput = (e) => {
+            let v = p5Val.value.replace(/[^0-9a-fA-F]/g, '');
+            if (v.length > 12) v = v.substring(0, 12);
+            p5Val.value = v.toUpperCase();
+            syncStep4();
+        }
 
         applyStep1Btn.onclick = () => {
             if (selectedMode === 'v4') {
@@ -582,10 +657,21 @@
                 currentBytes.set(ts.subarray(2, 8), 0);
             }
             else if (selectedMode === 'custom') {
-                const hexVal = customHexInput.value.padEnd(12, '0');
+                const hexOnly = customHexInput.value.replace(/[^0-9a-fA-F]/g, '');
+                const part1Hex = hexOnly.substring(0, 12).padEnd(12, '0');
+
+                // Set Part 1 & 2
                 for (let i = 0; i < 6; i++) {
-                    const byteHex = hexVal.substring(i * 2, i * 2 + 2);
+                    const byteHex = part1Hex.substring(i * 2, i * 2 + 2);
                     currentBytes[i] = parseInt(byteHex, 16) || 0;
+                }
+
+                // If full UUID provided (enough for Node), extract Part 5
+                // Standard UUID has 32 hex digits. Part 5 is last 12.
+                if (hexOnly.length >= 32) {
+                    const part5Hex = hexOnly.substring(hexOnly.length - 12);
+                    p5Val.value = part5Hex.toUpperCase();
+                    syncStep4();
                 }
             }
             initV8FixedBits(currentBytes);
@@ -604,6 +690,9 @@
             p3Val.value = '';
             p4Val.value = '';
             customHexInput.value = '';
+            customHexPreview.innerHTML = '';
+            p5Val.value = '';
+            p5Val.classList.remove('border-fuchsia-500', 'bg-fuchsia-50');
 
             localStorage.removeItem(STORAGE_KEY);
             updateModeSelectionUI();
@@ -637,6 +726,7 @@
         updateModeUI(p4Mode, p4Val);
         renderBitButtons();
         updateDisplay();
+        syncStep4(); // Load Part 5
     </script>
 </body>
 
